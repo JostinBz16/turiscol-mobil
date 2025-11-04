@@ -1,0 +1,38 @@
+<ion-tabs>
+  <!-- Donde se renderizan las páginas de cada tab -->
+  <ion-router-outlet></ion-router-outlet>
+
+  <!-- Barra inferior -->
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home">
+      <ion-icon
+        [name]="currenTab() === 'home' ? 'home' : 'home-outline'"
+      ></ion-icon>
+      <ion-label>Inicio</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="explore">
+      <ion-icon
+        [name]="currenTab() === 'explore' ? 'map' :'map-outline'"
+      ></ion-icon>
+      <ion-label>Explorar</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="prices">
+      <ion-icon
+        [name]="currenTab() === 'prices' ? 'cash' :'cash-outline'"
+      ></ion-icon>
+      <ion-label>Lista de Precios</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="bookings">
+      <ion-icon
+        [name]="currenTab() === 'bookings' ? 'calendar' :'calendar-outline'"
+      ></ion-icon>
+      <ion-label>Reservas</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="providers">
+      <ion-icon
+        [name]="currenTab() === 'providers' ? 'briefcase' :'briefcase-outline'"
+      ></ion-icon>
+      <ion-label>Proveedores</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>
