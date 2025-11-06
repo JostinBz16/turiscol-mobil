@@ -1,4 +1,4 @@
-<ion-tabs>
+<ion-tabs #tabs (ionTabsDidChange)="getCurrentTab($event)">
   <!-- Donde se renderizan las páginas de cada tab -->
   <ion-router-outlet></ion-router-outlet>
 
@@ -10,17 +10,17 @@
       ></ion-icon>
       <ion-label>Inicio</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="explore">
+    <ion-tab-button tab="destination">
       <ion-icon
-        [name]="currenTab() === 'explore' ? 'map' :'map-outline'"
+        [name]="currenTab() === 'destination' ? 'map' :'map-outline'"
       ></ion-icon>
       <ion-label>Explorar</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="prices">
       <ion-icon
-        [name]="currenTab() === 'prices' ? 'cash' :'cash-outline'"
+        [name]="currenTab() === 'prices' ? 'receipt' :'receipt-outline'"
       ></ion-icon>
-      <ion-label>Lista de Precios</ion-label>
+      <ion-label>Precios</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="bookings">
       <ion-icon
@@ -28,11 +28,11 @@
       ></ion-icon>
       <ion-label>Reservas</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="providers">
+    <ion-tab-button tab="events">
       <ion-icon
-        [name]="currenTab() === 'providers' ? 'briefcase' :'briefcase-outline'"
+        [name]="currenTab() === 'events' ? 'color-palette' :'color-palette-outline'"
       ></ion-icon>
-      <ion-label>Proveedores</ion-label>
+      <ion-label>Eventos</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

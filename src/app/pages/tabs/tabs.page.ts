@@ -17,8 +17,10 @@ import {
   briefcase,
   calendar,
   home,
-  cash,
-  cashOutline,
+  receiptOutline,
+  receipt,
+  colorPalette,
+  colorPaletteOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -42,6 +44,7 @@ export class TabsPage {
   getCurrentTab(event: { tab: string }) {
     this.currenTab.set(event.tab);
   }
+
   constructor() {
     addIcons({
       homeOutline,
@@ -49,11 +52,12 @@ export class TabsPage {
       briefcase,
       calendar,
       home,
-      cash,
-      cashOutline,
+      receipt,
+      receiptOutline,
       mapOutline,
       calendarOutline,
-      briefcaseOutline,
+      colorPalette,
+      colorPaletteOutline,
     });
   }
 }
