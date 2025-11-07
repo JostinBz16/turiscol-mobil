@@ -9,6 +9,7 @@ import {
   IonButtons,
   IonButton,
   IonIcon,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { notifications } from 'ionicons/icons';
@@ -28,6 +29,7 @@ import { notifications } from 'ionicons/icons';
     FormsModule,
     IonButton,
     IonIcon,
+    IonImg,
   ],
 })
 export class HomePage implements OnInit {

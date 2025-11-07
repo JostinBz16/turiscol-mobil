@@ -36,6 +36,11 @@ export const routes: Routes = [
             (m) => m.PricesListPage
           ),
       },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('../account/account.page').then((m) => m.AccountPage),
+      },
     ],
   },
 ];

@@ -21,6 +21,8 @@ import {
   receipt,
   colorPalette,
   colorPaletteOutline,
+  person,
+  personOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -50,12 +52,12 @@ export class TabsPage {
       homeOutline,
       map,
       briefcase,
-      calendar,
+      person,
       home,
       receipt,
+      personOutline,
       receiptOutline,
       mapOutline,
-      calendarOutline,
       colorPalette,
       colorPaletteOutline,
     });

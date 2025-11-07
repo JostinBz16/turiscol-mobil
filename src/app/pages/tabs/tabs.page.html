@@ -22,17 +22,17 @@
       ></ion-icon>
       <ion-label>Precios</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="bookings">
-      <ion-icon
-        [name]="currenTab() === 'bookings' ? 'calendar' :'calendar-outline'"
-      ></ion-icon>
-      <ion-label>Reservas</ion-label>
-    </ion-tab-button>
     <ion-tab-button tab="events">
       <ion-icon
         [name]="currenTab() === 'events' ? 'color-palette' :'color-palette-outline'"
       ></ion-icon>
       <ion-label>Eventos</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="profile">
+      <ion-icon
+        [name]="currenTab() === 'profile' ? 'person' :'person-outline'"
+      ></ion-icon>
+      <ion-label>Perfil</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>
