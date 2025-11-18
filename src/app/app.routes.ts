@@ -1,15 +1,6 @@
 import { inject } from '@angular/core';
 import { Router, Routes } from '@angular/router';
-
-const showWelcomeGuard = () => {
-  const shown = localStorage.getItem('welcomeShown');
-  const router = inject(Router);
-  if (shown) {
-    router.navigateByUrl('/login', { replaceUrl: true });
-    return false;
-  }
-  return true;
-};
+import { welcomeGuard } from './shared/guards/welcome.guard';
 
 export const routes: Routes = [
   {
@@ -20,18 +11,18 @@ export const routes: Routes = [
   {
     path: 'welcome',
     loadComponent: () =>
-      import('./pages/welcome/welcome.page').then((m) => m.WelcomePage),
-    canActivate: [showWelcomeGuard],
+      import('./layouts/welcome/welcome.page').then((r) => r.WelcomePage),
+    canMatch: [welcomeGuard],
   },
   {
     path: 'tabs',
     loadChildren: () =>
-      import('./pages/tabs/tabs.routes').then((m) => m.routes),
+      import('./layouts/tabs/tabs.routes').then((r) => r.routes),
   },
   {
-    path: 'login',
-    loadComponent: () =>
-      import('./pages/login/login.page').then((m) => m.LoginPage),
+    path: 'auth',
+    loadChildren: () =>
+      import('./features/auth/auth.route').then((r) => r.authRoutes),
   },
   {
     path: '**',

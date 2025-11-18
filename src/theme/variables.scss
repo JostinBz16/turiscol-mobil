@@ -1,64 +1,33 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap");
+
 :root {
-  /* Azul profundo (Título Turiscol y headers) */
+  /* 🎨 Colores principales */
   --ion-color-primary: #0d3b66;
   --ion-color-primary-rgb: 13, 59, 102;
   --ion-color-primary-contrast: #ffffff;
 
-  /* Azul medio suave (Botones, tabs activos) */
   --ion-color-secondary: #1d6fa3;
   --ion-color-secondary-rgb: 29, 111, 163;
   --ion-color-secondary-contrast: #ffffff;
 
-  /* Amarillo cálido (Tags de cultura, categorías) */
   --ion-color-warning: #f4b400;
-  --ion-color-warning-rgb: 244, 180, 0;
-
-  /* Verde pastel (etiquetas de confirmado) */
   --ion-color-success: #5abf90;
-  --ion-color-success-rgb: 90, 191, 144;
-
-  /* Rojo suave (cancelado, alertas) */
   --ion-color-danger: #e65f5c;
-  --ion-color-danger-rgb: 230, 95, 92;
 
-  /* ===============================
-     🎨 Colores de fondo y superficie
-     =============================== */
-
-  /* Fondo general gris clarito */
-  --ion-background-color: #f8f8f8;
-  --ion-background-color-rgb: 241, 244, 247;
-
-  /* Tarjetas blancas redondeadas */
+  /* 🎨 Fondo y superficie */
+  --ion-background-color: #ebeff3;
   --ion-card-background: #ffffff;
-
-  /* Items */
   --ion-item-background: #ffffff;
-
-  /* Texto azul oscuro suave */
-  --ion-color-text-tittle: #013f79;
-  --ion-text-color: #0a2239;
-  --ion-text-color-rgb: 10, 34, 57;
-
-  /* Bordes suaves */
-  --ion-border-color: #d9dde2;
-
-  /* Superficie (tabs, toolbar) */
-  --ion-surface-color: #ffffff;
-
-  /* Toolbar con fondo blanco + sombra suave */
   --ion-toolbar-background: #ffffff;
-
-  /* ===============================
-     ✨ Sombra suave estilo Turiscol
-     =============================== */
+  --ion-text-color: #0a2239;
+  --ion-color-text-tittle: #013f79;
+  --ion-border-color: #d9dde2;
+  --ion-surface-color: #ffffff;
   --ion-box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 
-  /* ===============================
-     ✍️ Tipografías como en la imagen
-     =============================== */
+  /* ✍️ Tipografías */
   --font-family-base: "Poppins", "Segoe UI", Roboto, sans-serif;
-  --font-family-heading: "Poppins", "Segoe UI", Roboto, sans-serif;
+  --font-family-heading: "Bebas Neue", "Poppins", sans-serif;
 
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
@@ -74,24 +43,21 @@
   --font-weight-bold: 700;
 
   --line-height-base: 1.5;
-  --line-height-heading: 1.2;
+  --line-height-heading: 1.1;
 }
 
-/* App */
+/* ===============================
+   ⚙️ Aplicación general
+   =============================== */
 ion-app {
   font-family: var(--font-family-base);
   background-color: var(--ion-background-color);
   color: var(--ion-text-color);
 }
 
-/* Toolbar */
-// ion-toolbar {
-//   // background: var(--ion-background-color);
-//   color: var(--ion-color-primary);
-//   font-weight: var(--font-weight-semibold);
-//   font-size: var(--font-size-lg);
-// }
-
+/* ===============================
+   🧭 Toolbar / Header
+   =============================== */
 ion-header,
 ion-toolbar {
   --border-width: 0;
@@ -99,57 +65,51 @@ ion-toolbar {
   box-shadow: none !important;
 }
 
-/* Hace que el fondo sea igual al del ion-app */
 ion-toolbar {
   background: var(--ion-color-text-tittle) !important;
   color: var(--ion-text-color);
 }
 
-/* Si el ion-header genera un fondo diferente en scroll */
 ion-header::after {
   display: none !important;
 }
 
-/* Títulos */
-ion-title {
+/* ===============================
+   🧱 Títulos (usa Bebas Neue)
+   =============================== */
+ion-title,
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-family-heading);
   color: var(--ion-color-primary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   font-weight: var(--font-weight-bold);
+  margin: 0;
 }
 
-// /* Botones */
-// ion-button {
-//   --border-radius: 12px;
-//   --padding-start: 1rem;
-//   --padding-end: 1rem;
-//   font-weight: var(--font-weight-medium);
-//   --background: var(--ion-color-primary);
-//   --background-hover: var(--ion-color-secondary);
-//   color: white;
-// }
-
-/* Tarjetas */
+/* ===============================
+   🧩 Elementos base
+   =============================== */
 ion-card {
   border-radius: 16px;
   box-shadow: var(--ion-box-shadow);
 }
 
-/* Items */
 ion-item {
   --background: var(--ion-item-background);
   --padding-start: 12px;
   --border-radius: 12px;
 }
 
-/* Inputs */
 ion-input {
   --background: white;
   --padding-start: 12px;
   border-radius: 12px;
 }
 
-/* Tabs */
 ion-tab-bar {
   --background: var(--ion-surface-color);
   box-shadow: var(--ion-box-shadow);
@@ -168,8 +128,12 @@ ion-tab-bar::before {
     #f4b400 40%,
     #1d6fa3 40%,
     #1d6fa3 75%,
-    #e65f5c 75% /* Rojo */
+    #e65f5c 75%
   );
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
+}
+
+ion-content {
+  --background: var(--ion-background-color);
 }

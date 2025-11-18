@@ -21,11 +21,4 @@ export class AppComponent {
       body.classList.add('light');
     }
   }
-
-  // constructor() {
-  //   addIcons({
-  //     moon,
-  //     sunny,
-  //   });
-  // }
 }

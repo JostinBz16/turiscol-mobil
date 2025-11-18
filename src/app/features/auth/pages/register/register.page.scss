@@ -1,0 +1,123 @@
+/* Wrapper principal centrado */
+.register-wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Caja que contiene cada vista */
+.type-box,
+.tourist-box,
+.form-box {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Títulos */
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0d3b66;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #6b6b6b;
+  margin-bottom: 1.8rem;
+}
+
+/* === Cards para selección de tipo de usuario === */
+.cards-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Card individual */
+.user-card {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  border: 1px solid #e7e7e7;
+}
+
+.user-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.user-card:active {
+  transform: scale(0.97);
+}
+
+/* Iconos dentro de las cards */
+.card-icon {
+  font-size: 32px;
+  color: #0d3b66;
+  margin-bottom: 0.5rem;
+}
+
+/* === Inputs para el formulario provider === */
+.input-item {
+  --background: #fff;
+  --border-color: #ddd;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 0 1px #e5e5e5;
+  width: 100%;
+}
+
+/* Botón principal */
+.btn {
+  --background: #0d3b66;
+  --color: #fff;
+  --border-radius: 12px;
+  font-weight: 600;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Botón Google (solo tourist) */
+.google-btn {
+  --background: #ffffff;
+  --color: #000000;
+  --border-radius: 12px;
+  border: 1px solid #c4c4c4;
+  font-weight: 600;
+}
+
+/* Texto para retroceder */
+.back-text {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #0d3b66;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-text:hover {
+  opacity: 0.8;
+}
+
+/* Responsivo */
+@media (max-width: 400px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .user-card {
+    padding: 1.2rem;
+  }
+}

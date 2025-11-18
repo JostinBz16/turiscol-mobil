@@ -1,0 +1,27 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Lista de Precios</ion-title>
+
+    @if (isAdmin) {
+    <ion-buttons slot="end">
+      <ion-button (click)="openRegisterModal()">
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="prices-content">
+  <app-price-filter [cityList]="cities" (cityChange)="filterByCity($event)">
+  </app-price-filter>
+
+  <!-- Agrupar por categoría -->
+  @for (group of groupedPrices; track group.category) {
+  <div class="category-group">
+    <h2 class="category-title">{{ group.category }}</h2>
+
+    <app-price-list [items]="group.items"></app-price-list>
+  </div>
+  }
+</ion-content>

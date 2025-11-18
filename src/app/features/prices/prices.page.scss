@@ -1,0 +1,25 @@
+.prices-content {
+  --background: #f4f6f9;
+  padding: 16px;
+}
+
+.filter-container {
+  margin: 12px 0 20px;
+}
+
+.list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.price-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+}
