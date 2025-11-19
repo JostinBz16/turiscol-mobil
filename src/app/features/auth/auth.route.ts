@@ -8,19 +8,18 @@ export const authRoutes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () =>
-      import('./pages/login/login.page').then((m) => m.LoginPage),
+    loadComponent: () => import('./login/login.page').then((m) => m.LoginPage),
   },
   {
     path: 'remember-password',
     loadComponent: () =>
-      import('./pages/remember-password/remember-password.page').then(
+      import('./remember-password/remember-password.page').then(
         (m) => m.RememberPasswordPage
       ),
   },
   {
     path: 'register',
     loadComponent: () =>
-      import('./pages/register/register.page').then((m) => m.RegisterPage),
+      import('./register/register.page').then((m) => m.RegisterPage),
   },
 ];

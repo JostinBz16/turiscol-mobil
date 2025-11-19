@@ -7,11 +7,14 @@ import {
   IonButton,
   IonButtons,
   IonContent,
+  IonLabel,
+  IonCard,
 } from '@ionic/angular/standalone';
-import { CityFilterComponent } from './components/price-filter/price-filter.component';
 import { PriceListComponent } from './components/price-list/price-list.component';
 import { addIcons } from 'ionicons';
 import { addCircleOutline } from 'ionicons/icons';
+import { CommonModule } from '@angular/common';
+import { CityFilterComponent } from './components/price-filter/price-filter.component';
 
 @Component({
   selector: 'app-prices',
@@ -19,6 +22,9 @@ import { addCircleOutline } from 'ionicons/icons';
   templateUrl: './prices.page.html',
   styleUrls: ['./prices.page.scss'],
   imports: [
+    IonCard,
+    IonLabel,
+    CommonModule,
     IonContent,
     IonButtons,
     IonButton,
@@ -31,9 +37,7 @@ import { addCircleOutline } from 'ionicons/icons';
   ],
 })
 export class PricesPage implements OnInit {
-  cities = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla'];
-
-  isAdmin = true; // Cambia según tu auth real
+  isAdmin = false;
 
   prices = [
     { name: 'Tour Ciudad', price: 120000, city: 'Bogotá', category: 'Tours' },
@@ -53,12 +57,14 @@ export class PricesPage implements OnInit {
   ];
 
   groupedPrices: any[] = [];
+  selectedCity: any = null;
 
   ngOnInit() {
-    this.groupByCategory(this.prices);
     addIcons({
       addCircleOutline,
     });
+    // Filtrar automáticamente con la ciudad por defecto
+    this.filterByCity(this.selectedCity);
   }
 
   groupByCategory(data: any[]) {
@@ -75,18 +81,27 @@ export class PricesPage implements OnInit {
     }));
   }
 
-  filterByCity(city: string) {
-    console.log(city);
-    if (!city) {
+  filterByCity(cityObj: any) {
+    console.log('Ciudad seleccionada:', cityObj);
+
+    this.selectedCity = cityObj;
+
+    if (!cityObj) {
       this.groupedPrices = [];
       return;
     }
 
-    const filtered = this.prices.filter((p) => p.city === city);
+    // Filtrar por el nombre de la ciudad (cityObj.name)
+    const filtered = this.prices.filter((p) => p.city === cityObj.name);
     this.groupByCategory(filtered);
   }
 
   openRegisterModal() {
     console.log('Abrir modal registrar nuevo precio (solo admin)');
+  }
+
+  onCitySelected(cityObj: any) {
+    this.selectedCity = cityObj;
+    this.filterByCity(cityObj);
   }
 }

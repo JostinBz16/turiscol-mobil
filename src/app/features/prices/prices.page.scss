@@ -1,25 +1,88 @@
+/* Contenido principal */
 .prices-content {
   --background: #f4f6f9;
   padding: 16px;
 }
 
+/* Contenedor del filtro de ciudad */
 .filter-container {
   margin: 12px 0 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
 
+/* Lista de precios agrupada */
 .list-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.price-card {
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+/* Cada grupo por categoría */
+.category-group {
+  margin-bottom: 24px;
+
+  .category-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+    border-left: 4px solid var(--ion-color-primary);
+    padding-left: 14px;
+  }
 }
 
+/* Tarjeta de precio individual */
+.price-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Precio destacado */
 .price {
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--ion-color-primary);
+}
+
+/* Botón de agregar */
+ion-buttons[slot="end"] ion-button {
+  border-radius: 50%;
+  padding: 8px;
+  font-size: 1.2rem;
+
+  ion-icon {
+    vertical-align: middle;
+  }
+
+  &:hover {
+    --background: var(--ion-color-primary-shade);
+  }
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+  .filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .price-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }

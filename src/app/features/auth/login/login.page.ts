@@ -3,18 +3,17 @@ import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import {
-  IonContent,
   IonItem,
   IonButton,
   IonIcon,
   IonImg,
-  IonLabel,
   IonInput,
+  IonSelect,
+  IonSelectOption,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { logoGoogle } from 'ionicons/icons';
@@ -26,13 +25,14 @@ import { addIcons } from 'ionicons';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
+    IonSelect,
+    IonSelectOption,
     IonInput,
     ReactiveFormsModule,
     IonImg,
     IonIcon,
     IonButton,
     IonItem,
-    IonContent,
     CommonModule,
   ],
 })
@@ -58,8 +58,9 @@ export class LoginPage implements OnInit {
 
     //   return;
     // }
-    this.router.navigate(['/tabs/home']);
+    this.router.navigate(['/tabs']);
   }
+
   goToRegister() {
     this.router.navigate(['/auth/register']);
   }
@@ -71,4 +72,11 @@ export class LoginPage implements OnInit {
   loginWithGoogle() {
     console.log('Login with Google');
   }
+
+  cities: any[] = [
+    { id: 1, name: 'Bogotá', type: 'capital' },
+    { id: 2, name: 'Medellín', type: 'ciudad' },
+    { id: 3, name: 'Cali', type: 'ciudad' },
+    { id: 4, name: 'Barranquilla', type: 'ciudad' },
+  ];
 }

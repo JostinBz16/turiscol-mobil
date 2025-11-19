@@ -12,16 +12,28 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="prices-content">
-  <app-price-filter [cityList]="cities" (cityChange)="filterByCity($event)">
-  </app-price-filter>
+<ion-content>
+  <div class="prices-container">
+    <!-- Usar solo el componente y pasarle los datos -->
+    <app-price-filter
+      [selectedCity]="selectedCity"
+      (citySelected)="onCitySelected($event)"
+    ></app-price-filter>
 
-  <!-- Agrupar por categoría -->
-  @for (group of groupedPrices; track group.category) {
-  <div class="category-group">
-    <h2 class="category-title">{{ group.category }}</h2>
-
-    <app-price-list [items]="group.items"></app-price-list>
+    <!-- Agrupar por categoría -->
+    @for (group of groupedPrices; track group.category) {
+    <div class="category-group">
+      <h4 class="category-title">{{ group.category }}</h4>
+      <app-price-list [items]="group.items"></app-price-list>
+    </div>
+    } @empty { @if (selectedCity) {
+    <div class="no-results">
+      <p>No hay precios disponibles para {{ selectedCity?.name }}</p>
+    </div>
+    } @else {
+    <div class="no-selection">
+      <p>Selecciona una ciudad para ver los precios</p>
+    </div>
+    } }
   </div>
-  }
 </ion-content>

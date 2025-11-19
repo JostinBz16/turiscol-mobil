@@ -16,14 +16,31 @@ export const routes: Routes = [
   },
   {
     path: 'tabs',
-    loadChildren: () =>
-      import('./layouts/tabs/tabs.routes').then((r) => r.routes),
+    loadComponent: () =>
+      import('./layouts/tabs/tabs.page').then((m) => m.TabsPage),
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./layouts/tabs/tabs.routes').then((m) => m.routes),
+      },
+    ],
   },
   {
     path: 'auth',
-    loadChildren: () =>
-      import('./features/auth/auth.route').then((r) => r.authRoutes),
+    loadComponent: () =>
+      import('./layouts/auth-layout/auth-layout.component').then(
+        (m) => m.AuthLayoutComponent
+      ),
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/auth/auth.route').then((m) => m.authRoutes),
+      },
+    ],
   },
+
   {
     path: '**',
     redirectTo: '',

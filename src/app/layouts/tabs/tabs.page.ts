@@ -21,6 +21,7 @@ import {
   person,
   personOutline,
 } from 'ionicons/icons';
+import { RouterOutlet } from "../../../../node_modules/@angular/router/router_module.d";
 
 @Component({
   selector: 'app-tabs',
@@ -33,7 +34,8 @@ import {
     IonTabButton,
     IonIcon,
     IonLabel,
-  ],
+    RouterOutlet
+],
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
