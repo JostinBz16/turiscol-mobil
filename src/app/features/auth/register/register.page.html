@@ -1,0 +1,85 @@
+<ion-content fullscreen="true">
+  <div class="register-wrapper">
+    <!-- STEP: SELECCIÓN DE TIPO DE USUARIO -->
+    @if (step === 'type') {
+    <div class="type-box">
+      <h2 class="title">Create an account</h2>
+      <p class="subtitle">Choose your user type</p>
+
+      <div class="cards-container">
+        <!-- Tourist card -->
+        <div class="user-card" (click)="selectType('tourist')">
+          <ion-icon name="airplane-outline" class="card-icon"></ion-icon>
+          <h3>Tourist</h3>
+          <p>Continue using your Google account</p>
+        </div>
+
+        <!-- Provider card -->
+        <div class="user-card" (click)="selectType('provider')">
+          <ion-icon name="briefcase-outline" class="card-icon"></ion-icon>
+          <h3>Provider</h3>
+          <p>Register your business to offer services</p>
+        </div>
+      </div>
+
+      <p class="back-text" (click)="goBack()">Back to login</p>
+    </div>
+    }
+
+    <!-- STEP: TURISTA GOOGLE -->
+    @if (step === 'tourist') {
+    <div class="tourist-box">
+      <h2 class="title">Continue as Tourist</h2>
+      <p class="subtitle">Use your Google account</p>
+
+      <ion-button expand="block" class="btn" (click)="loginWithGoogle()">
+        <ion-icon name="logo-google" slot="start"></ion-icon>
+        Sign in with Google
+      </ion-button>
+
+      <p class="back-text" (click)="reset()">Back</p>
+    </div>
+    }
+
+    <!-- STEP: PROVIDER FORM -->
+    @if (step === 'provider') {
+    <div class="form-box">
+      <h2 class="title">Register as Provider</h2>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <ion-item class="input-item">
+          <ion-input
+            labelPlacement="stacked"
+            placeholder="Full name"
+            formControlName="name"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item class="input-item">
+          <ion-input
+            type="email"
+            labelPlacement="stacked"
+            placeholder="Email"
+            formControlName="email"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item class="input-item">
+          <ion-input
+            type="password"
+            labelPlacement="stacked"
+            placeholder="Password"
+            formControlName="password"
+          ></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" class="btn" type="submit">
+          Create account
+        </ion-button>
+      </form>
+
+      <p class="back-text" (click)="reset()">Back</p>
+    </div>
+    }
+  </div>
+</ion-content>

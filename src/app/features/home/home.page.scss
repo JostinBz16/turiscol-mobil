@@ -1,0 +1,21 @@
+.title-logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 22px;
+}
+
+/* 👇 tamaño del ion-img */
+.img-logo-turiscol {
+  width: 60px;
+  height: 60px;
+  object-fit: contain; /* evita deformaciones */
+}
+
+ion-title {
+  padding: 0%;
+}
+
+ion-icon {
+  color: var(--ion-color-primary);
+}

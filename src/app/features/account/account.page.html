@@ -1,0 +1,81 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Mi Cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="account-content">
+  <!-- Header con icono -->
+  <div class="account-header">
+    <div class="icon-wrapper">
+      <ion-icon name="person-outline"></ion-icon>
+    </div>
+
+    <h2 class="name">John Doe</h2>
+    <p class="email">john.doe@example.com</p>
+  </div>
+
+  <ion-list class="account-list" lines="none">
+    <ion-item button>
+      <div class="item-left">
+        <div class="icon-box">
+          <ion-icon name="create-outline"></ion-icon>
+        </div>
+        <span>Editar Perfil</span>
+      </div>
+
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-item>
+
+    <ion-item button>
+      <div class="item-left">
+        <div class="icon-box">
+          <ion-icon name="card-outline"></ion-icon>
+        </div>
+        <span>Métodos de Pago</span>
+      </div>
+
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-item>
+
+    <ion-item button>
+      <div class="item-left">
+        <div class="icon-box">
+          <ion-icon name="bookmark-outline"></ion-icon>
+        </div>
+        <span>Mis Reservas</span>
+      </div>
+
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-item>
+
+    <ion-item button>
+      <div class="item-left">
+        <div class="icon-box">
+          <ion-icon name="notifications-outline"></ion-icon>
+        </div>
+        <span>Notificaciones</span>
+      </div>
+
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-item>
+
+    <ion-item button>
+      <div class="item-left">
+        <div class="icon-box">
+          <ion-icon name="settings-outline"></ion-icon>
+        </div>
+        <span>Configuración</span>
+      </div>
+
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <div class="logout-container">
+    <ion-button color="danger" expand="block" (click)="logout()">
+      <ion-icon slot="start" name="log-out-outline"></ion-icon>
+      Cerrar Sesión
+    </ion-button>
+  </div>
+</ion-content>

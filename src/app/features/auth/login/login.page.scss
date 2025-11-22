@@ -1,0 +1,159 @@
+/* ======== CONTENEDOR PRINCIPAL ======== */
+.login-content {
+  --background: var(--ion-background-color);
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  flex-direction: column;
+  height: 100%; /* Ocupa toda la pantalla */
+  padding: 2rem 1rem;
+  position: relative;
+  text-align: center;
+}
+
+/* ======== ENCABEZADO SUPERIOR (COLORES BANDERA) ======== */
+.login-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(
+    to right,
+    #f4b400 33%,
+    #1d6fa3 33%,
+    #1d6fa3 66%,
+    #e65f5c 66%
+  );
+}
+
+/* ======== LOGO + TÍTULO ======== */
+.title-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 2rem;
+}
+
+.img-logo-turiscol {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.title {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #0d3b66;
+  margin: 0;
+}
+
+/* ======== CONTENEDOR LOGIN (SIN FONDO) ======== */
+.login-box {
+  width: 80%;
+  height: 100vh;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* ======== INPUTS ======== */
+.input-item {
+  --background: #fff;
+  --border-color: #ddd;
+  --highlight-color-focused: #0d3b66;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  width: 100%;
+  box-shadow: 0 0 0 1px #e5e5e5;
+}
+
+/* ======== BOTÓN LOGIN ======== */
+.btn-login {
+  --background: #0d3b66;
+  --border-radius: 10px;
+  --color: #fff;
+  font-weight: 600;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+form {
+  width: 100%;
+}
+
+/* ======== TEXTO OLVIDAR CONTRASEÑA ======== */
+.forgot-text {
+  font-size: 0.9rem;
+  color: #6b6b6b;
+  margin-top: 0.8rem;
+  cursor: pointer;
+}
+
+/* ======== LOGIN SOCIAL ======== */
+.social-login {
+  margin-top: 1.8rem;
+}
+
+.social-login p {
+  font-size: 0.9rem;
+  color: #6b6b6b;
+}
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.social-btn {
+  --display: flex;
+  --justify-content: center;
+  --align-items: center;
+  --color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: none;
+  padding: 0 10px;
+  border: 1px solid #a3abb2;
+  border-radius: 20px;
+  background-color: #1f4a72;
+}
+
+.social-btn ion-icon {
+  font-size: 20px;
+  margin-inline-start: 8px;
+}
+
+/* ======== CREAR CUENTA ======== */
+.signup-text {
+  font-size: 0.9rem;
+  color: #333;
+  margin-top: 1.5rem;
+}
+
+.signup-text a {
+  color: #0d3b66;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 400px) {
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .img-logo-turiscol {
+    width: 45px;
+    height: 45px;
+  }
+}
