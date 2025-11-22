@@ -1,0 +1,23 @@
+<ion-card class="table-card">
+  <ion-card-content>
+    <table class="price-table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Ciudad</th>
+          <th>Precio</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (item of items; track item) {
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>{{ item.city }}</td>
+          <td>{{ item.price }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </ion-card-content>
+</ion-card>

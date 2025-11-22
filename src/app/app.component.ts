@@ -1,29 +1,10 @@
 import { Component } from '@angular/core';
-import {
-  IonApp,
-  IonRouterOutlet,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonIcon,
-  IonButton,
-} from '@ionic/angular/standalone';
-// import { addIcons } from 'ionicons';
-// import { moon, sunny } from 'ionicons/icons';
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [
-    IonButtons,
-    IonTitle,
-    IonToolbar,
-    IonHeader,
-    IonApp,
-    IonRouterOutlet,
-    IonButton,
-  ],
+  imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent {
   isDarkMode = false;
@@ -40,11 +21,4 @@ export class AppComponent {
       body.classList.add('light');
     }
   }
-
-  // constructor() {
-  //   addIcons({
-  //     moon,
-  //     sunny,
-  //   });
-  // }
 }

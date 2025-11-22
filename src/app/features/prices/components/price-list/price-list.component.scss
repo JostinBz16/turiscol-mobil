@@ -1,0 +1,21 @@
+.table-card {
+  margin-bottom: 20px;
+}
+
+.price-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.price-table th {
+  background: var(--ion-color-light);
+  font-weight: 600;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.price-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}

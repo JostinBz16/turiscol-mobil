@@ -1,0 +1,32 @@
+<ion-content class="welcome-content">
+  <!-- Fondo principal -->
+  <div class="welcome-bg">
+    <ion-img src="assets/images/welcome.png" alt="Fondo Turiscol" />
+  </div>
+
+  <!-- Contenido superpuesto -->
+  <div class="welcome-overlay">
+    <!-- Logo + título -->
+    <div class="title-logo">
+      <ion-img
+        src="assets/images/TuriscolLogo.png"
+        alt="Logo turiscol"
+        class="img-logo-turiscol"
+      ></ion-img>
+      <h2 class="title">Turiscol</h2>
+    </div>
+
+    <!-- Texto principal -->
+    <div class="welcome-text">
+      <div>
+        <h1>Descubre Colombia</h1>
+        <p>Explora los mejores destinos turísticos del país</p>
+      </div>
+      <ion-button expand="block" color="primary" (click)="startApp()">
+        Empezar
+      </ion-button>
+    </div>
+
+    <!-- Botón -->
+  </div>
+</ion-content>
