@@ -53,12 +53,12 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    // if (this.loginForm.invalid) {
-    //   this.loginForm.markAllAsTouched();
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
-    //   return;
-    // }
-    this.router.navigate(['/tabs']);
+    this.router.navigate(['/tabs/home'], { replaceUrl: true });
   }
 
   goToRegister() {

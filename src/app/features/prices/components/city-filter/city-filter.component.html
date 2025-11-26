@@ -1,0 +1,15 @@
+<ion-list>
+  <ion-item>
+    <ion-select
+      [compareWith]="compareWith"
+      [value]="selectedCity"
+      placeholder="Selecciona una ciudad"
+      interface="popover"
+      (ionChange)="onCityChange($event)"
+    >
+      @for (city of cities; track city.id) {
+      <ion-select-option [value]="city">{{ city.name }}</ion-select-option>
+      }
+    </ion-select>
+  </ion-item></ion-list
+>

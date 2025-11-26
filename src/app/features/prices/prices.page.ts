@@ -14,7 +14,7 @@ import { PriceListComponent } from './components/price-list/price-list.component
 import { addIcons } from 'ionicons';
 import { addCircleOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
-import { CityFilterComponent } from './components/price-filter/price-filter.component';
+import { CityFilterComponent } from './components/city-filter/city-filter.component';
 
 @Component({
   selector: 'app-prices',
@@ -22,8 +22,6 @@ import { CityFilterComponent } from './components/price-filter/price-filter.comp
   templateUrl: './prices.page.html',
   styleUrls: ['./prices.page.scss'],
   imports: [
-    IonCard,
-    IonLabel,
     CommonModule,
     IonContent,
     IonButtons,
