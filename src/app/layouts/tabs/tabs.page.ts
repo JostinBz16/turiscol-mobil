@@ -6,6 +6,7 @@ import {
   IonIcon,
   IonLabel,
   IonRouterOutlet,
+  IonApp,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -21,12 +22,12 @@ import {
   person,
   personOutline,
 } from 'ionicons/icons';
-import { RouterOutlet } from "../../../../node_modules/@angular/router/router_module.d";
 
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
+  standalone: true,
   imports: [
     IonRouterOutlet,
     IonTabs,
@@ -34,8 +35,7 @@ import { RouterOutlet } from "../../../../node_modules/@angular/router/router_mo
     IonTabButton,
     IonIcon,
     IonLabel,
-    RouterOutlet
-],
+  ],
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
