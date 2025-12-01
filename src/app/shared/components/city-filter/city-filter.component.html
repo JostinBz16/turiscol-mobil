@@ -1,0 +1,29 @@
+<ion-card>
+  <ion-card-content>
+    <div class="row">
+      <ion-select
+        class="city-select"
+        [compareWith]="compareWith"
+        [value]="selectedCity"
+        interface="popover"
+        placeholder="Selecciona una ciudad de interes"
+        (ionChange)="onCityChange($event)"
+      >
+        @for (city of cities; track city.id) {
+        <ion-select-option [value]="city">
+          {{ city.name }}
+        </ion-select-option>
+        }
+      </ion-select>
+      <div class="button-clear" (click)="onClear()">
+        <ion-icon
+          name="trash-bin-outline"
+          slot="icon-only"
+          class="icon-trash"
+        ></ion-icon>
+
+        <span class="clear-text">Limpiar</span>
+      </div>
+    </div>
+  </ion-card-content>
+</ion-card>

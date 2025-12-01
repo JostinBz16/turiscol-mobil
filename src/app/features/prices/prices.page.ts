@@ -3,18 +3,13 @@ import {
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonIcon,
-  IonButton,
-  IonButtons,
   IonContent,
-  IonLabel,
-  IonCard,
 } from '@ionic/angular/standalone';
 import { PriceListComponent } from './components/price-list/price-list.component';
 import { addIcons } from 'ionicons';
 import { addCircleOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
-import { CityFilterComponent } from './components/city-filter/city-filter.component';
+import { CityFilterComponent } from '../../shared/components/city-filter/city-filter.component';
 
 @Component({
   selector: 'app-prices',
@@ -24,9 +19,6 @@ import { CityFilterComponent } from './components/city-filter/city-filter.compon
   imports: [
     CommonModule,
     IonContent,
-    IonButtons,
-    IonButton,
-    IonIcon,
     IonTitle,
     IonToolbar,
     IonHeader,
@@ -35,8 +27,6 @@ import { CityFilterComponent } from './components/city-filter/city-filter.compon
   ],
 })
 export class PricesPage implements OnInit {
-  isAdmin = false;
-
   prices = [
     { name: 'Tour Ciudad', price: 120000, city: 'Bogotá', category: 'Tours' },
     { name: 'Tour Graffiti', price: 90000, city: 'Bogotá', category: 'Tours' },
@@ -94,12 +84,13 @@ export class PricesPage implements OnInit {
     this.groupByCategory(filtered);
   }
 
-  openRegisterModal() {
-    console.log('Abrir modal registrar nuevo precio (solo admin)');
-  }
-
   onCitySelected(cityObj: any) {
     this.selectedCity = cityObj;
     this.filterByCity(cityObj);
+  }
+
+  resetCityFilter() {
+    this.selectedCity = null;
+    this.groupedPrices = [];
   }
 }

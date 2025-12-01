@@ -1,0 +1,46 @@
+<div class="advanced-filter">
+  <!-- FILA 1: FECHAS -->
+  <div class="filter-row">
+    <ion-item class="input-line" lines="none">
+      <ion-label position="stacked">Desde</ion-label>
+      <input
+        #dateFromInput
+        type="date"
+        (change)="onDateFrom($event)"
+        class="native-date"
+      />
+    </ion-item>
+
+    <ion-item class="input-line" lines="none">
+      <ion-label position="stacked">Hasta</ion-label>
+      <input
+        #dateToInput
+        type="date"
+        (change)="onDateTo($event)"
+        class="native-date"
+      />
+    </ion-item>
+  </div>
+
+  <!-- FILA 2: SELECT + LIMPIAR -->
+  <div class="filter-row">
+    <ion-item class="input-line" lines="none">
+      <ion-label position="stacked">Estado</ion-label>
+      <ion-select
+        #statusSelect
+        placeholder="Seleccionar"
+        interface="popover"
+        (ionChange)="onStatus($event)"
+      >
+        <ion-select-option value="todos">Todos</ion-select-option>
+        <ion-select-option value="activo">Activo</ion-select-option>
+        <ion-select-option value="inactivo">Inactivo</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <div class="button-clear" (click)="onClear()">
+      <ion-icon name="trash-bin-outline"></ion-icon>
+      <span>Limpiar</span>
+    </div>
+  </div>
+</div>

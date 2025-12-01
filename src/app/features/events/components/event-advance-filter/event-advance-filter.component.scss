@@ -1,0 +1,54 @@
+.advanced-filter {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  margin: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Quita background y bordes internos de ion-item */
+.input-line {
+  --background: transparent;
+  --inner-border-width: 0;
+  --highlight-height: 2px;
+  --highlight-color-focused: #3880ff;
+  border-bottom: 1px solid #d4d4d4;
+  padding-bottom: 6px;
+}
+
+/* INPUT NATIVO (date) – ancho completo, sin borde */
+.native-date {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  padding-top: 6px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 20px;
+}
+
+.input-line {
+  flex: 1;
+}
+
+/* BOTÓN PEQUEÑO */
+.button-clear {
+  width: fit-content; /* <-- NO ocupa toda la columna */
+  white-space: nowrap;
+  align-self: end; /* alineado abajo para coincidir con ion-item */
+  padding: 12px;
+  font-size: 14px;
+  background: var(--ion-color-danger);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

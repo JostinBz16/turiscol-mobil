@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { PriceFormComponent } from './price-form.component';
+import { EventAdvanceFilterComponent } from './event-advance-filter.component';
 
-describe('PriceFormComponent', () => {
-  let component: PriceFormComponent;
-  let fixture: ComponentFixture<PriceFormComponent>;
+describe('EventAdvanceFilterComponent', () => {
+  let component: EventAdvanceFilterComponent;
+  let fixture: ComponentFixture<EventAdvanceFilterComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PriceFormComponent ],
+      declarations: [ EventAdvanceFilterComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PriceFormComponent);
+    fixture = TestBed.createComponent(EventAdvanceFilterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

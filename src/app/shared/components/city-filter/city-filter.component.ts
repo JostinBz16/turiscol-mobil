@@ -3,16 +3,25 @@ import { CommonModule } from '@angular/common';
 import {
   IonSelect,
   IonSelectOption,
-  IonItem,
-  IonList,
+  IonCard,
+  IonCardContent,
+  IonIcon,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { trashBinOutline } from 'ionicons/icons';
 
 @Component({
-  selector: 'app-price-filter',
-  standalone: true,
+  selector: 'app-city-filter',
   templateUrl: './city-filter.component.html',
   styleUrls: ['./city-filter.component.scss'],
-  imports: [IonList, IonItem, CommonModule, IonSelect, IonSelectOption],
+  imports: [
+    IonIcon,
+    CommonModule,
+    IonSelect,
+    IonSelectOption,
+    IonCard,
+    IonCardContent,
+  ],
 })
 export class CityFilterComponent implements OnInit {
   cities: any[] = [
@@ -26,6 +35,8 @@ export class CityFilterComponent implements OnInit {
 
   @Output() citySelected = new EventEmitter<any>(); // Función para comparar objetos, crucial cuando el valor es un objeto complejo
 
+  @Output() clearFilter = new EventEmitter<void>();
+
   compareWith = (o1: any, o2: any): boolean => {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
   };
@@ -35,11 +46,20 @@ export class CityFilterComponent implements OnInit {
     if (!this.selectedCity && this.cities.length > 0) {
       this.selectedCity = null;
     }
+    addIcons({
+      trashBinOutline,
+    });
   }
 
   onCityChange(event: CustomEvent) {
     // Dado que [value]="city" en la opción, event.detail.value ya es el objeto city
     // No es necesario buscarlo en el array cities
     this.citySelected.emit(event.detail.value);
+  }
+
+  onClear() {
+    this.selectedCity = null;
+    this.clearFilter.emit();
+    this.citySelected.emit(null);
   }
 }
