@@ -35,6 +35,13 @@ export const routes: Routes = [
             (m) => m.AccountPage
           ),
       },
+      {
+        path: 'events/details/:id',
+        loadComponent: () =>
+          import(
+            '../../features/events/components/event-details/event-details.page'
+          ).then((m) => m.EventDetailsPage),
+      },
     ],
   },
 ];

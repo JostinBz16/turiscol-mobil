@@ -1,0 +1,21 @@
+<div class="event-card-list">
+  @for (e of events; track e.id) {
+  <ion-card class="event-card" (click)="openDetails(e)">
+    <img [src]="e.image" class="event-img" />
+
+    <ion-card-content>
+      <h2>{{ e.title }}</h2>
+      <p class="city">{{ e.city }}</p>
+      <p class="date">📅 {{ e.date }}</p>
+
+      <span
+        class="status"
+        [class.active]="e.status === 'activo'"
+        [class.inactive]="e.status === 'inactivo'"
+      >
+        {{ e.status }}
+      </span>
+    </ion-card-content>
+  </ion-card>
+  }
+</div>

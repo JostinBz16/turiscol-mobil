@@ -1,24 +1,17 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Lista de Precios</ion-title>
-
-    @if (isAdmin) {
-    <ion-buttons slot="end">
-      <ion-button (click)="openRegisterModal()">
-        <ion-icon name="add-circle-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    }
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <div class="prices-container">
     <!-- Usar solo el componente y pasarle los datos -->
-    <app-price-filter
+    <app-city-filter
       [selectedCity]="selectedCity"
       (citySelected)="onCitySelected($event)"
-    ></app-price-filter>
+      (clearFilter)="resetCityFilter()"
+    ></app-city-filter>
 
     <!-- Agrupar por categoría -->
     @for (group of groupedPrices; track group.category) {

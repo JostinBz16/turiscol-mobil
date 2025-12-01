@@ -8,7 +8,6 @@ import {
   IonToolbar,
   IonItem,
   IonIcon,
-  IonLabel,
   IonList,
   IonButton,
 } from '@ionic/angular/standalone';
@@ -16,13 +15,11 @@ import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   bookmarkOutline,
-  cardOutline,
   chevronForwardOutline,
   createOutline,
   logOutOutline,
   notificationsOutline,
   personAddOutline,
-  settingsOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -51,10 +48,8 @@ export class AccountPage implements OnInit {
       personAddOutline,
       createOutline,
       chevronForwardOutline,
-      cardOutline,
       bookmarkOutline,
       notificationsOutline,
-      settingsOutline,
       logOutOutline,
     });
   }
