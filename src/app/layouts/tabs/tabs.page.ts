@@ -5,7 +5,6 @@ import {
   IonTabButton,
   IonIcon,
   IonLabel,
-  IonRouterOutlet,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {

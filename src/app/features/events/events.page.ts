@@ -5,7 +5,6 @@ import {
   IonTitle,
   IonContent,
   IonButton,
-  IonItem,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { EventListComponent } from './components/event-list/event-list.component';
@@ -120,11 +119,6 @@ export class EventsPage implements OnInit {
   resetCityFilter() {
     this.selectedCity = null;
     this.applyFilters();
-  }
-
-  goToDetails(id: number) {
-    console.log('NAVEGAR A:', id);
-    this.router.navigate(['/events/details', id]);
   }
 
   resetAdvancedFilters() {

@@ -37,10 +37,7 @@
 
     <!-- LISTA DE EVENTOS -->
     @if (filteredEvents.length > 0) {
-    <app-event-list
-      [events]="filteredEvents"
-      (selectEvent)="goToDetails($event)"
-    ></app-event-list>
+    <app-event-list [events]="filteredEvents"></app-event-list>
     } @else {
     <p class="empty">No hay eventos que coincidan</p>
     }

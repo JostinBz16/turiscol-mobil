@@ -24,6 +24,13 @@ export const routes: Routes = [
           import('../../features/events/events.page').then((m) => m.EventsPage),
       },
       {
+        path: 'events/:id',
+        loadComponent: () =>
+          import(
+            '../../features/events/components/event-details/event-details.page'
+          ).then((m) => m.EventDetailsPage),
+      },
+      {
         path: 'prices',
         loadComponent: () =>
           import('../../features/prices/prices.page').then((m) => m.PricesPage),
@@ -34,13 +41,6 @@ export const routes: Routes = [
           import('../../features/account/account.page').then(
             (m) => m.AccountPage
           ),
-      },
-      {
-        path: 'events/details/:id',
-        loadComponent: () =>
-          import(
-            '../../features/events/components/event-details/event-details.page'
-          ).then((m) => m.EventDetailsPage),
       },
     ],
   },
