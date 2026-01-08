@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/account"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Editar Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="edit-content">
+  <div class="edit-wrapper">
+    <form [formGroup]="form" (ngSubmit)="save()" class="edit-form">
+      <ion-list lines="none" class="form-card">
+        <ion-item>
+          <ion-input
+            label="Nombre"
+            labelPlacement="stacked"
+            formControlName="name"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            label="Apellido"
+            labelPlacement="stacked"
+            formControlName="lastName"
+          ></ion-input>
+        </ion-item>
+
+        <!-- <ion-item>
+          <ion-input
+            label="Nombre de usuario"
+            labelPlacement="stacked"
+            formControlName="username"
+          ></ion-input>
+        </ion-item> -->
+
+        <ion-item>
+          <ion-input
+            label="Correo electrónico"
+            labelPlacement="stacked"
+            type="email"
+            formControlName="email"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            label="Número de teléfono"
+            labelPlacement="stacked"
+            type="tel"
+            formControlName="phone"
+          ></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <div class="actions">
+        <ion-button expand="block" type="submit" [disabled]="form.invalid">
+          Guardar Cambios
+        </ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>

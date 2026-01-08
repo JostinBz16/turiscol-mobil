@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/account/reservations"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Reserva</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="detail-content">
+  @if (booking()) {
+
+  <div class="hero">
+    <img [src]="booking()!.image" />
+    <span class="status" [ngClass]="booking()!.status.toLowerCase()">
+      {{ statusLabel(booking()!.status) }}
+    </span>
+  </div>
+
+  <div class="card">
+    <h2>{{ booking()!.title }}</h2>
+    <p class="date">
+      {{ booking()!.startDate }} @if (booking()!.endDate) { – {{
+      booking()!.endDate }} }
+    </p>
+
+    <div class="info-row">
+      <span>Personas</span>
+      <strong>{{ booking()!.people }}</strong>
+    </div>
+
+    <div class="info-row">
+      <span>Tipo</span>
+      <strong>{{ booking()!.type }}</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Resumen de pago</h3>
+
+    <div class="price-row">
+      <span>Subtotal</span>
+      <span>${{ booking()!.subtotal }}</span>
+    </div>
+
+    <div class="price-row">
+      <span>Impuestos</span>
+      <span>${{ booking()!.taxes }}</span>
+    </div>
+
+    <div class="price-row total">
+      <strong>Total</strong>
+      <strong>${{ booking()!.total }}</strong>
+    </div>
+  </div>
+
+  }
+</ion-content>

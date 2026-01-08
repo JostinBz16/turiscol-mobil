@@ -61,4 +61,11 @@ export class AccountPage implements OnInit {
       replaceUrl: true,
     });
   }
+
+  goToEditProfile() {
+    this.router.navigate(['/tabs/account/edit']);
+  }
+  goToReservations() {
+    this.router.navigate(['/tabs/account/reservations']);
+  }
 }

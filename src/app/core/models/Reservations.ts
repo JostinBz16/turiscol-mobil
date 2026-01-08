@@ -1,9 +1,20 @@
 export interface Booking {
-  id: string;
-  userId: string;
-  targetId: string; // service, product or event id
-  type: 'service' | 'product' | 'event';
-  date: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  id: number;
+  title: string;
+  type: string;
+  image: string;
+  status: BookingStatus;
+  startDate: string;
+  endDate?: string;
+  people: number;
+  subtotal: number;
+  taxes: number;
+  total: number;
   quantity?: number; // for products
+}
+
+export enum BookingStatus {
+  CONFIRMED = 'CONFIRMED',
+  PENDING = 'PENDING',
+  CANCELED = 'CANCELED',
 }
