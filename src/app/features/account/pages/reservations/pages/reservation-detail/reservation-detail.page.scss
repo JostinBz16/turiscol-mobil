@@ -1,0 +1,119 @@
+.detail-content {
+  --background: #f4f5f8;
+}
+
+/* HERO IMAGE */
+.hero {
+  position: relative;
+  height: 260px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.6)
+    );
+  }
+
+  .status {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    z-index: 2;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+
+    &.confirmed {
+      background: #2dd36f;
+    }
+
+    &.pending {
+      background: #ffc409;
+      color: #000;
+    }
+
+    &.canceled {
+      background: #eb445a;
+    }
+  }
+}
+
+/* CARD BASE */
+.card {
+  background: #fff;
+  margin: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  h3 {
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+/* FLOATING MAIN CARD */
+.main-card {
+  margin-top: -40px;
+  position: relative;
+  z-index: 3;
+}
+
+/* DATE */
+.date {
+  color: #666;
+  font-size: 14px;
+  margin: 6px 0 16px;
+}
+
+/* INFO GRID */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  span {
+    font-size: 12px;
+    color: #888;
+  }
+
+  strong {
+    font-size: 16px;
+    display: block;
+  }
+}
+
+/* PRICE ROWS */
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+
+  &.total {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+    font-size: 16px;
+  }
+}

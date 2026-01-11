@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header translucent>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/account/reservations"></ion-back-button>
@@ -7,34 +7,40 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="detail-content">
+<ion-content fullscreen class="detail-content">
   @if (booking()) {
 
+  <!-- HERO IMAGE -->
   <div class="hero">
     <img [src]="booking()!.image" />
+
     <span class="status" [ngClass]="booking()!.status.toLowerCase()">
       {{ statusLabel(booking()!.status) }}
     </span>
   </div>
 
-  <div class="card">
+  <!-- MAIN CARD -->
+  <div class="card main-card">
     <h2>{{ booking()!.title }}</h2>
+
     <p class="date">
       {{ booking()!.startDate }} @if (booking()!.endDate) { – {{
       booking()!.endDate }} }
     </p>
 
-    <div class="info-row">
-      <span>Personas</span>
-      <strong>{{ booking()!.people }}</strong>
-    </div>
-
-    <div class="info-row">
-      <span>Tipo</span>
-      <strong>{{ booking()!.type }}</strong>
+    <div class="info-grid">
+      <div>
+        <span>Personas</span>
+        <strong>{{ booking()!.people }}</strong>
+      </div>
+      <div>
+        <span>Tipo</span>
+        <strong>{{ booking()!.type }}</strong>
+      </div>
     </div>
   </div>
 
+  <!-- PAYMENT CARD -->
   <div class="card">
     <h3>Resumen de pago</h3>
 
