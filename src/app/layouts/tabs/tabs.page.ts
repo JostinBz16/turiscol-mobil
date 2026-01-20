@@ -19,6 +19,8 @@ import {
   colorPaletteOutline,
   person,
   personOutline,
+  heart,
+  heartOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -39,6 +41,8 @@ export class TabsPage {
 
   constructor() {
     addIcons({
+      heart,
+      heartOutline,
       homeOutline,
       map,
       briefcase,

@@ -10,9 +10,10 @@ import {
   IonButton,
   IonIcon,
   IonImg,
+  IonAvatar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { notifications } from 'ionicons/icons';
+import { notifications, searchOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-home',
@@ -20,23 +21,40 @@ import { notifications } from 'ionicons/icons';
   styleUrls: ['./home.page.scss'],
   standalone: true,
   imports: [
-    IonButtons,
+    IonAvatar,
     IonContent,
     IonHeader,
-    IonTitle,
     IonToolbar,
     CommonModule,
     FormsModule,
     IonButton,
     IonIcon,
-    IonImg,
   ],
 })
 export class HomePage implements OnInit {
+  categories = [
+    { label: 'Tours', icon: 'map-outline' },
+    { label: 'Hoteles', icon: 'bed-outline' },
+    { label: 'Guías', icon: 'people-outline' },
+    { label: 'Transporte', icon: 'car-outline' },
+  ];
+
+  destinations = [
+    { name: 'Cartagena', city: 'Bolívar', image: 'assets/cartagena.jpg' },
+    { name: 'Medellín', city: 'Antioquia', image: 'assets/medellin.jpg' },
+  ];
+
+  plans = [
+    {
+      title: 'Tour Islas del Rosario',
+      description: 'Full day con transporte',
+      price: 250000,
+      image: 'assets/rosario.jpg',
+    },
+  ];
+
   constructor() {
-    addIcons({
-      notifications,
-    });
+    addIcons({ searchOutline, notifications });
   }
 
   ngOnInit() {}

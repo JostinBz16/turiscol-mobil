@@ -49,7 +49,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('../../features/prices/prices.page').then((m) => m.PricesPage),
       },
-
+      {
+        path: 'likes',
+        loadComponent: () =>
+          import('../../features/likes/likes.page').then((m) => m.LikesPage),
+      },
       /* ===================== ACCOUNT =================== */
       {
         path: 'account',

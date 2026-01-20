@@ -1,25 +1,68 @@
-<ion-header>
+<ion-header translucent="true" class="home-header">
   <ion-toolbar>
-    <div class="title-logo">
-      <ion-img
-        src="assets/images/TuriscolLogo.png"
-        alt="Logo turiscol"
-        class="img-logo-turiscol"
-      />
-      <ion-title>Turiscol</ion-title>
+    <div class="header-content">
+      <div class="header-text">
+        <span class="welcome">Hola, Jostin 👋</span>
+        <h2>Explora Colombia</h2>
+      </div>
+
+      <ion-avatar class="avatar">
+        <img src="assets/avatar.jpg" />
+      </ion-avatar>
     </div>
-    <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon name="notifications"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">home</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="home-content">
+  <!-- 🔍 Buscador -->
+  <div class="search-box">
+    <ion-icon name="search-outline"></ion-icon>
+    <input placeholder="¿A dónde quieres viajar?" />
+  </div>
+
+  <!-- 🧭 Categorías -->
+  <div class="section">
+    <h3>Categorías</h3>
+
+    <div class="categories">
+      <div class="category-card" *ngFor="let c of categories">
+        <ion-icon [name]="c.icon"></ion-icon>
+        <span>{{ c.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🌍 Destinos -->
+  <div class="section">
+    <h3>Destinos destacados</h3>
+
+    <div class="horizontal-scroll">
+      <div class="destination-card" *ngFor="let d of destinations">
+        <img [src]="d.image" />
+        <div class="overlay">
+          <h4>{{ d.name }}</h4>
+          <span>{{ d.city }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⭐ Planes -->
+  <div class="section">
+    <h3>Planes recomendados</h3>
+
+    <div class="plan-card" *ngFor="let p of plans">
+      <img [src]="p.image" />
+
+      <div class="plan-info">
+        <h4>{{ p.title }}</h4>
+        <p>{{ p.description }}</p>
+
+        <div class="plan-footer">
+          <span class="price">${{ p.price }}</span>
+          <ion-button size="small">Ver</ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
 </ion-content>
