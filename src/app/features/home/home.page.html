@@ -14,53 +14,55 @@
 </ion-header>
 
 <ion-content class="home-content">
-  <!-- 🔍 Buscador -->
-  <div class="search-box">
-    <ion-icon name="search-outline"></ion-icon>
-    <input placeholder="¿A dónde quieres viajar?" />
-  </div>
+  <div class="content-wrapper">
+    <!-- 🔍 Buscador -->
+    <div class="search-box">
+      <ion-icon name="search-outline"></ion-icon>
+      <input placeholder="¿A dónde quieres viajar?" />
+    </div>
 
-  <!-- 🧭 Categorías -->
-  <div class="section">
-    <h3>Categorías</h3>
+    <div class="section">
+      <h3>Categorías</h3>
 
-    <div class="categories">
-      <div class="category-card" *ngFor="let c of categories">
-        <ion-icon [name]="c.icon"></ion-icon>
-        <span>{{ c.label }}</span>
+      <div class="carousel">
+        @for (c of categories; track c.id) {
+        <div class="carousel-item category-card">
+          <span>{{ c.label }}</span>
+        </div>
+        }
       </div>
     </div>
-  </div>
 
-  <!-- 🌍 Destinos -->
-  <div class="section">
-    <h3>Destinos destacados</h3>
+    <!-- 🌍 Destinos -->
+    <div class="section">
+      <h3>Destinos destacados</h3>
 
-    <div class="horizontal-scroll">
-      <div class="destination-card" *ngFor="let d of destinations">
-        <img [src]="d.image" />
-        <div class="overlay">
-          <h4>{{ d.name }}</h4>
-          <span>{{ d.city }}</span>
+      <div class="horizontal-scroll">
+        <div class="destination-card" *ngFor="let d of destinations">
+          <img [src]="d.image" />
+          <div class="overlay">
+            <h4 class="destination-h4">{{ d.name }}</h4>
+            <span>{{ d.city }}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ⭐ Planes -->
-  <div class="section">
-    <h3>Planes recomendados</h3>
+    <!-- ⭐ Planes -->
+    <div class="section">
+      <h3>Planes recomendados</h3>
 
-    <div class="plan-card" *ngFor="let p of plans">
-      <img [src]="p.image" />
+      <div class="plan-card" *ngFor="let p of plans">
+        <img [src]="p.image" />
 
-      <div class="plan-info">
-        <h4>{{ p.title }}</h4>
-        <p>{{ p.description }}</p>
+        <div class="plan-info">
+          <h4>{{ p.title }}</h4>
+          <p>{{ p.description }}</p>
 
-        <div class="plan-footer">
-          <span class="price">${{ p.price }}</span>
-          <ion-button size="small">Ver</ion-button>
+          <div class="plan-footer">
+            <span class="price">${{ p.price }}</span>
+            <ion-button size="small">Ver</ion-button>
+          </div>
         </div>
       </div>
     </div>
