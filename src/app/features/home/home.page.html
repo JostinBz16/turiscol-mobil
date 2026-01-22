@@ -37,14 +37,16 @@
     <div class="section">
       <h3>Destinos destacados</h3>
 
-      <div class="horizontal-scroll">
-        <div class="destination-card" *ngFor="let d of destinations">
+      <div class="carousel destinations-carousel">
+        @for (d of destinations; track d.id) {
+        <div class="carousel-item destination-card">
           <img [src]="d.image" />
           <div class="overlay">
-            <h4 class="destination-h4">{{ d.name }}</h4>
+            <h4>{{ d.name }}</h4>
             <span>{{ d.city }}</span>
           </div>
         </div>
+        }
       </div>
     </div>
 

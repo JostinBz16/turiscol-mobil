@@ -11,9 +11,6 @@ import {
 } from '@ionic/angular/standalone';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { register } from 'swiper/element/bundle';
-
-register();
 
 document.documentElement.classList.add('light');
 

@@ -118,18 +118,18 @@
   }
 }
 
-.horizontal-scroll {
-  display: flex;
+.destinations-carousel {
   gap: 14px;
-  overflow-x: auto;
 }
 
 .destination-card {
-  min-width: 220px;
-  height: 140px;
-  border-radius: 18px;
+  flex: 0 0 240px;
+  height: 150px;
+  border-radius: 20px;
   overflow: hidden;
   position: relative;
+  scroll-snap-align: start;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 
   img {
     width: 100%;
@@ -142,11 +142,19 @@
     bottom: 0;
     padding: 12px;
     width: 100%;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
     color: white;
-  }
-  .destination-h4 {
-    color: white;
+
+    h4 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: rgb(242, 242, 242);
+    }
+
+    span {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
   }
 }
 

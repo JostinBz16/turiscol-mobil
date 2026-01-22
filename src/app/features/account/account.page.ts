@@ -20,6 +20,7 @@ import {
   logOutOutline,
   notificationsOutline,
   personAddOutline,
+  personOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -41,7 +42,16 @@ import {
   ],
 })
 export class AccountPage implements OnInit {
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    addIcons({
+      personOutline,
+      createOutline,
+      chevronForwardOutline,
+      bookmarkOutline,
+      notificationsOutline,
+      logOutOutline,
+    });
+  }
 
   ngOnInit() {
     addIcons({
