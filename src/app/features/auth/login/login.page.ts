@@ -6,18 +6,20 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+
+type LoginMode = 'TOURIST' | 'PROVIDER';
+
 import {
   IonItem,
   IonButton,
   IonIcon,
   IonImg,
   IonInput,
-  IonSelect,
-  IonSelectOption,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { logoGoogle } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { AuthService } from './services/auth';
 
 @Component({
   selector: 'app-login',
@@ -25,8 +27,6 @@ import { addIcons } from 'ionicons';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
-    IonSelect,
-    IonSelectOption,
     IonInput,
     ReactiveFormsModule,
     IonImg,
@@ -37,9 +37,14 @@ import { addIcons } from 'ionicons';
   ],
 })
 export class LoginPage implements OnInit {
+  loginMode: LoginMode = 'TOURIST';
   loginForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+  ) {
     addIcons({
       logoGoogle,
     });
@@ -52,13 +57,34 @@ export class LoginPage implements OnInit {
     });
   }
 
-  login() {
+  loginProvider() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    this.router.navigate(['/tabs/home'], { replaceUrl: true });
+    this.authService.loginWithPassword(this.loginForm.value).subscribe({
+      next: (user) => this.redirectByRole(user.role),
+      error: () => alert('Credenciales inválidas'),
+    });
+  }
+
+  setMode(mode: LoginMode) {
+    this.loginMode = mode;
+    this.loginForm.reset();
+  }
+
+  // 🔑 TURISTA
+  loginWithGoogle() {
+    this.authService.loginWithGoogle();
+  }
+
+  redirectByRole(role: string) {
+    if (role === 'PROVIDER') {
+      this.router.navigate(['/provider/dashboard'], { replaceUrl: true });
+    } else {
+      this.router.navigate(['/tabs/home'], { replaceUrl: true });
+    }
   }
 
   goToRegister() {
@@ -67,10 +93,6 @@ export class LoginPage implements OnInit {
 
   goToRememberPassword() {
     this.router.navigate(['/auth/remember-password']);
-  }
-
-  loginWithGoogle() {
-    console.log('Login with Google');
   }
 
   cities: any[] = [

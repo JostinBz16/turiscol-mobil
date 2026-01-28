@@ -1,71 +1,86 @@
 <div class="login-content">
   <div class="login-header">
     <div class="login-box">
+      <!-- LOGO -->
       <div class="title-logo">
         <ion-img
           src="assets/images/TuriscolLogo.png"
           alt="Logo turiscol"
           class="img-logo-turiscol"
         ></ion-img>
-
         <h2 class="title">Turiscol</h2>
       </div>
-      <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+      <!-- SELECTOR -->
+      <div class="login-type-selector">
+        <button
+          [class.active]="loginMode === 'TOURIST'"
+          (click)="setMode('TOURIST')"
+        >
+          Turista
+        </button>
+
+        <button
+          [class.active]="loginMode === 'PROVIDER'"
+          (click)="setMode('PROVIDER')"
+        >
+          Proveedor
+        </button>
+      </div>
+
+      <!-- TEXTO CONTEXTUAL -->
+      <p class="login-info">
+        @if (loginMode === 'TOURIST') { Accede como turista usando tu cuenta de
+        Google } @else { Acceso exclusivo para proveedores registrados }
+      </p>
+
+      <!-- LOGIN PROVEEDOR -->
+      @if (loginMode === 'PROVIDER') {
+      <form [formGroup]="loginForm" (ngSubmit)="loginProvider()">
         <ion-item class="input-item">
           <ion-input
-            labelPlacement="stacked"
             type="email"
-            placeholder="Enter your email"
+            placeholder="Correo electrónico"
             formControlName="email"
-            name="email"
-            required
           ></ion-input>
         </ion-item>
+
         <ion-item class="input-item">
           <ion-input
-            labelPlacement="stacked"
             type="password"
-            placeholder="Enter your password"
+            placeholder="Contraseña"
             formControlName="password"
-            name="password"
-            required
           ></ion-input>
         </ion-item>
 
         <ion-button expand="block" class="btn-login" type="submit">
-          Log in
+          Iniciar sesión
         </ion-button>
       </form>
 
       <p class="forgot-text" (click)="goToRememberPassword()">
-        Forgot password?
+        ¿Olvidaste tu contraseña?
       </p>
+      }
 
+      <!-- LOGIN TURISTA -->
+      @if (loginMode === 'TOURIST') {
       <div class="social-login">
-        <div class="social-buttons">
-          <ion-button
-            fill="clear"
-            class="social-btn"
-            (click)="loginWithGoogle()"
-          >
-            Log in with <ion-icon name="logo-google" />
-          </ion-button>
-        </div>
+        <ion-button
+          expand="block"
+          class="btn-google"
+          (click)="loginWithGoogle()"
+        >
+          <ion-icon name="logo-google" slot="start"></ion-icon>
+          Continuar con Google
+        </ion-button>
       </div>
+      }
 
-      <ion-select
-        interface="alert"
-        placeholder="Selecciona una ciudad"
-        interface="alert"
-      >
-        @for (city of cities; track city.id) {
-        <ion-select-option [value]="city.id">{{ city.name }}</ion-select-option>
-        }
-      </ion-select>
-
+      <!-- REGISTRO -->
       <p class="signup-text">
-        Don’t have an account?
-        <a (click)="goToRegister()">Create one</a>
+        ¿No tienes una cuenta?
+        <a (click)="goToRegister()">Crear una</a>
       </p>
     </div>
   </div>

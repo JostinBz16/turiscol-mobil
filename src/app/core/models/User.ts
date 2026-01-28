@@ -1,9 +1,19 @@
 export interface User {
   id: string;
-  nombre: string;
   email: string;
-  telefono: string;
-  ciudadId: string;
-  foto?: string;
-  rol: 'turista' | 'admin' | 'proveedor';
+  name: string;
+  lastName: string;
+  phone: string;
+  active: boolean;
+  role: 'turista' | 'admin' | 'proveedor';
+}
+
+export interface UserApi {
+  id: string;
+  email: string;
+  name: string;
+  lastName: string;
+  phoneNumber: string;
+  active: boolean;
+  role: 'ADMIN' | 'PROVIDER' | 'CONSUMER';
 }
