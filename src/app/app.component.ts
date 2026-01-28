@@ -1,5 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { AuthService } from './features/auth/login/services/auth';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +10,10 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 })
 export class AppComponent {
   isDarkMode = false;
+
+  constructor(private authStore: AuthService) {
+    this.authStore.loadFromStorage();
+  }
 
   toggleTheme() {
     const body = document.documentElement;

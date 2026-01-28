@@ -22,6 +22,7 @@ import {
   heart,
   heartOutline,
 } from 'ionicons/icons';
+import { AuthService } from 'src/app/features/auth/login/services/auth';
 
 @Component({
   selector: 'app-tabs',
@@ -32,6 +33,9 @@ import {
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
+  private authStore = inject(AuthService);
+
+  role = this.authStore.role;
 
   currenTab = signal<string>('home');
 

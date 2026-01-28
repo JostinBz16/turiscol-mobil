@@ -63,10 +63,12 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    this.authService.loginWithPassword(this.loginForm.value).subscribe({
-      next: (user) => this.redirectByRole(user.role),
-      error: () => alert('Credenciales inválidas'),
-    });
+    this.authService
+      .loginMocked(this.loginForm.value.email, this.loginForm.value.password)
+      .subscribe({
+        next: (user) => this.redirectByRole(user.role),
+        error: () => alert('Credenciales inválidas'),
+      });
   }
 
   setMode(mode: LoginMode) {

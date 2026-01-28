@@ -5,7 +5,7 @@ export const MOCK_USERS: User[] = [
     id: 'usr-001',
     name: 'Jostin',
     lastName: 'Morales',
-    email: 'jostin.morales@example.com',
+    email: 'jostin@gmail.com',
     phone: '3001112233',
     role: 'turista',
     active: true,
@@ -21,9 +21,9 @@ export const MOCK_USERS: User[] = [
   },
   {
     id: 'usr-003',
-    name: 'Carlos',
+    name: 'Jx',
     lastName: 'Ruiz',
-    email: 'carlos.ruiz@example.com',
+    email: 'admin@example.com',
     phone: '3023334455',
     role: 'admin',
     active: true,
@@ -35,7 +35,7 @@ export const MOCK_USERS: User[] = [
     email: 'luisa.martinez@example.com',
     phone: '3034445566',
     role: 'turista',
-    active: false, // 🔥 caso real: usuario desactivado
+    active: false,
   },
   {
     id: 'usr-005',

@@ -17,3 +17,5 @@ export interface UserApi {
   active: boolean;
   role: 'ADMIN' | 'PROVIDER' | 'CONSUMER';
 }
+
+export type Role = 'turista' | 'proveedor' | 'admin';

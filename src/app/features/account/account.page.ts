@@ -22,6 +22,7 @@ import {
   personAddOutline,
   personOutline,
 } from 'ionicons/icons';
+import { AuthService } from '../auth/login/services/auth';
 
 @Component({
   selector: 'app-account',
@@ -42,7 +43,10 @@ import {
   ],
 })
 export class AccountPage implements OnInit {
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+  ) {
     addIcons({
       personOutline,
       createOutline,
@@ -65,7 +69,7 @@ export class AccountPage implements OnInit {
   }
 
   logout() {
-    console.log('Logout...');
+    this.authService.logout();
     // Aquí puedes limpiar estado, token, etc.
     this.router.navigate(['/auth/login'], {
       replaceUrl: true,
