@@ -1,6 +1,6 @@
-import { Departament } from '../models/Deparment';
+import { Department } from '../models/Deparment';
 
-export const departamentos: Departament[] = [
+export const departamentos: Department[] = [
   {
     id: '1',
     name: 'Antioquia',

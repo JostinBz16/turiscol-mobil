@@ -1,87 +1,119 @@
-<div class="login-content">
-  <div class="login-header">
-    <div class="login-box">
-      <!-- LOGO -->
-      <div class="title-logo">
-        <ion-img
-          src="assets/images/TuriscolLogo.png"
-          alt="Logo turiscol"
-          class="img-logo-turiscol"
-        ></ion-img>
-        <h2 class="title">Turiscol</h2>
+<ion-content>
+  <div class="login-content">
+    <div class="login-header">
+      <div class="login-box">
+        <!-- LOGO -->
+        <div class="title-logo">
+          <ion-img
+            src="assets/images/TuriscolLogo.png"
+            alt="Logo turiscol"
+            class="img-logo-turiscol"
+          ></ion-img>
+          <h2 class="title">Turiscol</h2>
+        </div>
+
+        <!-- SELECTOR -->
+        <div class="login-type-selector">
+          <button
+            [class.active]="loginMode === 'TOURIST'"
+            (click)="setMode('TOURIST')"
+          >
+            Turista
+          </button>
+
+          <button
+            [class.active]="loginMode === 'PROVIDER'"
+            (click)="setMode('PROVIDER')"
+          >
+            Proveedor
+          </button>
+        </div>
+
+        <!-- TEXTO CONTEXTUAL -->
+        <p class="login-info">
+          @if (loginMode === 'TOURIST') { Accede como turista usando tu cuenta
+          de Google } @else { Acceso exclusivo para proveedores registrados }
+        </p>
+
+        <div class="login-body">
+          @if (loginMode === 'PROVIDER') {
+          <form [formGroup]="loginForm">
+            <ion-item class="input-item">
+              <ion-input
+                type="email"
+                placeholder="Correo electrónico"
+                formControlName="email"
+              ></ion-input>
+            </ion-item>
+            @if (loginForm.get('email')?.touched) {
+            <ion-text color="danger">
+              @if (loginForm.get('email')?.errors?.['required']) {
+              <small>El email es obligatorio</small>
+              } @if (loginForm.get('email')?.errors?.['email']) {
+              <small>El formato del email no es válido</small>
+              }
+            </ion-text>
+            }
+
+            <ion-item class="input-item">
+              <ion-input
+                type="password"
+                placeholder="Contraseña"
+                formControlName="password"
+              ></ion-input>
+            </ion-item>
+            @if (loginForm.get('password')?.touched &&
+            loginForm.get('password')?.errors?.['required']) {
+            <ion-text color="danger">
+              <small>La contraseña es obligatoria</small>
+            </ion-text>
+            }
+          </form>
+
+          } @if (loginMode === 'TOURIST') {
+          <div class="tourist-center">
+            <ion-button
+              expand="block"
+              class="btn-google"
+              (click)="loginWithGoogle()"
+            >
+              <ion-icon name="logo-google" slot="start"></ion-icon>
+              Continuar con Google
+            </ion-button>
+          </div>
+          }
+        </div>
+
+        <div class="login-footer">
+          @if (loginMode === 'PROVIDER') {
+          <ion-button
+            expand="block"
+            class="btn-login"
+            type="button"
+            (click)="loginProvider()"
+          >
+            Iniciar sesión
+          </ion-button>
+
+          <p class="forgot-text" (click)="goToRememberPassword()">
+            ¿Olvidaste tu contraseña?
+          </p>
+          }
+          <p class="signup-text">
+            ¿No tienes una cuenta?
+            <a (click)="goToRegister()">Crear una</a>
+          </p>
+        </div>
       </div>
-
-      <!-- SELECTOR -->
-      <div class="login-type-selector">
-        <button
-          [class.active]="loginMode === 'TOURIST'"
-          (click)="setMode('TOURIST')"
-        >
-          Turista
-        </button>
-
-        <button
-          [class.active]="loginMode === 'PROVIDER'"
-          (click)="setMode('PROVIDER')"
-        >
-          Proveedor
-        </button>
-      </div>
-
-      <!-- TEXTO CONTEXTUAL -->
-      <p class="login-info">
-        @if (loginMode === 'TOURIST') { Accede como turista usando tu cuenta de
-        Google } @else { Acceso exclusivo para proveedores registrados }
-      </p>
-
-      <!-- LOGIN PROVEEDOR -->
-      @if (loginMode === 'PROVIDER') {
-      <form [formGroup]="loginForm" (ngSubmit)="loginProvider()">
-        <ion-item class="input-item">
-          <ion-input
-            type="email"
-            placeholder="Correo electrónico"
-            formControlName="email"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item class="input-item">
-          <ion-input
-            type="password"
-            placeholder="Contraseña"
-            formControlName="password"
-          ></ion-input>
-        </ion-item>
-
-        <ion-button expand="block" class="btn-login" type="submit">
-          Iniciar sesión
-        </ion-button>
-      </form>
-
-      <p class="forgot-text" (click)="goToRememberPassword()">
-        ¿Olvidaste tu contraseña?
-      </p>
-      }
-
-      <!-- LOGIN TURISTA -->
-      @if (loginMode === 'TOURIST') {
-      <div class="social-login">
-        <ion-button
-          expand="block"
-          class="btn-google"
-          (click)="loginWithGoogle()"
-        >
-          <ion-icon name="logo-google" slot="start"></ion-icon>
-          Continuar con Google
-        </ion-button>
-      </div>
-      }
-
-      <!-- REGISTRO -->
-      <p class="signup-text">
-        ¿No tienes una cuenta?
-        <a (click)="goToRegister()">Crear una</a>
-      </p>
     </div>
   </div>
-</div>
+  <ion-toast
+    [isOpen]="IsShowingToast"
+    position="bottom"
+    [message]="toastMessage"
+    [duration]="1500"
+    color="danger"
+    (didDismiss)="IsShowingToast = false"
+  >
+  </ion-toast>
+</ion-content>

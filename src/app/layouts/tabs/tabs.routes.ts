@@ -17,8 +17,8 @@ export const routes: Routes = [
       {
         path: 'destination',
         loadComponent: () =>
-          import('../../features/destination/destination.page').then(
-            (m) => m.DestinationPage
+          import('../../features/explore/explore.page').then(
+            (m) => m.ExplorePage,
           ),
       },
 
@@ -30,15 +30,15 @@ export const routes: Routes = [
             path: '',
             loadComponent: () =>
               import('../../features/events/events.page').then(
-                (m) => m.EventsPage
+                (m) => m.EventsPage,
               ),
           },
           {
             path: ':id',
             loadComponent: () =>
-              import(
-                '../../features/events/components/event-details/event-details.page'
-              ).then((m) => m.EventDetailsPage),
+              import('../../features/events/components/event-details/event-details.page').then(
+                (m) => m.EventDetailsPage,
+              ),
           },
         ],
       },
@@ -49,11 +49,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('../../features/prices/prices.page').then((m) => m.PricesPage),
       },
-      {
-        path: 'likes',
-        loadComponent: () =>
-          import('../../features/likes/likes.page').then((m) => m.LikesPage),
-      },
+
       /* ===================== ACCOUNT =================== */
       {
         path: 'account',
@@ -62,17 +58,23 @@ export const routes: Routes = [
             path: '',
             loadComponent: () =>
               import('../../features/account/account.page').then(
-                (m) => m.AccountPage
+                (m) => m.AccountPage,
               ),
           },
           {
             path: 'edit',
             loadComponent: () =>
               import('../../features/account/pages/edit/edit.page').then(
-                (m) => m.EditPage
+                (m) => m.EditPage,
               ),
           },
-
+          {
+            path: 'likes',
+            loadComponent: () =>
+              import('../../features/account/pages/likes/likes.page').then(
+                (m) => m.LikesPage,
+              ),
+          },
           /* -------------- RESERVATIONS ---------------- */
           {
             path: 'reservations',
@@ -80,16 +82,16 @@ export const routes: Routes = [
               {
                 path: '',
                 loadComponent: () =>
-                  import(
-                    '../../features/account/pages/reservations/reservations.page'
-                  ).then((m) => m.ReservationsPage),
+                  import('../../features/account/pages/reservations/reservations.page').then(
+                    (m) => m.ReservationsPage,
+                  ),
               },
               {
                 path: 'detail/:id',
                 loadComponent: () =>
-                  import(
-                    '../../features/account/pages/reservations/pages/reservation-detail/reservation-detail.page'
-                  ).then((m) => m.ReservationDetailPage),
+                  import('../../features/account/pages/reservations/pages/reservation-detail/reservation-detail.page').then(
+                    (m) => m.ReservationDetailPage,
+                  ),
               },
             ],
           },
@@ -98,9 +100,9 @@ export const routes: Routes = [
           {
             path: 'notifications',
             loadComponent: () =>
-              import(
-                '../../features/account/pages/notifications/notifications.page'
-              ).then((m) => m.NotificationsPage),
+              import('../../features/account/pages/notifications/notifications.page').then(
+                (m) => m.NotificationsPage,
+              ),
           },
         ],
       },

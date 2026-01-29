@@ -13,8 +13,11 @@ import {
   IonItem,
   IonButton,
   IonIcon,
+  IonToast,
   IonImg,
   IonInput,
+  IonContent,
+  IonText,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { logoGoogle } from 'ionicons/icons';
@@ -27,18 +30,23 @@ import { AuthService } from './services/auth';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
+    IonText,
     IonInput,
+    IonToast,
     ReactiveFormsModule,
     IonImg,
     IonIcon,
     IonButton,
     IonItem,
     CommonModule,
+    IonContent,
   ],
 })
 export class LoginPage implements OnInit {
   loginMode: LoginMode = 'TOURIST';
   loginForm!: FormGroup;
+  IsShowingToast: boolean = false;
+  toastMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -67,7 +75,10 @@ export class LoginPage implements OnInit {
       .loginMocked(this.loginForm.value.email, this.loginForm.value.password)
       .subscribe({
         next: (user) => this.redirectByRole(user.role),
-        error: () => alert('Credenciales inválidas'),
+        error: (err) => {
+          this.toastMessage = err.message;
+          this.IsShowingToast = true;
+        },
       });
   }
 
@@ -96,11 +107,4 @@ export class LoginPage implements OnInit {
   goToRememberPassword() {
     this.router.navigate(['/auth/remember-password']);
   }
-
-  cities: any[] = [
-    { id: 1, name: 'Bogotá', type: 'capital' },
-    { id: 2, name: 'Medellín', type: 'ciudad' },
-    { id: 3, name: 'Cali', type: 'ciudad' },
-    { id: 4, name: 'Barranquilla', type: 'ciudad' },
-  ];
 }

@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Explorar</ion-title>
+
+    <ion-button slot="end" fill="clear" (click)="openFilters()">
+      <ion-icon name="options-outline"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="explore-content">
+  <!-- Categorías estilo Airbnb -->
+  <div class="categories">
+    @for (c of categories; track c.id) {
+    <div class="category-chip">{{ c.name }}</div>
+    }
+  </div>
+
+  <!-- Placeholder resultados -->
+  <div class="results">
+    <p>Selecciona filtros para ver resultados</p>
+  </div>
+</ion-content>

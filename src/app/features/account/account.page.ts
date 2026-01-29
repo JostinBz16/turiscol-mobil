@@ -21,6 +21,8 @@ import {
   notificationsOutline,
   personAddOutline,
   personOutline,
+  settingsOutline,
+  heartOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../auth/login/services/auth';
 
@@ -52,8 +54,10 @@ export class AccountPage implements OnInit {
       createOutline,
       chevronForwardOutline,
       bookmarkOutline,
+      heartOutline,
       notificationsOutline,
       logOutOutline,
+      settingsOutline,
     });
   }
 
@@ -81,5 +85,9 @@ export class AccountPage implements OnInit {
   }
   goToReservations() {
     this.router.navigate(['/tabs/account/reservations']);
+  }
+
+  goToFavorites() {
+    this.router.navigate(['/tabs/account/favorites']);
   }
 }

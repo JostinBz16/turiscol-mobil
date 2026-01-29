@@ -5,10 +5,6 @@
         <span class="welcome">Hola, Jostin 👋</span>
         <h2>Explora Colombia</h2>
       </div>
-
-      <ion-avatar class="avatar">
-        <img src="assets/avatar.jpg" />
-      </ion-avatar>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -27,7 +23,7 @@
       <div class="carousel">
         @for (c of categories; track c.id) {
         <div class="carousel-item category-card">
-          <span>{{ c.label }}</span>
+          <span>{{ c.name }}</span>
         </div>
         }
       </div>
@@ -40,10 +36,10 @@
       <div class="carousel destinations-carousel">
         @for (d of destinations; track d.id) {
         <div class="carousel-item destination-card">
-          <img [src]="d.image" />
+          <ion-img [src]="d.image" />
           <div class="overlay">
             <h4>{{ d.name }}</h4>
-            <span>{{ d.city }}</span>
+            <span>{{ getDepartmentName(d.departmentId) }}</span>
           </div>
         </div>
         }
@@ -55,12 +51,13 @@
       <h3>Planes recomendados</h3>
 
       <div class="plan-card" *ngFor="let p of plans">
-        <img [src]="p.image" />
+        <ion-img [src]="p.image" />
 
         <div class="plan-info">
-          <h4>{{ p.title }}</h4>
-          <p>{{ p.description }}</p>
-
+          <div>
+            <h4>{{ p.title }}</h4>
+            <p>{{ p.description }}</p>
+          </div>
           <div class="plan-footer">
             <span class="price">${{ p.price }}</span>
             <ion-button size="small">Ver</ion-button>

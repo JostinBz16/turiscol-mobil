@@ -30,7 +30,10 @@ import { BookingService } from 'src/app/core/services/booking';
 export class ReservationsPage implements OnInit {
   bookings = signal<Booking[]>([]);
 
-  constructor(private bookingService: BookingService, private router: Router) {}
+  constructor(
+    private bookingService: BookingService,
+    private router: Router,
+  ) {}
 
   ngOnInit() {
     this.bookingService.getBookings().subscribe((data) => {

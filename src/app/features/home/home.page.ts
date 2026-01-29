@@ -4,16 +4,18 @@ import { FormsModule } from '@angular/forms';
 import {
   IonContent,
   IonHeader,
-  IonTitle,
   IonToolbar,
-  IonButtons,
   IonButton,
   IonIcon,
   IonImg,
-  IonAvatar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { notifications, searchOutline } from 'ionicons/icons';
+import { CategoryService } from 'src/app/core/services/category.service';
+import { MunicipalityService } from 'src/app/core/services/municipality.service';
+import { Category } from 'src/app/core/models/CategoryModel';
+import { Municipality } from 'src/app/core/models/Municipality';
+import { DepartmentService } from 'src/app/core/services/DepartmentService';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +23,6 @@ import { notifications, searchOutline } from 'ionicons/icons';
   styleUrls: ['./home.page.scss'],
   standalone: true,
   imports: [
-    IonAvatar,
     IonContent,
     IonHeader,
     IonToolbar,
@@ -29,61 +30,13 @@ import { notifications, searchOutline } from 'ionicons/icons';
     FormsModule,
     IonButton,
     IonIcon,
+    IonImg,
   ],
 })
 export class HomePage implements OnInit {
-  categories = [
-    { id: 1, label: 'Tours' },
-    { id: 2, label: 'Hoteles' },
-    { id: 3, label: 'Guías' },
-    { id: 4, label: 'Transporte' },
-    { id: 5, label: 'Restaurantes' },
-    { id: 6, label: 'Experiencias' },
-  ];
-
-  destinations = [
-    {
-      id: 1,
-      name: 'Cartagena',
-      city: 'Bolívar',
-      image:
-        'https://mlqfmr3rpryd.i.optimole.com/cb:JBSP.a525/w:auto/h:auto/q:100/ig:avif/https://cartagena-tours.co/wp-content/uploads/2023/12/Torre-del-Reloj-en-Cartagena-de-Indias-Colombia.jpg',
-    },
-    {
-      id: 2,
-      name: 'Medellín',
-      city: 'Antioquia',
-      image: 'https://www.minuto30.com/wp-content/uploads/2020/01/medellin.jpg',
-    },
-    {
-      id: 3,
-      name: 'Bogotá',
-      city: 'Cundinamarca',
-      image:
-        'https://desarrolloeconomico.gov.co/wp-content/uploads/2023/05/167_Colpatria8_RicardoBaez_small.jpg',
-    },
-    {
-      id: 4,
-      name: 'Cali',
-      city: 'Valle del Cauca',
-      image:
-        'https://www.cali.gov.co/info/caligovco_se/media/pubInt/thumbs/thpubInt_700X400_186322.webp',
-    },
-    {
-      id: 5,
-      name: 'Santa Marta',
-      city: 'Magdalena',
-      image:
-        'https://www.santamarta.gov.co/sites/default/files/el_rodadero_web.jpg?fid=27409',
-    },
-    {
-      id: 6,
-      name: 'Bucaramanga',
-      city: 'Santander',
-      image:
-        'https://www.hotelrivieraplaza.com/wp-content/uploads/2022/07/bucaramanga-de-noche-santander-colombia.jpg',
-    },
-  ];
+  categories: Category[] = [];
+  destinations: Municipality[] = [];
+  departmentMap = new Map<string, string>();
 
   plans = [
     {
@@ -93,11 +46,37 @@ export class HomePage implements OnInit {
       image:
         'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/17/e9/fb/58/caption.jpg?w=1000&h=1000&s=1',
     },
+    {
+      title: 'City Tour Medellín',
+      description: 'Recorrido por los principales atractivos',
+      price: 150000,
+      image: 'https://www.minuto30.com/wp-content/uploads/2020/01/medellin.jpg',
+    },
   ];
 
-  constructor() {
+  constructor(
+    private categoryService: CategoryService,
+    private municipalityService: MunicipalityService,
+    private departmentService: DepartmentService,
+  ) {
     addIcons({ searchOutline, notifications });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadData();
+  }
+
+  private loadData() {
+    this.categories = this.categoryService.getAll();
+    this.destinations = this.municipalityService.getAll();
+
+    this.departmentService.getAll().forEach((dep) => {
+      console.log(dep.id + ' ' + dep.name);
+      this.departmentMap.set(dep.id, dep.name);
+    });
+  }
+
+  getDepartmentName(departmentId?: string): string {
+    return departmentId ? (this.departmentMap.get(departmentId) ?? '') : '';
+  }
 }

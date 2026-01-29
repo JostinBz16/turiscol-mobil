@@ -1,7 +1,7 @@
 // auth/services/auth.service.ts
-import { computed, Injectable, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { delay, of, tap, throwError } from 'rxjs';
+import { of, tap, throwError } from 'rxjs';
 import { LoginResponse } from '../models/auth.models';
 import { LoginRequestDTO } from '../models/login-request';
 import { MOCK_USERS } from 'src/app/core/data/UserMock';
@@ -58,12 +58,15 @@ export class AuthService {
   }
 
   loginMocked(email: string, password: string) {
-    const user = MOCK_USERS.find((u) => u.email === email);
+    const normalizedEmail = email.trim();
+    const user = MOCK_USERS.find(
+      (u) => u.email.toLowerCase() === normalizedEmail,
+    );
 
     if (!user) {
       return throwError(() => ({
         status: 401,
-        message: 'Usuario no encontrado',
+        message: 'Usuario no encontrado, verifica tus datos',
       }));
     }
 
@@ -71,6 +74,13 @@ export class AuthService {
       return throwError(() => ({
         status: 403,
         message: 'Usuario inactivo',
+      }));
+    }
+
+    if (user.email !== password) {
+      return throwError(() => ({
+        status: 401,
+        message: 'Credenciales inválidas, inténtalo de nuevo',
       }));
     }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { BOOKINGS_MOCK } from '../data/BookingMock';
 import { Booking } from '../models/Reservations';
+import { bookingsMock } from '../data/BookingMock';
 
 @Injectable({
   providedIn: 'root',
@@ -10,11 +10,11 @@ export class BookingService {
   constructor() {}
 
   getBookings(): Observable<Booking[]> {
-    return of(BOOKINGS_MOCK);
+    return of(bookingsMock);
   }
 
   getBookingById(id: number): Observable<Booking | undefined> {
-    const booking = BOOKINGS_MOCK.find((b) => b.id === id);
+    const booking = bookingsMock.find((b) => b.id === id);
     return of(booking);
   }
 }
