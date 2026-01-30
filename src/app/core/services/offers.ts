@@ -1,30 +1,54 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Offer, OfferType } from '../models/Offers';
+import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  AccommodationOffer,
+  EventOffer,
+  Offer,
+  OfferType,
+  ProductOffer,
+} from '../models/Offers';
+import { HttpClient } from '@angular/common/http';
+import { OfferDetailStrategyFactory } from './strategy/offersDetails/OfferDetailStrategyFactory';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OfferService {
-  private offers$ = new BehaviorSubject<Offer[]>([]);
+  private readonly api = '/api/offers';
 
-  getAll() {
-    return this.offers$.asObservable();
+  constructor(
+    private http: HttpClient,
+    private factory: OfferDetailStrategyFactory,
+  ) {}
+
+  findAll(): Observable<Offer[]> | any {
+    // http real
   }
 
-  getById(id: string): Offer | undefined {
-    return this.offers$.value.find((o) => o.id === id);
+  findAllActive(): Observable<Offer[]> | any {
+    // http real
   }
 
-  getByType(type: OfferType): Offer[] {
-    return this.offers$.value.filter((o) => o.type === type);
+  findAllByType(type: OfferType): Observable<Offer[]> | any {
+    // http real
   }
 
-  getByCity(cityId: number): Offer[] {
-    return this.offers$.value.filter((o) => o.cityId === cityId);
+  create(offer: Offer): Observable<Offer> {
+    return this.http.post<Offer>(this.api, offer);
   }
 
-  getActive(): Offer[] {
-    return this.offers$.value.filter((o) => o.active);
+  update(id: string, offer: Offer): Observable<Offer> {
+    return this.http.put<Offer>(`${this.api}/${id}`, offer);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/${id}`);
+  }
+  // ----
+
+  getDetail(
+    offer: Offer,
+  ): Observable<AccommodationOffer | EventOffer | ProductOffer> {
+    return this.factory.getStrategy(offer.type).getDetail(offer.id);
   }
 }

@@ -8,11 +8,11 @@
 </ion-header>
 
 <ion-content fullscreen class="detail-content">
-  @if (booking()) {
+  @if (booking() && offer()) {
 
   <!-- HERO IMAGE -->
   <div class="hero">
-    <img [src]="booking()!.image" />
+    <ion-img [src]="offer()!.images[0]" />
 
     <span class="status" [ngClass]="booking()!.status.toLowerCase()">
       {{ statusLabel(booking()!.status) }}
@@ -21,7 +21,7 @@
 
   <!-- MAIN CARD -->
   <div class="card main-card">
-    <h2>{{ booking()!.title }}</h2>
+    <h2>{{ offer()!.title }}</h2>
 
     <p class="date">
       {{ booking()!.startDate }} @if (booking()!.endDate) { – {{
@@ -31,11 +31,11 @@
     <div class="info-grid">
       <div>
         <span>Personas</span>
-        <strong>{{ booking()!.people }}</strong>
+        <strong>{{ peopleCount() }}</strong>
       </div>
       <div>
         <span>Tipo</span>
-        <strong>{{ booking()!.type }}</strong>
+        <strong>{{ offer()!.type }}</strong>
       </div>
     </div>
   </div>
@@ -46,17 +46,17 @@
 
     <div class="price-row">
       <span>Subtotal</span>
-      <span>${{ booking()!.subtotal }}</span>
+      <span>${{ subtotal() }}</span>
     </div>
 
     <div class="price-row">
       <span>Impuestos</span>
-      <span>${{ booking()!.taxes }}</span>
+      <span>${{ taxes() }}</span>
     </div>
 
     <div class="price-row total">
       <strong>Total</strong>
-      <strong>${{ booking()!.total }}</strong>
+      <strong>${{ total() }}</strong>
     </div>
   </div>
 

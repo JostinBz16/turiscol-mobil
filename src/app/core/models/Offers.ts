@@ -13,7 +13,7 @@ export interface Offer {
   images: string[];
   cityId: number;
   rating: number;
-  categoryId: number;
+  providerId: number;
   basePrice: number;
   active: boolean;
 }
@@ -30,22 +30,20 @@ export interface Rules {
 }
 
 export interface AccommodationOffer extends Offer {
-  type: OfferType.ACCOMMODATION | OfferType.SERVICE;
   maxGuests: number;
   guestRules: Rules;
 }
 
 export interface EventOffer extends Offer {
-  type: OfferType.EVENT;
   eventDate: string;
   capacity: number;
+  eventAcces: string;
   rules: Rules;
 }
 
 // --- productos ---
 
 export interface ProductOffer extends Offer {
-  type: OfferType.PRODUCT;
   stock: number;
 }
 

@@ -21,6 +21,8 @@ import {
   personOutline,
   heart,
   heartOutline,
+  cash,
+  cashOutline,
 } from 'ionicons/icons';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 
@@ -58,6 +60,8 @@ export class TabsPage {
       mapOutline,
       colorPalette,
       colorPaletteOutline,
+      cash,
+      cashOutline,
     });
   }
 }

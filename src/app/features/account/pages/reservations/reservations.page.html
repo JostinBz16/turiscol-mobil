@@ -9,22 +9,22 @@
 
 <ion-content class="reservations-content">
   <div class="reservations-card">
-    @for (reservation of bookings(); track reservation.id) {
-    <div class="reservation-item" (click)="goToDetail(reservation.id)">
-      <img [src]="reservation.image" />
+    @for (item of bookingsWithOffers(); track item.booking.id) {
+    <div class="reservation-item" (click)="goToDetail(item.booking.id)">
+      <ion-img [src]="item.offer.images[0]" />
 
       <div class="info">
         <div class="top">
-          <h3>{{ reservation.title }}</h3>
+          <h3>{{ item.offer.title }}</h3>
 
-          <span class="status" [ngClass]="reservation.status">
-            {{ statusLabel(reservation.status) }}
+          <span class="status" [ngClass]="item.booking.status">
+            {{ statusLabel(item.booking.status) }}
           </span>
         </div>
 
         <p>
-          {{ reservation.startDate }} @if (reservation.endDate) { – {{
-          reservation.endDate }} }
+          {{ item.booking.startDate }} @if (item.booking.endDate) { – {{
+          item.booking.endDate }} }
         </p>
       </div>
     </div>
