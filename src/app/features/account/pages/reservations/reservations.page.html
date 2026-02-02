@@ -14,18 +14,17 @@
       <ion-img [src]="item.offer.images[0]" />
 
       <div class="info">
-        <div class="top">
-          <h3>{{ item.offer.title }}</h3>
-
+        <h3>{{ item.offer.title }}</h3>
+        <div class="details">
           <span class="status" [ngClass]="item.booking.status">
             {{ statusLabel(item.booking.status) }}
           </span>
-        </div>
 
-        <p>
-          {{ item.booking.startDate }} @if (item.booking.endDate) { – {{
-          item.booking.endDate }} }
-        </p>
+          <p>
+            {{ item.booking.startDate }} @if (item.booking.endDate) { – {{
+            item.booking.endDate }} }
+          </p>
+        </div>
       </div>
     </div>
     }

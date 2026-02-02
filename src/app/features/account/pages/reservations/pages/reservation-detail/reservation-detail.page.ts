@@ -12,7 +12,7 @@ import {
   IonImg,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { Offer } from 'src/app/core/models/Offers';
+import { Offer, OfferType } from 'src/app/core/models/Offers';
 import { OfferMockService } from 'src/app/core/services/mocks/offer-mock.service';
 
 @Component({
@@ -34,6 +34,13 @@ import { OfferMockService } from 'src/app/core/services/mocks/offer-mock.service
 export class ReservationDetailPage implements OnInit {
   booking = signal<Booking | null>(null);
   offer = signal<Offer | null>(null);
+
+  OFFER_TYPE_LABEL: Record<OfferType, string> = {
+    [OfferType.ACCOMMODATION]: 'Alojamiento',
+    [OfferType.EVENT]: 'Evento',
+    [OfferType.PRODUCT]: 'Producto',
+    [OfferType.SERVICE]: 'Servicio',
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -63,6 +70,20 @@ export class ReservationDetailPage implements OnInit {
       PENDING: 'Pendiente',
       CANCELED: 'Cancelada',
     }[status];
+  }
+
+  offerTypeLabel(type: OfferType): string {
+    return this.OFFER_TYPE_LABEL[type];
+  }
+
+  offerInfoLabel(): string {
+    if (!this.booking() || !this.offer()) return '';
+
+    if (this.offer()!.type === OfferType.PRODUCT) {
+      return `Cantidad`;
+    }
+
+    return `Personas`;
   }
 
   peopleCount() {

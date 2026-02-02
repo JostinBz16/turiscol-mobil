@@ -1,17 +1,18 @@
 .detail-content {
-  --background: #f4f5f8;
+  --background: linear-gradient(180deg, #f7f8fc 0%, #eef1f7 100%);
 }
 
-/* HERO IMAGE */
+/* ================= HERO ================= */
 .hero {
   position: relative;
-  height: 260px;
+  height: 300px;
   overflow: hidden;
 
-  img {
+  ion-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scale(1.05);
   }
 
   &::after {
@@ -20,100 +21,146 @@
     inset: 0;
     background: linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.1),
-      rgba(0, 0, 0, 0.6)
+      rgba(0, 0, 0, 0.05),
+      rgba(0, 0, 0, 0.7)
     );
-  }
-
-  .status {
-    position: absolute;
-    bottom: 16px;
-    left: 16px;
-    z-index: 2;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #fff;
-
-    &.confirmed {
-      background: #2dd36f;
-    }
-
-    &.pending {
-      background: #ffc409;
-      color: #000;
-    }
-
-    &.canceled {
-      background: #eb445a;
-    }
   }
 }
 
-/* CARD BASE */
+/* ================= CARD BASE ================= */
 .card {
-  background: #fff;
+  background: #ffffff;
   margin: 16px;
-  padding: 16px;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 22px;
+  border-radius: 22px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
 
   h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
+    text-align: center;
+    color: #0f172a;
+    margin-bottom: 10px;
   }
 
   h3 {
-    margin-bottom: 12px;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #111827;
   }
 }
 
-/* FLOATING MAIN CARD */
+/* ================= FLOATING MAIN CARD ================= */
 .main-card {
-  margin-top: -40px;
+  margin-top: -64px;
   position: relative;
-  z-index: 3;
+  z-index: 5;
+}
+
+/* ================= DESCRIPTION ================= */
+.description {
+  margin-top: 8px;
+
+  p {
+    font-size: 14px;
+    line-height: 1.7;
+    text-align: center;
+    color: #475569;
+  }
+}
+
+/* ================= INFO BLOCK ================= */
+.info {
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* ================= INFO GRID ================= */
+.info-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+
+  .info-peoplecount,
+  .info-offertype {
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4px;
+
+    span {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+    }
+
+    strong {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+  }
+}
+
+/* ================= STATUS + DATE ================= */
+.status-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  margin-top: 16px;
 }
 
 /* DATE */
 .date {
-  color: #666;
-  font-size: 14px;
-  margin: 6px 0 16px;
+  font-size: 13px;
+  color: #64748b;
 }
 
-/* INFO GRID */
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+/* ================= STATUS CHIP ================= */
+.status-chip {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
 
-  span {
-    font-size: 12px;
-    color: #888;
+  &.confirmed {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #166534;
   }
 
-  strong {
-    font-size: 16px;
-    display: block;
+  &.pending {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+  }
+
+  &.canceled {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #991b1b;
   }
 }
 
-/* PRICE ROWS */
+/* ================= PAYMENT ================= */
 .price-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
   font-size: 14px;
+  margin-bottom: 10px;
+  color: #334155;
 
   &.total {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid #eee;
-    font-size: 16px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed #e5e7eb;
+    font-size: 18px;
+    font-weight: 800;
+    color: #020617;
   }
 }

@@ -6,8 +6,6 @@ import { OfferDetailStrategyFactory } from '../strategy/offersDetails/OfferDetai
 
 @Injectable({ providedIn: 'root' })
 export class OfferMockService {
-  constructor(private factory: OfferDetailStrategyFactory) {}
-
   findAll(): Observable<Offer[]> {
     return of(offersMock);
   }
@@ -23,9 +21,5 @@ export class OfferMockService {
 
   findAllByType(type: OfferType): Observable<Offer[]> {
     return of(offersMock.filter((o) => o.type === type && o.active));
-  }
-
-  getDetail(offer: Offer): Observable<any> {
-    return this.factory.getStrategy(offer.type).getDetail(offer.id);
   }
 }

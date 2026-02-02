@@ -71,7 +71,6 @@ export class HomePage implements OnInit {
     this.destinations = this.municipalityService.getAll();
 
     this.departmentService.getAll().forEach((dep) => {
-      console.log(dep.id + ' ' + dep.name);
       this.departmentMap.set(dep.id, dep.name);
     });
   }

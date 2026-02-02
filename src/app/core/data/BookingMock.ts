@@ -39,6 +39,7 @@ export const bookingsMock: Booking[] = [
     id: 4,
     offerId: 'prd-1',
     status: BookingStatus.CONFIRMED,
+    startDate: '2026-07-15',
     quantity: 3,
   },
   {

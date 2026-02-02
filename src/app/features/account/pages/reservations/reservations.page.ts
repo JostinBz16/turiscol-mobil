@@ -2,12 +2,12 @@ import { Component, computed, OnInit, signal, Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonButtons,
   IonBackButton,
   IonImg,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { Booking, BookingStatus } from 'src/app/core/models/Reservations';
@@ -15,14 +15,22 @@ import { BookingService } from 'src/app/core/services/booking';
 import { OfferMockService } from 'src/app/core/services/mocks/offer-mock.service';
 import { Offer } from 'src/app/core/models/Offers';
 import { forkJoin } from 'rxjs';
-import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-reservations',
   templateUrl: './reservations.page.html',
   styleUrls: ['./reservations.page.scss'],
   standalone: true,
-  imports: [IonImg, IonBackButton, IonContent, CommonModule, IonicModule],
+  imports: [
+    IonImg,
+    IonBackButton,
+    IonContent,
+    CommonModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+  ],
 })
 export class ReservationsPage implements OnInit {
   bookings = signal<Booking[]>([]);
@@ -47,6 +55,7 @@ export class ReservationsPage implements OnInit {
 
   ngOnInit() {
     this.bookingService.getBookings().subscribe((bookings) => {
+      console.log(bookings);
       this.bookings.set(bookings);
 
       const requests = bookings.map((b) =>
@@ -56,6 +65,7 @@ export class ReservationsPage implements OnInit {
       forkJoin(requests).subscribe((offers) => {
         this.offersByBooking.set(offers.filter(Boolean) as Offer[]);
       });
+      console.log(this.offersByBooking());
     });
   }
 

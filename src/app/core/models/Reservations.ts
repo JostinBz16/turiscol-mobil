@@ -2,7 +2,7 @@ export interface Booking {
   id: number;
   offerId: string;
   status: BookingStatus;
-  startDate?: string;
+  startDate: string;
   endDate?: string;
   guests?: GuestCount;
   quantity?: number;

@@ -1,4 +1,4 @@
-<ion-header translucent>
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/account/reservations"></ion-back-button>
@@ -13,52 +13,61 @@
   <!-- HERO IMAGE -->
   <div class="hero">
     <ion-img [src]="offer()!.images[0]" />
-
-    <span class="status" [ngClass]="booking()!.status.toLowerCase()">
-      {{ statusLabel(booking()!.status) }}
-    </span>
   </div>
 
   <!-- MAIN CARD -->
   <div class="card main-card">
     <h2>{{ offer()!.title }}</h2>
 
-    <p class="date">
-      {{ booking()!.startDate }} @if (booking()!.endDate) { – {{
-      booking()!.endDate }} }
-    </p>
-
-    <div class="info-grid">
-      <div>
-        <span>Personas</span>
-        <strong>{{ peopleCount() }}</strong>
-      </div>
-      <div>
-        <span>Tipo</span>
-        <strong>{{ offer()!.type }}</strong>
-      </div>
+    <div class="description">
+      <p>{{ offer()!.description }}</p>
     </div>
   </div>
 
   <!-- PAYMENT CARD -->
   <div class="card">
-    <h3>Resumen de pago</h3>
+    <div class="info">
+      <h3>Detalles de la reserva</h3>
+      <div class="info-grid">
+        <div class="info-peoplecount">
+          <span>{{ offerInfoLabel() }}:</span>
+          <strong>{{ peopleCount() }}</strong>
+        </div>
+        <div class="info-offertype">
+          <span>Tipo de reserva:</span>
+          <strong>{{ offerTypeLabel(offer()!.type) }}</strong>
+        </div>
+      </div>
 
-    <div class="price-row">
-      <span>Subtotal</span>
-      <span>${{ subtotal() }}</span>
+      <div class="status-date">
+        <span class="date">
+          {{ booking()!.startDate }} @if (booking()!.endDate) { – {{
+          booking()!.endDate }} }
+        </span>
+
+        <span class="status-chip" [ngClass]="booking()!.status.toLowerCase()">
+          {{ statusLabel(booking()!.status) }}
+        </span>
+      </div>
     </div>
+    <div>
+      <h3>Resumen de pago</h3>
 
-    <div class="price-row">
-      <span>Impuestos</span>
-      <span>${{ taxes() }}</span>
-    </div>
+      <div class="price-row">
+        <span>Subtotal</span>
+        <span>${{ subtotal() }}</span>
+      </div>
 
-    <div class="price-row total">
-      <strong>Total</strong>
-      <strong>${{ total() }}</strong>
+      <div class="price-row">
+        <span>Impuestos</span>
+        <span>${{ taxes() }}</span>
+      </div>
+
+      <div class="price-row total">
+        <strong>Total</strong>
+        <strong>${{ total() }}</strong>
+      </div>
     </div>
   </div>
-
   }
 </ion-content>
