@@ -5,7 +5,7 @@ import {
   IonTitle,
   IonContent,
 } from '@ionic/angular/standalone';
-import { PriceListComponent } from './components/price-list/price-list.component';
+import { PriceListComponent } from './components/price-list/price-list.page';
 import { addIcons } from 'ionicons';
 import { addCircleOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
@@ -42,7 +42,26 @@ export class PricesPage implements OnInit {
       city: 'Medellín',
       category: 'Experiencias',
     },
+    {
+      name: 'Visita al Zoológico',
+      price: 80000,
+      city: 'Cali',
+      category: 'Tours',
+    },
+    {
+      name: 'Paseo en Bicicleta',
+      price: 70000,
+      city: 'Cali',
+      category: 'Experiencias',
+    },
+    {
+      name: 'Tour Histórico',
+      price: 110000,
+      city: 'Barranquilla',
+      category: 'Tours',
+    },
   ];
+  // Ciudad seleccionada como objeto
 
   groupedPrices: any[] = [];
   selectedCity: any = null;

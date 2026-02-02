@@ -7,11 +7,7 @@
 <ion-content>
   <div class="events-container">
     <!-- FILTRO DE CIUDAD -->
-    <app-city-filter
-      [selectedCity]="selectedCity"
-      (citySelected)="filterByCity($event)"
-      (clearFilter)="resetCityFilter()"
-    ></app-city-filter>
+    <app-city-filter (select)="filterByCity($event)"></app-city-filter>
 
     <!-- BOTÓN MOSTRAR/OCULTAR FILTRO AVANZADO -->
     <ion-button

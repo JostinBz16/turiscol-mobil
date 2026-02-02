@@ -7,11 +7,7 @@
 <ion-content>
   <div class="prices-container">
     <!-- Usar solo el componente y pasarle los datos -->
-    <app-city-filter
-      [selectedCity]="selectedCity"
-      (citySelected)="onCitySelected($event)"
-      (clearFilter)="resetCityFilter()"
-    ></app-city-filter>
+    <app-city-filter (select)="filterByCity($event)"></app-city-filter>
 
     <!-- Agrupar por categoría -->
     @for (group of groupedPrices; track group.category) {

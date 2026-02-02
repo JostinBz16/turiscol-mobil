@@ -6,60 +6,38 @@ import {
   IonCard,
   IonCardContent,
   IonIcon,
+  IonInput,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { trashBinOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-city-filter',
   templateUrl: './city-filter.component.html',
   styleUrls: ['./city-filter.component.scss'],
-  imports: [
-    IonIcon,
-    CommonModule,
-    IonSelect,
-    IonSelectOption,
-    IonCard,
-    IonCardContent,
-  ],
+  imports: [IonInput, CommonModule, IonCard, IonCardContent],
 })
-export class CityFilterComponent implements OnInit {
+export class CityFilterComponent {
+  @Output() select = new EventEmitter<any>();
+
   cities: any[] = [
     { id: 1, name: 'Bogotá', type: 'capital' },
     { id: 2, name: 'Medellín', type: 'ciudad' },
     { id: 3, name: 'Cali', type: 'ciudad' },
     { id: 4, name: 'Barranquilla', type: 'ciudad' },
-  ]; // Ciudad seleccionada como objeto
+  ];
 
-  @Input() selectedCity: any = null; // Evento cuando se selecciona una ciudad
+  filter = '';
 
-  @Output() citySelected = new EventEmitter<any>(); // Función para comparar objetos, crucial cuando el valor es un objeto complejo
-
-  @Output() clearFilter = new EventEmitter<void>();
-
-  compareWith = (o1: any, o2: any): boolean => {
-    return o1 && o2 ? o1.id === o2.id : o1 === o2;
-  };
-
-  ngOnInit() {
-    // Aseguramos que selectedCity sea null o el objeto si se pasa un valor
-    if (!this.selectedCity && this.cities.length > 0) {
-      this.selectedCity = null;
-    }
-    addIcons({
-      trashBinOutline,
-    });
+  get filteredCities() {
+    return this.cities.filter((c) =>
+      c.name.toLowerCase().includes(this.filter.toLowerCase()),
+    );
   }
 
-  onCityChange(event: CustomEvent) {
-    // Dado que [value]="city" en la opción, event.detail.value ya es el objeto city
-    // No es necesario buscarlo en el array cities
-    this.citySelected.emit(event.detail.value);
+  onSelect(city: any) {
+    this.select.emit(city);
   }
 
-  onClear() {
-    this.selectedCity = null;
-    this.clearFilter.emit();
-    this.citySelected.emit(null);
+  onFilterChange(event: CustomEvent) {
+    this.filter = (event.detail?.value ?? '').toString();
   }
 }

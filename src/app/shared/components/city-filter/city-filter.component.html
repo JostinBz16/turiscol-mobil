@@ -1,29 +1,17 @@
-<ion-card>
-  <ion-card-content>
-    <div class="row">
-      <ion-select
-        class="city-select"
-        [compareWith]="compareWith"
-        [value]="selectedCity"
-        interface="popover"
-        placeholder="Selecciona una ciudad de interes"
-        (ionChange)="onCityChange($event)"
-      >
-        @for (city of cities; track city.id) {
-        <ion-select-option [value]="city">
-          {{ city.name }}
-        </ion-select-option>
-        }
-      </ion-select>
-      <div class="button-clear" (click)="onClear()">
-        <ion-icon
-          name="trash-bin-outline"
-          slot="icon-only"
-          class="icon-trash"
-        ></ion-icon>
+<ion-input
+  placeholder="Buscar ciudad..."
+  fill="outline"
+  class="mb-3"
+  (ionInput)="onFilterChange($event)"
+></ion-input>
 
-        <span class="clear-text">Limpiar</span>
-      </div>
-    </div>
-  </ion-card-content>
-</ion-card>
+<div class="grid">
+  @for (city of filteredCities; track city.id) {
+    <ion-card class="city-card" (click)="onSelect(city)">
+      <ion-card-content>
+        <h5>{{ city.name }}</h5>
+        <small>{{ city.type }}</small>
+      </ion-card-content>
+    </ion-card>
+  }
+</div>

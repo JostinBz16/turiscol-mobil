@@ -3,8 +3,8 @@ import { IonCard, IonCardContent } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-price-list',
-  templateUrl: './price-list.component.html',
-  styleUrls: ['./price-list.component.scss'],
+  templateUrl: './price-list.page.html',
+  styleUrls: ['./price-list.page.scss'],
   imports: [IonCardContent, IonCard],
 })
 export class PriceListComponent implements OnInit {
