@@ -46,14 +46,19 @@ export const routes: Routes = [
       /* ===================== PRICES ==================== */
       {
         path: 'prices',
-        loadComponent: () =>
-          import('../../features/prices/prices.page').then((m) => m.PricesPage),
         children: [
           {
-            path: ':cityId',
+            path: '',
             loadComponent: () =>
-              import('../../features/prices/components/price-list/price-list.page').then(
-                (m) => m.PriceListComponent,
+              import('../../features/prices/prices.page').then(
+                (m) => m.PricesPage,
+              ),
+          },
+          {
+            path: 'city/:cityId',
+            loadComponent: () =>
+              import('../../features/prices/price-list/price-list.page').then(
+                (m) => m.PriceListPage,
               ),
           },
         ],

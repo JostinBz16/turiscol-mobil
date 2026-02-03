@@ -1,8 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonSelect,
-  IonSelectOption,
   IonCard,
   IonCardContent,
   IonIcon,
@@ -13,7 +11,7 @@ import {
   selector: 'app-city-filter',
   templateUrl: './city-filter.component.html',
   styleUrls: ['./city-filter.component.scss'],
-  imports: [IonInput, CommonModule, IonCard, IonCardContent],
+  imports: [IonInput, CommonModule, IonCard, IonCardContent, IonIcon],
 })
 export class CityFilterComponent {
   @Output() select = new EventEmitter<any>();
