@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/User';
-import { users } from '../data/UserMock';
+import { MOCK_USERS } from '../data/UserMock';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private users$ = new BehaviorSubject<User[]>(users);
+  private users$ = new BehaviorSubject<User[]>(MOCK_USERS);
 
   getAll(): Observable<User[]> {
     return this.users$.asObservable();

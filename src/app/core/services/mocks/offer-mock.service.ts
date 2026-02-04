@@ -22,4 +22,8 @@ export class OfferMockService {
   findAllByType(type: OfferType): Observable<Offer[]> {
     return of(offersMock.filter((o) => o.type === type && o.active));
   }
+
+  findByIdSync(id: string): Offer | null {
+    return offersMock.find((o) => o.id === id) || null;
+  }
 }

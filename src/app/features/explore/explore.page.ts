@@ -42,9 +42,7 @@ export class ExplorePage implements OnInit {
     addIcons({ optionsOutline });
     this.categories = this.categoryService.getAll();
   }
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
-  }
+  ngOnInit(): void {}
 
   async openFilters() {
     const modal = await this.modalCtrl.create({

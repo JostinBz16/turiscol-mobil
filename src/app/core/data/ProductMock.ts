@@ -161,13 +161,13 @@ export const productOffers: ProductOffer[] = [
 export const favoritesMock: Favorite[] = [
   {
     id: 'fav-1',
-    userId: 'usr-1',
+    userId: 'usr-001',
     offerId: 'acc-1',
     createdAt: '2026-01-10T10:00:00Z',
   },
   {
     id: 'fav-2',
-    userId: 'usr-1',
+    userId: 'usr-001',
     offerId: 'evt-2',
     createdAt: '2026-01-12T12:30:00Z',
   },

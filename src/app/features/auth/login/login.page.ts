@@ -74,7 +74,7 @@ export class LoginPage implements OnInit {
     this.authService
       .loginMocked(this.loginForm.value.email, this.loginForm.value.password)
       .subscribe({
-        next: (user) => this.redirectByRole(user.role),
+        next: (user) => this.redirectByRole(user.user.role),
         error: (err) => {
           this.toastMessage = err.message;
           this.IsShowingToast = true;

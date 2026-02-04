@@ -50,20 +50,32 @@
     <div class="section">
       <h3>Planes recomendados</h3>
 
-      <div class="plan-card" *ngFor="let p of plans">
-        <ion-img [src]="p.image" />
+      @for (offer of offers; track offer.id) {
+      <div class="plan-card">
+        <ion-img [src]="offer.images[0]" />
 
         <div class="plan-info">
           <div>
-            <h4>{{ p.title }}</h4>
-            <p>{{ p.description }}</p>
+            <h4>{{ offer.title }}</h4>
+            <p>{{ offer.description }}</p>
           </div>
+
           <div class="plan-footer">
-            <span class="price">${{ p.price }}</span>
-            <ion-button size="small">Ver</ion-button>
+            <span class="price"> {{ offer.basePrice | currency:'COP' }} </span>
+
+            <ion-button
+              fill="clear"
+              size="small"
+              color="danger"
+              (click)="toggleFavorite(offer)"
+            >
+              <ion-icon [name]="isFavorite(offer) ? 'heart' : 'heart-outline'">
+              </ion-icon>
+            </ion-button>
           </div>
         </div>
       </div>
+      }
     </div>
   </div>
 </ion-content>

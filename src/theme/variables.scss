@@ -168,16 +168,16 @@ ion-app {
 /* ===============================
    🧭 Toolbar / Header
    =============================== */
-ion-header,
-ion-toolbar {
-  --border-width: 0;
-  border: none !important;
-  box-shadow: none !important;
-}
 
-ion-toolbar {
-  background: var(--ion-color-text-tittle) !important;
-  color: var(--ion-text-color);
+ion-header {
+  ion-toolbar {
+    --background: var(--ion-color-text-tittle);
+    --color: #ffffff;
+  }
+
+  ion-title {
+    color: #ffffff;
+  }
 }
 
 ion-header::after {

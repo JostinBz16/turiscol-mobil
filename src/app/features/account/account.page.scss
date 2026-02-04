@@ -1,9 +1,19 @@
 .home-header {
   ion-toolbar {
     --background: white;
+
+    ion-title {
+      color: var(--ion-color-primary);
+    }
   }
 }
 
+ion-header,
+ion-toolbar {
+  --border-width: 0;
+  border: none !important;
+  box-shadow: none !important;
+}
 .account-content {
   --background: #ebeff3;
 }

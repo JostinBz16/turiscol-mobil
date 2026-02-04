@@ -30,7 +30,7 @@ export const routes: Routes = [
     path: 'auth',
     loadComponent: () =>
       import('./layouts/auth-layout/auth-layout.component').then(
-        (m) => m.AuthLayoutComponent
+        (m) => m.AuthLayoutComponent,
       ),
     children: [
       {

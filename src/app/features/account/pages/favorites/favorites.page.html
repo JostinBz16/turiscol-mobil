@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/account"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Favoritos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="favorites-content">
+  @if (favoriteOffers().length === 0) {
+  <div class="empty-state">
+    <ion-icon name="heart-outline"></ion-icon>
+    <p>No tienes ofertas favoritas aún</p>
+  </div>
+  } @for (offer of favoriteOffers(); track offer.id) {
+  <ion-card class="offer-card horizontal" (click)="goToDetail(offer.id)">
+    <!-- 📸 IMAGEN -->
+    <ion-img class="offer-image" [src]="offer.images"></ion-img>
+
+    <!-- 📝 DETALLE -->
+    <div class="offer-info">
+      <ion-card-header>
+        <ion-card-title>{{ offer.title }}</ion-card-title>
+        <ion-card-subtitle>{{ offer.type }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <div class="footer">
+        <span class="price"> {{ offer.basePrice | currency:'COP' }} </span>
+
+        <ion-button
+          fill="clear"
+          color="danger"
+          size="small"
+          (click)="removeLike(offer.id); $event.stopPropagation()"
+        >
+          <ion-icon name="heart"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-card>
+  }
+</ion-content>

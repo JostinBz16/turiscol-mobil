@@ -1,11 +1,9 @@
-// auth/services/auth.service.ts
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { of, tap, throwError } from 'rxjs';
-import { LoginResponse } from '../models/auth.models';
 import { LoginRequestDTO } from '../models/login-request';
+import { LoginResponse, UserSession } from '../models/auth.models';
 import { MOCK_USERS } from 'src/app/core/data/UserMock';
-import { Role } from 'src/app/core/models/User';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -13,6 +11,17 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  // 🔐 Estado central de sesión
+  user = signal<UserSession | null>(null);
+
+  // 👉 derivados (solo lectura)
+  isAuthenticated = computed(() => !!this.user());
+  role = computed(() => this.user()?.role ?? null);
+  userId = computed(() => this.user()?.id ?? null);
+
+  // ============================
+  // LOGIN REAL (backend)
+  // ============================
   loginWithPassword(dto: LoginRequestDTO) {
     return this.http
       .post<LoginResponse>(`${this.API}/login`, dto)
@@ -20,45 +29,15 @@ export class AuthService {
   }
 
   loginWithGoogle() {
-    // Aquí normalmente rediriges al backend
     window.location.href = `${this.API}/google`;
   }
-  storeSession(res: LoginResponse) {
-    localStorage.setItem('access_token', res.accessToken);
-    localStorage.setItem('refresh_token', res.refreshToken);
-    localStorage.setItem('role', res.role);
 
-    // 🔥 ESTO ES LO QUE FALTABA
-    this.role.set(res.role);
-  }
-
-  role = signal<Role | null>(null);
-
-  setRole(role: Role) {
-    this.role.set(role);
-    localStorage.setItem('role', role);
-  }
-
-  loadFromStorage() {
-    const role = localStorage.getItem('role') as Role | null;
-    if (role) this.role.set(role);
-  }
-
-  logout() {
-    this.role.set(null);
-    localStorage.clear();
-  }
-
-  isAuthenticated(): boolean {
-    return !!localStorage.getItem('access_token');
-  }
-
-  getRole() {
-    return localStorage.getItem('role');
-  }
-
+  // ============================
+  // LOGIN MOCK (desarrollo)
+  // ============================
   loginMocked(email: string, password: string) {
-    const normalizedEmail = email.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
     const user = MOCK_USERS.find(
       (u) => u.email.toLowerCase() === normalizedEmail,
     );
@@ -66,7 +45,7 @@ export class AuthService {
     if (!user) {
       return throwError(() => ({
         status: 401,
-        message: 'Usuario no encontrado, verifica tus datos',
+        message: 'Usuario no encontrado',
       }));
     }
 
@@ -77,19 +56,47 @@ export class AuthService {
       }));
     }
 
-    if (user.email !== password) {
+    // password mock explícito
+    if (password !== '1234') {
       return throwError(() => ({
         status: 401,
-        message: 'Credenciales inválidas, inténtalo de nuevo',
+        message: 'Credenciales inválidas',
       }));
     }
 
     const response: LoginResponse = {
       accessToken: 'mock-access-token-' + user.id,
       refreshToken: 'mock-refresh-token-' + user.id,
-      role: user.role,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
     };
 
     return of(response).pipe(tap((res) => this.storeSession(res)));
+  }
+
+  // ============================
+  // SESIÓN
+  // ============================
+  private storeSession(res: LoginResponse) {
+    localStorage.setItem('access_token', res.accessToken);
+    localStorage.setItem('refresh_token', res.refreshToken);
+    localStorage.setItem('user', JSON.stringify(res.user));
+
+    this.user.set(res.user);
+  }
+
+  loadFromStorage() {
+    const rawUser = localStorage.getItem('user');
+    if (rawUser) {
+      this.user.set(JSON.parse(rawUser));
+    }
+  }
+
+  logout() {
+    localStorage.clear();
+    this.user.set(null);
   }
 }

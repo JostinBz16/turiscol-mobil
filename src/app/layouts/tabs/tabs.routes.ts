@@ -83,10 +83,10 @@ export const routes: Routes = [
               ),
           },
           {
-            path: 'likes',
+            path: 'favorites',
             loadComponent: () =>
-              import('../../features/account/pages/likes/likes.page').then(
-                (m) => m.LikesPage,
+              import('../../features/account/pages/favorites/favorites.page').then(
+                (m) => m.FavoritesPage,
               ),
           },
           /* -------------- RESERVATIONS ---------------- */
@@ -108,15 +108,6 @@ export const routes: Routes = [
                   ),
               },
             ],
-          },
-
-          /* -------------- NOTIFICATIONS ---------------- */
-          {
-            path: 'notifications',
-            loadComponent: () =>
-              import('../../features/account/pages/notifications/notifications.page').then(
-                (m) => m.NotificationsPage,
-              ),
           },
         ],
       },
