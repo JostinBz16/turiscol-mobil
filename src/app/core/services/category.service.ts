@@ -10,7 +10,7 @@ export class CategoryService {
     return categories;
   }
 
-  getById(id: string): Category | undefined {
+  getById(id: number): Category | undefined {
     return categories.find((c) => c.id === id);
   }
 }

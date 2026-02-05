@@ -8,7 +8,7 @@ import {
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { EventListComponent } from './components/event-list/event-list.component';
-import { CityFilterComponent } from 'src/app/shared/components/city-filter/city-filter.component';
+import { CityFilterComponent } from 'src/app/components/city-filter/city-filter.component';
 import { addIcons } from 'ionicons';
 import { filterOutline, refreshCircleOutline } from 'ionicons/icons';
 import { EventAdvanceFilterComponent } from './components/event-advance-filter/event-advance-filter.component';
@@ -85,7 +85,8 @@ export class EventsPage implements OnInit {
     this.filteredEvents = this.events
       .filter((ev) => !this.selectedCity || ev.city === this.selectedCity.name)
       .filter(
-        (ev) => this.statusFilter === 'todos' || ev.status === this.statusFilter
+        (ev) =>
+          this.statusFilter === 'todos' || ev.status === this.statusFilter,
       )
       .filter((ev) => !this.dateFrom || ev.date >= this.dateFrom)
       .filter((ev) => !this.dateTo || ev.date <= this.dateTo);

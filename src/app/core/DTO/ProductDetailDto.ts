@@ -2,6 +2,7 @@ export interface ProductDetailDto {
   uuid: string;
   title: string;
   description: string;
+  categoryId: number;
   images: string[];
   cityId: number;
   rating: number;

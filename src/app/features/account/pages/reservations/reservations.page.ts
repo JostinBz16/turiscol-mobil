@@ -55,7 +55,6 @@ export class ReservationsPage implements OnInit {
 
   ngOnInit() {
     this.bookingService.getBookings().subscribe((bookings) => {
-      console.log(bookings);
       this.bookings.set(bookings);
 
       const requests = bookings.map((b) =>
@@ -65,7 +64,6 @@ export class ReservationsPage implements OnInit {
       forkJoin(requests).subscribe((offers) => {
         this.offersByBooking.set(offers.filter(Boolean) as Offer[]);
       });
-      console.log(this.offersByBooking());
     });
   }
 

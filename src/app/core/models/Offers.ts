@@ -10,6 +10,7 @@ export interface Offer {
   type: OfferType;
   title: string;
   description: string;
+  categoryId: number;
   images: string[];
   cityId: number;
   rating: number;

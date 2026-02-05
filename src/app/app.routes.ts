@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { Router, Routes } from '@angular/router';
-import { welcomeGuard } from './shared/guards/welcome.guard';
+import { welcomeGuard } from './core/guards/welcome.guard';
 
 export const routes: Routes = [
   {

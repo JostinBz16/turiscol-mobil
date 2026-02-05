@@ -10,7 +10,6 @@ import { addIcons } from 'ionicons';
 import {
   homeOutline,
   mapOutline,
-  map,
   briefcase,
   home,
   receiptOutline,
@@ -23,6 +22,7 @@ import {
   heartOutline,
   cash,
   cashOutline,
+  mapSharp,
 } from 'ionicons/icons';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 
@@ -50,7 +50,7 @@ export class TabsPage {
       heart,
       heartOutline,
       homeOutline,
-      map,
+      mapSharp,
       briefcase,
       person,
       home,

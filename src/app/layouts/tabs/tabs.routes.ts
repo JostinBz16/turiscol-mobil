@@ -15,11 +15,23 @@ export const routes: Routes = [
 
       /* ================== DESTINATIONS ================= */
       {
-        path: 'destination',
-        loadComponent: () =>
-          import('../../features/explore/explore.page').then(
-            (m) => m.ExplorePage,
-          ),
+        path: 'offers',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('../../features/explore/explore.page').then(
+                (m) => m.ExplorePage,
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('../../features/explore/pages/offer-details/offer-details.page').then(
+                (m) => m.OfferDetailsPage,
+              ),
+          },
+        ],
       },
 
       /* ===================== EVENTS ==================== */

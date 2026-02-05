@@ -2,6 +2,7 @@ export interface AccommodationDetailDto {
   id: string;
   title: string;
   description: string;
+  categoryId: number;
   imgs: string[];
   city_id: number;
   rating: number;

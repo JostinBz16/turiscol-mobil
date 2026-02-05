@@ -8,7 +8,7 @@ import {
 import { addIcons } from 'ionicons';
 import { addCircleOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
-import { CityFilterComponent } from '../../shared/components/city-filter/city-filter.component';
+import { CityFilterComponent } from '../../components/city-filter/city-filter.component';
 import { Router } from '@angular/router';
 
 @Component({

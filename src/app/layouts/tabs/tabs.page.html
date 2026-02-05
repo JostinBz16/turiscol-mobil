@@ -9,8 +9,10 @@
 
     <!-- SOLO TURISTA -->
     @if (role() === 'turista') {
-    <ion-tab-button tab="destination">
-      <ion-icon [name]="currenTab() === 'destination' ? 'map' : 'map-outline'">
+    <ion-tab-button tab="offers">
+      <ion-icon
+        [name]="currenTab() === 'destination' ? 'map-sharp' : 'map-outline'"
+      >
       </ion-icon>
       <ion-label>Explorar</ion-label>
     </ion-tab-button>

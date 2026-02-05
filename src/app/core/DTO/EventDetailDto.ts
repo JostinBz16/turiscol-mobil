@@ -3,7 +3,8 @@ import { Rules } from '../models/Offers';
 export interface EventDetailDto {
   id: string;
   name: string;
-  desc: string;
+  description: string;
+  categoryId: number;
   images: string[];
   city: number;
   score: number;
