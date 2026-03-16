@@ -1,21 +1,194 @@
-.title-logo {
+.home-header {
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+  }
+
+  .header-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .welcome {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  h2 {
+    margin: 4px 0 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+  }
+}
+
+.content-wrapper {
+  padding: 16px;
+}
+
+.search-box {
+  padding: 16px 18px;
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-left: 22px;
+  gap: 12px;
+
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+
+  border: 1px solid rgba(79, 172, 254, 0.25);
+
+  transition: all 0.25s ease;
+
+  ion-icon {
+    font-size: 22px;
+    color: #4facfe;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #111827;
+
+    &::placeholder {
+      color: #6b7280;
+      font-weight: 400;
+    }
+  }
+
+  &:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 35px rgba(79, 172, 254, 0.35);
+  }
 }
 
-/* 👇 tamaño del ion-img */
-.img-logo-turiscol {
-  width: 60px;
-  height: 60px;
-  object-fit: contain; /* evita deformaciones */
+.section {
+  margin-top: 24px;
+
+  h3 {
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+}
+.carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-ion-title {
-  padding: 0%;
+.carousel-item {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
 }
 
-ion-icon {
-  color: var(--ion-color-primary);
+.category-card {
+  padding: 12px 16px;
+  background: white;
+  border-radius: 16px;
+  white-space: nowrap;
+
+  span {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+.destinations-carousel {
+  gap: 14px;
+}
+
+.destination-card {
+  flex: 0 0 240px;
+  height: 150px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  scroll-snap-align: start;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+
+  ion-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.75);
+  }
+
+  .overlay {
+    position: absolute;
+    bottom: 0;
+    padding: 12px;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+    color: white;
+
+    h4 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: rgb(242, 242, 242);
+    }
+
+    span {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+  }
+}
+
+.plan-card {
+  display: flex;
+  gap: 9px;
+  background: white;
+  border-radius: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  ion-img {
+    width: 165px;
+    object-fit: cover;
+  }
+
+  .plan-info {
+    padding: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    h4 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin: 4px 0 10px;
+    }
+
+    .plan-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .price {
+        font-weight: 700;
+        color: #4facfe;
+      }
+    }
+  }
 }

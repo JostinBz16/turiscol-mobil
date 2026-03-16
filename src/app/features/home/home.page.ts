@@ -4,15 +4,21 @@ import { FormsModule } from '@angular/forms';
 import {
   IonContent,
   IonHeader,
-  IonTitle,
   IonToolbar,
-  IonButtons,
   IonButton,
   IonIcon,
   IonImg,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { notifications } from 'ionicons/icons';
+import { notifications, searchOutline } from 'ionicons/icons';
+import { CategoryService } from 'src/app/core/services/category.service';
+import { MunicipalityService } from 'src/app/core/services/municipality.service';
+import { Category } from 'src/app/core/models/CategoryModel';
+import { Municipality } from 'src/app/core/models/Municipality';
+import { DepartmentService } from 'src/app/core/services/DepartmentService';
+import { FavoritesService } from 'src/app/core/services/favorites.services';
+import { Offer } from 'src/app/core/models/Offers';
+import { offersMock } from 'src/app/core/data/ProductMock';
 
 @Component({
   selector: 'app-home',
@@ -20,10 +26,8 @@ import { notifications } from 'ionicons/icons';
   styleUrls: ['./home.page.scss'],
   standalone: true,
   imports: [
-    IonButtons,
     IonContent,
     IonHeader,
-    IonTitle,
     IonToolbar,
     CommonModule,
     FormsModule,
@@ -33,11 +37,44 @@ import { notifications } from 'ionicons/icons';
   ],
 })
 export class HomePage implements OnInit {
-  constructor() {
-    addIcons({
-      notifications,
+  categories: Category[] = [];
+  destinations: Municipality[] = [];
+  departmentMap = new Map<string, string>();
+
+  constructor(
+    private categoryService: CategoryService,
+    private municipalityService: MunicipalityService,
+    private departmentService: DepartmentService,
+    private favoriteService: FavoritesService,
+  ) {
+    addIcons({ searchOutline, notifications });
+  }
+
+  offers: Offer[] = [];
+
+  ngOnInit() {
+    this.loadData();
+    this.offers = offersMock.filter((o) => o.active);
+  }
+
+  private loadData() {
+    this.categories = this.categoryService.getAll();
+    this.destinations = this.municipalityService.getAll();
+
+    this.departmentService.getAll().forEach((dep) => {
+      this.departmentMap.set(dep.id, dep.name);
     });
   }
 
-  ngOnInit() {}
+  getDepartmentName(departmentId?: string): string {
+    return departmentId ? (this.departmentMap.get(departmentId) ?? '') : '';
+  }
+
+  isFavorite(offer: Offer): boolean {
+    return this.favoriteService.isFavorite(offer.id);
+  }
+
+  toggleFavorite(offer: Offer) {
+    this.favoriteService.toggleFavorite(offer.id);
+  }
 }

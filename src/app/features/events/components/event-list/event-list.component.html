@@ -1,6 +1,6 @@
 <div class="event-card-list">
   @for (e of events; track e.id) {
-  <ion-card class="event-card" (click)="openDetails(e)">
+  <ion-card class="event-card" [routerLink]="['/tabs/events', e?.id]">
     <img [src]="e.image" class="event-img" />
 
     <ion-card-content>

@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Explorar</ion-title>
+
+    <ion-button slot="end" fill="clear" (click)="openFilters()">
+      <ion-icon name="options-outline"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="explore-content">
+  <div class="content-wrapper">
+    <!-- 🔍 Buscador -->
+    <div class="search-box">
+      <ion-icon name="search-outline"></ion-icon>
+      <input
+        placeholder="Busca planes, destinos o experiencias"
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+
+    <!-- 🏷 Categorías -->
+    <div class="section">
+      <div class="carousel">
+        @for (c of categories; track c.id) {
+        <div
+          class="carousel-item category-card"
+          [class.active]="selectedCategory === c.id"
+          (click)="selectCategory(c.id)"
+        >
+          <span>{{ c.name }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- ⭐ Resultados -->
+    <div class="section">
+      <h3>Ofertas</h3>
+
+      @for (offer of filteredOffers; track offer.id) {
+      <div class="plan-card" (click)="goToDetail(offer.id)">
+        <ion-img [src]="offer.images[0]" />
+
+        <div class="plan-info">
+          <div>
+            <h4>{{ offer.title }}</h4>
+            <p>{{ offer.description }}</p>
+
+            <!-- offer.score -->
+          </div>
+
+          <div class="plan-footer">
+            <span class="rating">⭐ {{ 0 }}</span>
+            <span class="price"> {{ offer.basePrice | currency:'COP' }} </span>
+          </div>
+        </div>
+      </div>
+      } @if (filteredOffers.length === 0) {
+      <p class="empty">No hay resultados</p>
+      }
+    </div>
+  </div>
+</ion-content>

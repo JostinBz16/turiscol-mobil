@@ -1,0 +1,139 @@
+ion-header {
+  ion-toolbar {
+    ion-icon {
+      color: #f2f2f2;
+    }
+  }
+}
+
+.content-wrapper {
+  padding: 16px;
+}
+
+/* 🔍 Buscador */
+.search-box {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  border: 1px solid rgba(79, 172, 254, 0.25);
+  transition: all 0.25s ease;
+
+  ion-icon {
+    font-size: 22px;
+    color: #4facfe;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  &:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 35px rgba(79, 172, 254, 0.35);
+  }
+}
+
+/* Sections */
+.section {
+  margin-top: 18px;
+
+  h3 {
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+}
+
+/* 🏷 Categorías */
+.carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.category-card {
+  padding: 14px 16px;
+  background: #fff;
+  border-radius: 16px;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 600;
+  scroll-snap-align: start;
+  transition: all 0.25s ease;
+  cursor: pointer;
+
+  &.active {
+    background: linear-gradient(135deg, #103a5e, #22aeff);
+    color: white;
+  }
+}
+
+/* ⭐ Plan cards */
+.plan-card {
+  display: flex;
+  gap: 10px;
+  background: white;
+  border-radius: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+
+  ion-img {
+    width: 160px;
+    object-fit: cover;
+  }
+
+  .plan-info {
+    padding: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    h4 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin: 4px 0 8px;
+    }
+  }
+}
+
+.rating {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.plan-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .price {
+    font-weight: 700;
+    color: #4facfe;
+  }
+}
+
+.empty {
+  text-align: center;
+  color: #6b7280;
+  margin-top: 40px;
+}

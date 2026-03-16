@@ -7,11 +7,7 @@
 <ion-content>
   <div class="events-container">
     <!-- FILTRO DE CIUDAD -->
-    <app-city-filter
-      [selectedCity]="selectedCity"
-      (citySelected)="filterByCity($event)"
-      (clearFilter)="resetCityFilter()"
-    ></app-city-filter>
+    <app-city-filter (select)="filterByCity($event)"></app-city-filter>
 
     <!-- BOTÓN MOSTRAR/OCULTAR FILTRO AVANZADO -->
     <ion-button
@@ -37,10 +33,7 @@
 
     <!-- LISTA DE EVENTOS -->
     @if (filteredEvents.length > 0) {
-    <app-event-list
-      [events]="filteredEvents"
-      (selectEvent)="goToDetails($event)"
-    ></app-event-list>
+    <app-event-list [events]="filteredEvents"></app-event-list>
     } @else {
     <p class="empty">No hay eventos que coincidan</p>
     }

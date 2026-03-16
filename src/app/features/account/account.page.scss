@@ -1,3 +1,19 @@
+.home-header {
+  ion-toolbar {
+    --background: white;
+
+    ion-title {
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+ion-header,
+ion-toolbar {
+  --border-width: 0;
+  border: none !important;
+  box-shadow: none !important;
+}
 .account-content {
   --background: #ebeff3;
 }
@@ -42,7 +58,7 @@
 }
 
 .account-list {
-  margin: 24px 12px;
+  margin: 24px;
   border-radius: 16px;
   background: var(--ion-card-background);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);

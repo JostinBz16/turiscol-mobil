@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/account"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Reservas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="reservations-content">
+  <div class="reservations-card">
+    @for (item of bookingsWithOffers(); track item.booking.id) {
+    <div class="reservation-item" (click)="goToDetail(item.booking.id)">
+      <ion-img [src]="item.offer.images[0]" />
+
+      <div class="info">
+        <h3>{{ item.offer.title }}</h3>
+        <div class="details">
+          <span class="status" [ngClass]="item.booking.status">
+            {{ statusLabel(item.booking.status) }}
+          </span>
+
+          <p>
+            {{ item.booking.startDate }} @if (item.booking.endDate) { – {{
+            item.booking.endDate }} }
+          </p>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</ion-content>

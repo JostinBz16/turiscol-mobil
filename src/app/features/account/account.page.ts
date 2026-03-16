@@ -20,7 +20,12 @@ import {
   logOutOutline,
   notificationsOutline,
   personAddOutline,
+  personOutline,
+  settingsOutline,
+  heartOutline,
 } from 'ionicons/icons';
+import { AuthService } from '../auth/login/services/auth';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-account',
@@ -41,7 +46,22 @@ import {
   ],
 })
 export class AccountPage implements OnInit {
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private navService: NavigationService,
+  ) {
+    addIcons({
+      personOutline,
+      createOutline,
+      chevronForwardOutline,
+      bookmarkOutline,
+      heartOutline,
+      notificationsOutline,
+      logOutOutline,
+      settingsOutline,
+    });
+  }
 
   ngOnInit() {
     addIcons({
@@ -55,10 +75,24 @@ export class AccountPage implements OnInit {
   }
 
   logout() {
-    console.log('Logout...');
+    this.authService.logout();
     // Aquí puedes limpiar estado, token, etc.
     this.router.navigate(['/auth/login'], {
       replaceUrl: true,
     });
+  }
+
+  goToEditProfile() {
+    this.navService.setReturnUrl('/tabs/account');
+    this.router.navigate(['/tabs/account/edit']);
+  }
+  goToReservations() {
+    this.navService.setReturnUrl('/tabs/account');
+    this.router.navigate(['/tabs/account/reservations']);
+  }
+
+  goToFavorites() {
+    this.navService.setReturnUrl('/tabs/account');
+    this.router.navigate(['/tabs/account/favorites']);
   }
 }

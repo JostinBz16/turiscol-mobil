@@ -1,0 +1,20 @@
+<div class="search-box">
+  <ion-icon name="search-outline"></ion-icon>
+
+  <ion-input
+    placeholder="Buscar ciudad..."
+    clear-input="true"
+    (ionInput)="onFilterChange($event)"
+  ></ion-input>
+</div>
+
+<div class="grid">
+  @for (city of filteredCities; track city.id) {
+    <ion-card class="city-card" (click)="onSelect(city)">
+      <ion-card-content>
+        <h5>{{ city.name }}</h5>
+        <small>{{ city.type }}</small>
+      </ion-card-content>
+    </ion-card>
+  }
+</div>

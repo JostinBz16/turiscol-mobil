@@ -16,7 +16,7 @@
   --ion-color-danger: #e65f5c;
 
   /* 🎨 Fondo y superficie */
-  --ion-background-color: #ebeff3;
+  --ion-background-color: #ebeffe;
   --ion-card-background: #ffffff;
   --ion-item-background: #ffffff;
   --ion-toolbar-background: #ffffff;
@@ -168,16 +168,16 @@ ion-app {
 /* ===============================
    🧭 Toolbar / Header
    =============================== */
-ion-header,
-ion-toolbar {
-  --border-width: 0;
-  border: none !important;
-  box-shadow: none !important;
-}
 
-ion-toolbar {
-  background: var(--ion-color-text-tittle) !important;
-  color: var(--ion-text-color);
+ion-header {
+  ion-toolbar {
+    --background: var(--ion-color-text-tittle);
+    --color: #ffffff;
+  }
+
+  ion-title {
+    color: #ffffff;
+  }
 }
 
 ion-header::after {

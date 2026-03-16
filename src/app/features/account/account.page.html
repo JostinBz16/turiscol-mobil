@@ -1,11 +1,11 @@
-<ion-header [translucent]="true">
+<ion-header class="home-header">
   <ion-toolbar>
     <ion-title>Mi Cuenta</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="account-content">
-  <!-- Header con icono -->
+<ion-content fullscreen class="account-content">
+  <!-- Header -->
   <div class="account-header">
     <div class="icon-wrapper">
       <ion-icon name="person-outline"></ion-icon>
@@ -15,8 +15,9 @@
     <p class="email">john.doe@example.com</p>
   </div>
 
+  <!-- Opciones -->
   <ion-list class="account-list" lines="none">
-    <ion-item button>
+    <ion-item button detail="false" (click)="goToEditProfile()">
       <div class="item-left">
         <div class="icon-box">
           <ion-icon name="create-outline"></ion-icon>
@@ -24,32 +25,43 @@
         <span>Editar Perfil</span>
       </div>
 
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      <ion-icon
+        slot="end"
+        name="chevron-forward-outline"
+        class="chevron"
+      ></ion-icon>
     </ion-item>
 
-    <ion-item button>
+    <ion-item button detail="false" (click)="goToReservations()">
       <div class="item-left">
         <div class="icon-box">
           <ion-icon name="bookmark-outline"></ion-icon>
         </div>
         <span>Mis Reservas</span>
       </div>
-
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      <ion-icon
+        slot="end"
+        name="chevron-forward-outline"
+        class="chevron"
+      ></ion-icon>
     </ion-item>
-
-    <ion-item button>
+    <ion-item button detail="false" (click)="goToFavorites()">
       <div class="item-left">
         <div class="icon-box">
-          <ion-icon name="notifications-outline"></ion-icon>
+          <ion-icon name="heart-outline"></ion-icon>
         </div>
-        <span>Notificaciones</span>
+        <span>Mis favoritos</span>
       </div>
 
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      <ion-icon
+        slot="end"
+        name="chevron-forward-outline"
+        class="chevron"
+      ></ion-icon>
     </ion-item>
   </ion-list>
 
+  <!-- Logout -->
   <div class="logout-container">
     <ion-button color="danger" expand="block" (click)="logout()">
       <ion-icon slot="start" name="log-out-outline"></ion-icon>

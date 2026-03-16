@@ -5,11 +5,11 @@ import {
   IonTitle,
   IonContent,
 } from '@ionic/angular/standalone';
-import { PriceListComponent } from './components/price-list/price-list.component';
 import { addIcons } from 'ionicons';
 import { addCircleOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
-import { CityFilterComponent } from '../../shared/components/city-filter/city-filter.component';
+import { CityFilterComponent } from '../../components/city-filter/city-filter.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-prices',
@@ -22,37 +22,18 @@ import { CityFilterComponent } from '../../shared/components/city-filter/city-fi
     IonTitle,
     IonToolbar,
     IonHeader,
-    PriceListComponent,
     CityFilterComponent,
   ],
 })
 export class PricesPage implements OnInit {
-  prices = [
-    { name: 'Tour Ciudad', price: 120000, city: 'Bogotá', category: 'Tours' },
-    { name: 'Tour Graffiti', price: 90000, city: 'Bogotá', category: 'Tours' },
-    {
-      name: 'Cabalgata',
-      price: 150000,
-      city: 'Medellín',
-      category: 'Experiencias',
-    },
-    {
-      name: 'Clase de Cocina',
-      price: 180000,
-      city: 'Medellín',
-      category: 'Experiencias',
-    },
-  ];
+  // Ciudad seleccionada como objeto
 
   groupedPrices: any[] = [];
-  selectedCity: any = null;
 
   ngOnInit() {
     addIcons({
       addCircleOutline,
     });
-    // Filtrar automáticamente con la ciudad por defecto
-    this.filterByCity(this.selectedCity);
   }
 
   groupByCategory(data: any[]) {
@@ -69,28 +50,9 @@ export class PricesPage implements OnInit {
     }));
   }
 
-  filterByCity(cityObj: any) {
-    console.log('Ciudad seleccionada:', cityObj);
+  constructor(private router: Router) {}
 
-    this.selectedCity = cityObj;
-
-    if (!cityObj) {
-      this.groupedPrices = [];
-      return;
-    }
-
-    // Filtrar por el nombre de la ciudad (cityObj.name)
-    const filtered = this.prices.filter((p) => p.city === cityObj.name);
-    this.groupByCategory(filtered);
-  }
-
-  onCitySelected(cityObj: any) {
-    this.selectedCity = cityObj;
-    this.filterByCity(cityObj);
-  }
-
-  resetCityFilter() {
-    this.selectedCity = null;
-    this.groupedPrices = [];
+  goToCity(city: any) {
+    this.router.navigate(['/tabs/prices/city/', city.id]);
   }
 }

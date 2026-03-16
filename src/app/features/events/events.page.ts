@@ -5,15 +5,15 @@ import {
   IonTitle,
   IonContent,
   IonButton,
-  IonItem,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { EventListComponent } from './components/event-list/event-list.component';
-import { CityFilterComponent } from 'src/app/shared/components/city-filter/city-filter.component';
+import { CityFilterComponent } from 'src/app/components/city-filter/city-filter.component';
 import { addIcons } from 'ionicons';
 import { filterOutline, refreshCircleOutline } from 'ionicons/icons';
 import { EventAdvanceFilterComponent } from './components/event-advance-filter/event-advance-filter.component';
 import { Router } from '@angular/router';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-events',
@@ -71,7 +71,10 @@ export class EventsPage implements OnInit {
   dateTo: string | null = null;
   statusFilter = 'todos';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private navService: NavigationService,
+  ) {}
 
   ngOnInit() {
     addIcons({ filterOutline, refreshCircleOutline });
@@ -86,7 +89,8 @@ export class EventsPage implements OnInit {
     this.filteredEvents = this.events
       .filter((ev) => !this.selectedCity || ev.city === this.selectedCity.name)
       .filter(
-        (ev) => this.statusFilter === 'todos' || ev.status === this.statusFilter
+        (ev) =>
+          this.statusFilter === 'todos' || ev.status === this.statusFilter,
       )
       .filter((ev) => !this.dateFrom || ev.date >= this.dateFrom)
       .filter((ev) => !this.dateTo || ev.date <= this.dateTo);
@@ -122,15 +126,15 @@ export class EventsPage implements OnInit {
     this.applyFilters();
   }
 
-  goToDetails(id: number) {
-    console.log('NAVEGAR A:', id);
-    this.router.navigate(['/events/details', id]);
-  }
-
   resetAdvancedFilters() {
     this.dateFrom = null;
     this.dateTo = null;
     this.statusFilter = 'todos';
     this.applyFilters();
+  }
+
+  goToDetail(id: number) {
+    this.navService.setReturnUrl('/tabs/events');
+    this.router.navigate(['/tabs/events', id]);
   }
 }

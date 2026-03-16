@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="navService.returnUrl()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Reserva</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="detail-content">
+  @if (booking() && offer()) {
+
+  <!-- HERO IMAGE -->
+  <div class="hero">
+    <ion-img [src]="offer()!.images[0]" />
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="card main-card">
+    <h2>{{ offer()!.title }}</h2>
+
+    <div class="description">
+      <p>{{ offer()!.description }}</p>
+    </div>
+  </div>
+
+  <!-- PAYMENT CARD -->
+  <div class="card">
+    <div class="info">
+      <h3>Detalles de la reserva</h3>
+      <div class="info-grid">
+        <div class="info-peoplecount">
+          <span>{{ offerInfoLabel() }}:</span>
+          <strong>{{ peopleCount() }}</strong>
+        </div>
+        <div class="info-offertype">
+          <span>Tipo de reserva:</span>
+          <strong>{{ offerTypeLabel(offer()!.type) }}</strong>
+        </div>
+      </div>
+
+      <div class="status-date">
+        <span class="date">
+          {{ booking()!.startDate }} @if (booking()!.endDate) { – {{
+          booking()!.endDate }} }
+        </span>
+
+        <span class="status-chip" [ngClass]="booking()!.status.toLowerCase()">
+          {{ statusLabel(booking()!.status) }}
+        </span>
+      </div>
+    </div>
+    <div>
+      <h3>Resumen de pago</h3>
+
+      <div class="price-row">
+        <span>Subtotal</span>
+        <span>${{ subtotal() }}</span>
+      </div>
+
+      <div class="price-row">
+        <span>Impuestos</span>
+        <span>${{ taxes() }}</span>
+      </div>
+
+      <div class="price-row total">
+        <strong>Total</strong>
+        <strong>${{ total() }}</strong>
+      </div>
+    </div>
+  </div>
+  }
+</ion-content>
