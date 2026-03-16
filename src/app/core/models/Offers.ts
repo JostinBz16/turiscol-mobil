@@ -5,6 +5,17 @@ export enum OfferType {
   PRODUCT = 'PRODUCT',
 }
 
+export enum ServiceCategory {
+  HOSPEDAJE = 'HOSPEDAJE',
+  PASADIA = 'PASADIA',
+  GASTRONOMIA = 'GASTRONOMIA',
+  TOUR = 'TOUR',
+  ARTESANIA = 'ARTESANIA',
+  TRANSPORTE = 'TRANSPORTE',
+  GUIA = 'GUIA',
+  SERVICIO_TECNICO = 'SERVICIO_TECNICO',
+}
+
 export interface Offer {
   id: string;
   type: OfferType;
@@ -46,6 +57,27 @@ export interface EventOffer extends Offer {
 
 export interface ProductOffer extends Offer {
   stock: number;
+}
+
+export interface ServiceOffer extends Offer {
+  rules: Rules;
+}
+
+export interface BookingFilters {
+  searchTerm?: string;
+  offerType?: OfferType | 'ALL';
+  categoryId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  minRating?: number;
+  startDate?: string;
+  endDate?: string;
+  adults?: number;
+  children?: number;
+  pets?: boolean;
+  childrenAllowed?: boolean;
+  petsAllowed?: boolean;
+  serviceCategory?: ServiceCategory;
 }
 
 export interface Favorite {

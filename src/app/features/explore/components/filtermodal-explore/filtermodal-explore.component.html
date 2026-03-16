@@ -1,3 +1,220 @@
-<p>
-  filtermodal-explore works!
-</p>
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Filtros</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="none">
+    <!-- Rango de Precio -->
+    <div class="filter-section">
+      <ion-label class="section-title">Rango de precio</ion-label>
+      <div class="price-display">
+        {{ filters.minPrice | currency: "COP" : "symbol" : "1.0-0" }} -
+        {{ filters.maxPrice | currency: "COP" : "symbol" : "1.0-0" }}
+      </div>
+      <ion-range
+        [dualKnobs]="true"
+        [min]="0"
+        [max]="2000000"
+        [step]="10000"
+        [(ngModel)]="filters.minPrice"
+        (ionChange)="
+          filters.minPrice = $any($event).detail.value.lower;
+          filters.maxPrice = $any($event).detail.value.upper
+        "
+      >
+      </ion-range>
+    </div>
+
+    <!-- Calificación -->
+    <div class="filter-section">
+      <ion-label class="section-title">Calificación mínima</ion-label>
+      <div class="rating-selector">
+        @for (star of [1, 2, 3, 4, 5]; track star) {
+          <div
+            class="rating-pill"
+            [class.active]="filters.minRating === star"
+            (click)="filters.minRating = star"
+          >
+            <ion-icon name="star"></ion-icon>
+            <span>{{ star }}+</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- 🏠 Alojamiento (Counters for booking) -->
+    @if (filters.offerType === offerTypeEnum.ACCOMMODATION) {
+      <div class="filter-section contextual">
+        <ion-label class="section-title">Huéspedes</ion-label>
+        <div class="counter-row">
+          <span>Adultos</span>
+          <div class="counter">
+            <ion-button
+              fill="clear"
+              (click)="filters.adults = (filters.adults || 1) - 1"
+              [disabled]="(filters.adults || 1) <= 1"
+              >-</ion-button
+            >
+            <span>{{ filters.adults }}</span>
+            <ion-button
+              fill="clear"
+              (click)="filters.adults = (filters.adults || 1) + 1"
+              >+</ion-button
+            >
+          </div>
+        </div>
+
+        <div class="counter-row">
+          <span>Niños</span>
+          <div class="counter">
+            <ion-button
+              fill="clear"
+              (click)="filters.children = (filters.children || 0) - 1"
+              [disabled]="(filters.children || 0) <= 0"
+              >-</ion-button
+            >
+            <span>{{ filters.children }}</span>
+            <ion-button
+              fill="clear"
+              (click)="filters.children = (filters.children || 0) + 1"
+              >+</ion-button
+            >
+          </div>
+        </div>
+
+        <ion-item class="toggle-item">
+          <ion-label>¿Mascotas?</ion-label>
+          <ion-toggle [(ngModel)]="filters.pets"></ion-toggle>
+        </ion-item>
+      </div>
+
+      <div class="filter-section">
+        <ion-label class="section-title">Fechas de estancia</ion-label>
+
+        <ion-accordion-group class="date-accordion-group">
+          <!-- Entrada -->
+          <ion-accordion value="start" class="date-accordion">
+            <div slot="header" class="date-card">
+              <span class="date-label">Entrada</span>
+              <span class="date-value">{{
+                filters.startDate
+                  ? (filters.startDate | date: "dd MMM, yyyy")
+                  : "Seleccionar"
+              }}</span>
+            </div>
+            <div slot="content" class="picker-container">
+              <ion-datetime
+                presentation="date"
+                [(ngModel)]="filters.startDate"
+              ></ion-datetime>
+            </div>
+          </ion-accordion>
+
+          <!-- Salida -->
+          <ion-accordion value="end" class="date-accordion">
+            <div slot="header" class="date-card">
+              <span class="date-label">Salida</span>
+              <span class="date-value">{{
+                filters.endDate
+                  ? (filters.endDate | date: "dd MMM, yyyy")
+                  : "Seleccionar"
+              }}</span>
+            </div>
+            <div slot="content" class="picker-container">
+              <ion-datetime
+                presentation="date"
+                [(ngModel)]="filters.endDate"
+              ></ion-datetime>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </div>
+    }
+
+    <!-- 🎭 Eventos / 🛠 Servicios (Toggles for allowed) -->
+    @if (
+      filters.offerType === offerTypeEnum.EVENT ||
+      filters.offerType === offerTypeEnum.SERVICE
+    ) {
+      @if (filters.offerType === offerTypeEnum.SERVICE) {
+        <div class="filter-section">
+          <ion-label class="section-title">Tipo de servicio</ion-label>
+          <ion-select
+            class="custom-select"
+            interface="popover"
+            placeholder="Cualquier tipo"
+            [(ngModel)]="filters.serviceCategory"
+          >
+            <ion-select-option [value]="undefined">Todos</ion-select-option>
+            @for (cat of serviceCategories; track cat) {
+              <ion-select-option [value]="cat">{{
+                cat | titlecase
+              }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+      }
+
+      <div class="filter-section contextual">
+        <ion-label class="section-title">Preferencias</ion-label>
+        <ion-item class="toggle-item">
+          <ion-label>Permitir niños</ion-label>
+          <ion-toggle [(ngModel)]="filters.childrenAllowed"></ion-toggle>
+        </ion-item>
+        <ion-item class="toggle-item">
+          <ion-label>Permitir mascotas</ion-label>
+          <ion-toggle [(ngModel)]="filters.petsAllowed"></ion-toggle>
+        </ion-item>
+      </div>
+
+      <div class="filter-section">
+        <ion-label class="section-title">Fecha del plan</ion-label>
+
+        <ion-accordion-group class="date-accordion-group single">
+          <ion-accordion value="plan" class="date-accordion">
+            <div slot="header" class="date-card full">
+              <span class="date-label">Fecha seleccionada</span>
+              <span class="date-value">{{
+                filters.startDate
+                  ? (filters.startDate | date: "dd MMM, yyyy")
+                  : "Seleccionar fecha"
+              }}</span>
+            </div>
+            <div slot="content" class="picker-container">
+              <ion-datetime
+                presentation="date"
+                [(ngModel)]="filters.startDate"
+              ></ion-datetime>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </div>
+    }
+
+    <!-- Spacer at the bottom to allow scrolling past the fixed footer -->
+    <div class="bottom-spacer"></div>
+  </ion-list>
+
+  <!-- Botones de Acción (Fijos visualmente vía CSS) -->
+  <div class="action-bar-container">
+    <div class="action-bar">
+      <ion-button fill="clear" color="dark" (click)="reset()"
+        >Limpiar</ion-button
+      >
+      <ion-button
+        expand="block"
+        shape="round"
+        class="apply-btn"
+        (click)="apply()"
+        >Aplicar filtros</ion-button
+      >
+    </div>
+  </div>
+</ion-content>
