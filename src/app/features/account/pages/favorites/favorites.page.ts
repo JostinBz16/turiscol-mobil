@@ -20,6 +20,7 @@ import { FavoritesService } from 'src/app/core/services/favorites.services';
 import { Offer } from 'src/app/core/models/Offers';
 import { OfferMockService } from 'src/app/core/services/mocks/offer-mock.service';
 import { Router } from '@angular/router';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-favorites',
@@ -57,6 +58,7 @@ export class FavoritesPage {
     private favoritesService: FavoritesService,
     private offerService: OfferMockService,
     private router: Router,
+    private navService: NavigationService,
   ) {}
 
   removeLike(offerId: string) {
@@ -68,6 +70,7 @@ export class FavoritesPage {
   }
 
   goToDetail(offerId: string) {
+    this.navService.setReturnUrl('/tabs/account/favorites');
     this.router.navigate(['/tabs/offers', offerId]);
   }
 }

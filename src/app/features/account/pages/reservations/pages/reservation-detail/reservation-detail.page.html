@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/account/reservations"></ion-back-button>
+      <ion-back-button [defaultHref]="navService.returnUrl()"></ion-back-button>
     </ion-buttons>
     <ion-title>Detalle de Reserva</ion-title>
   </ion-toolbar>

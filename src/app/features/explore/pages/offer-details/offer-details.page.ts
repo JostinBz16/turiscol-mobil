@@ -9,15 +9,19 @@ import {
   IonImg,
   IonIcon,
   IonButton,
-  IonButtons,
-  IonBackButton,
 } from '@ionic/angular/standalone';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FavoritesService } from 'src/app/core/services/favorites.services';
-import { heart, heartOutline, star } from 'ionicons/icons';
+import {
+  chevronBackOutline,
+  heart,
+  heartOutline,
+  star,
+} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { offersMock } from 'src/app/core/data/ProductMock';
 import { Offer } from 'src/app/core/models/Offers';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-offer-details',
@@ -25,24 +29,22 @@ import { Offer } from 'src/app/core/models/Offers';
   styleUrls: ['./offer-details.page.scss'],
   standalone: true,
   imports: [
-    IonBackButton,
-    IonButtons,
     IonButton,
     IonIcon,
     IonImg,
     IonContent,
-    IonHeader,
-    IonToolbar,
     CommonModule,
     FormsModule,
+    RouterModule,
   ],
 })
 export class OfferDetailsPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private favoritesService: FavoritesService,
+    public navService: NavigationService,
   ) {
-    addIcons({ heart, heartOutline, star });
+    addIcons({ heart, heartOutline, star, chevronBackOutline });
   }
 
   offer?: Offer;

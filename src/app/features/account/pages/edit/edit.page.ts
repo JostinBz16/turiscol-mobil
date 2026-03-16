@@ -14,6 +14,7 @@ import {
   IonButtons,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-edit',
@@ -43,7 +44,11 @@ export class EditPage implements OnInit {
     phone: [''],
   });
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    public navService: NavigationService,
+  ) {}
 
   ngOnInit() {
     this.form.patchValue({

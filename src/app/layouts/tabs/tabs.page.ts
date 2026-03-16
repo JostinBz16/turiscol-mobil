@@ -5,6 +5,7 @@ import {
   IonTabButton,
   IonIcon,
   IonLabel,
+  NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -40,9 +41,16 @@ export class TabsPage {
   role = this.authStore.role;
 
   currenTab = signal<string>('home');
+  private navCtrl = inject(NavController);
 
-  getCurrentTab(event: { tab: string }) {
+  getCurrentTab(event: any) {
     this.currenTab.set(event.tab);
+  }
+
+  handleTabClick(tab: string) {
+    if (this.currenTab() === tab) {
+      this.navCtrl.navigateRoot(`/tabs/${tab}`);
+    }
   }
 
   constructor() {
