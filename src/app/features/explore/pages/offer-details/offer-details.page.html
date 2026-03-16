@@ -1,20 +1,23 @@
-<ion-header>
-  <ion-toolbar class="detail-toolbar">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/explore/offers"></ion-back-button>
-    </ion-buttons>
+<ion-content fullscreen class="detail-content" [scrollEvents]="true">
+  @if (offer) {
+  <!-- Floating Header Buttons -->
+  <div class="floating-header">
+    <ion-button
+      fill="clear"
+      (click)="navService.setReturnUrl('')"
+      [routerLink]="[navService.returnUrl()]"
+      class="round-btn"
+    >
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </ion-button>
 
-    <ion-button slot="end" fill="clear" (click)="toggleFavorite()">
+    <ion-button fill="clear" (click)="toggleFavorite()" class="round-btn">
       <ion-icon
         [name]="isFavorite() ? 'heart' : 'heart-outline'"
-        color="danger"
+        [color]="isFavorite() ? 'danger' : 'dark'"
       ></ion-icon>
     </ion-button>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content fullscreen class="detail-content">
-  @if (offer) {
+  </div>
 
   <!-- HERO -->
   <div class="hero">
@@ -23,29 +26,40 @@
   </div>
 
   <!-- BODY -->
-  <div class="body">
-    <div class="title-row">
-      <h1>{{ offer.title }}</h1>
+  <div class="body-wrapper">
+    <div class="body">
+      <div class="header-info">
+        <div class="category-chip">{{ offer.type }}</div>
+        <div class="rating">
+          <ion-icon name="star"></ion-icon>
+          <span>{{ offer.rating }}</span>
+          <!-- <span class="reviews">(124 reviews)</span> -->
+        </div>
+      </div>
 
-      <div class="rating">
-        <ion-icon name="star"></ion-icon>
-        <span>{{ offer.rating }}</span>
+      <div class="title-row">
+        <h1>{{ offer.title }}</h1>
+      </div>
+
+      <p class="description">{{ offer.description }}</p>
+
+      <div class="highlights">
+        <h3>Lo que ofrece este lugar</h3>
+      </div>
+
+      <div class="price-section">
+        <div class="price-info">
+          <span class="price">
+            {{ offer.basePrice | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <span class="per">/ persona</span>
+        </div>
       </div>
     </div>
-
-    <p class="description">{{ offer.description }}</p>
-
-    <div class="price-row">
-      <span class="price"> {{ offer.basePrice | currency:'COP' }} </span>
-      <span class="per">por persona</span>
-    </div>
+  </div>
+  } @if (offer) {
+  <div class="cta">
+    <ion-button expand="block" shape="round"> Reservar ahora </ion-button>
   </div>
   }
 </ion-content>
-
-<!-- CTA FIJO -->
-@if (offer) {
-<div class="cta">
-  <ion-button expand="block" shape="round"> Reservar ahora </ion-button>
-</div>
-}

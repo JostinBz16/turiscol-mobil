@@ -15,6 +15,7 @@ import { BookingService } from 'src/app/core/services/booking';
 import { OfferMockService } from 'src/app/core/services/mocks/offer-mock.service';
 import { Offer } from 'src/app/core/models/Offers';
 import { forkJoin } from 'rxjs';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-reservations',
@@ -51,6 +52,7 @@ export class ReservationsPage implements OnInit {
     private bookingService: BookingService,
     private offerService: OfferMockService,
     private router: Router,
+    private navService: NavigationService,
   ) {}
 
   ngOnInit() {
@@ -68,6 +70,7 @@ export class ReservationsPage implements OnInit {
   }
 
   goToDetail(id: number) {
+    this.navService.setReturnUrl('/tabs/account/reservations');
     this.router.navigate(['/tabs/account/reservations/detail', id]);
   }
 

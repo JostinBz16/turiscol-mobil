@@ -4,7 +4,7 @@
       <ion-buttons>
         <ion-back-button
           mode="md"
-          defaultHref="/tabs/events"
+          [defaultHref]="navService.returnUrl()"
           class="btnbg btnbglight"
         ></ion-back-button>
       </ion-buttons>

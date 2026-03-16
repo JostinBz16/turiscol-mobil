@@ -14,6 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Offer, OfferType } from 'src/app/core/models/Offers';
 import { OfferMockService } from 'src/app/core/services/mocks/offer-mock.service';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -46,6 +47,7 @@ export class ReservationDetailPage implements OnInit {
     private route: ActivatedRoute,
     private bookingService: BookingService,
     private offerService: OfferMockService,
+    public navService: NavigationService,
   ) {}
 
   ngOnInit() {

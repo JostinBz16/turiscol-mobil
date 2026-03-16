@@ -25,6 +25,7 @@ import {
   heartOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../auth/login/services/auth';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-account',
@@ -48,6 +49,7 @@ export class AccountPage implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private navService: NavigationService,
   ) {
     addIcons({
       personOutline,
@@ -81,13 +83,16 @@ export class AccountPage implements OnInit {
   }
 
   goToEditProfile() {
+    this.navService.setReturnUrl('/tabs/account');
     this.router.navigate(['/tabs/account/edit']);
   }
   goToReservations() {
+    this.navService.setReturnUrl('/tabs/account');
     this.router.navigate(['/tabs/account/reservations']);
   }
 
   goToFavorites() {
+    this.navService.setReturnUrl('/tabs/account');
     this.router.navigate(['/tabs/account/favorites']);
   }
 }

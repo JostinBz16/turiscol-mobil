@@ -13,6 +13,7 @@ import { addIcons } from 'ionicons';
 import { filterOutline, refreshCircleOutline } from 'ionicons/icons';
 import { EventAdvanceFilterComponent } from './components/event-advance-filter/event-advance-filter.component';
 import { Router } from '@angular/router';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-events',
@@ -70,7 +71,10 @@ export class EventsPage implements OnInit {
   dateTo: string | null = null;
   statusFilter = 'todos';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private navService: NavigationService,
+  ) {}
 
   ngOnInit() {
     addIcons({ filterOutline, refreshCircleOutline });
@@ -127,5 +131,10 @@ export class EventsPage implements OnInit {
     this.dateTo = null;
     this.statusFilter = 'todos';
     this.applyFilters();
+  }
+
+  goToDetail(id: number) {
+    this.navService.setReturnUrl('/tabs/events');
+    this.router.navigate(['/tabs/events', id]);
   }
 }

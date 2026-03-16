@@ -1,17 +1,39 @@
 .detail-content {
-  --background: #ffffff;
+  --background: #f8fafc;
 }
 
-/* HEADER */
-.detail-toolbar {
-  --background: transparent;
-  --ion-color-base: transparent;
+/* FLOATING HEADER */
+.floating-header {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  padding: env(safe-area-inset-top, 20px) 16px 0;
+
+  .round-btn {
+    --background: #ffffff;
+    --color: #111827;
+    --border-radius: 50%;
+    --padding-start: 0;
+    --padding-end: 0;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    ion-icon {
+      font-size: 22px;
+    }
+  }
 }
 
 /* HERO */
 .hero {
   position: relative;
-  height: 320px;
+  height: 45vh;
   width: 100%;
   overflow: hidden;
 
@@ -19,6 +41,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scale(1.02); /* Slight scale to prevent gaps */
   }
 }
 
@@ -27,29 +50,63 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.45),
-    rgba(0, 0, 0, 0.05),
-    rgba(0, 0, 0, 0)
+    rgba(0, 0, 0, 0.3),
+    transparent 20%,
+    transparent 80%,
+    rgba(0, 0, 0, 0.4)
   );
 }
 
-/* BODY */
+/* BODY WRAPPER (CARD OVERLAY) */
+.body-wrapper {
+  position: relative;
+  margin-top: -20px;
+  background: #ffffff;
+  border-radius: 32px 32px 0 0;
+  min-height: 60vh;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.drag-handle {
+  width: 40px;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+
+/* BODY CONTENT */
 .body {
-  padding: 20px 20px 120px;
+  padding: 24px 24px 120px;
+}
+
+.header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.category-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #dfe2e6;
+  color: #3a4350;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-
   h1 {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     font-weight: 800;
     line-height: 1.2;
-    margin: 0;
-    color: #111827;
+    margin: 0 0 12px;
+    color: #1e293b;
   }
 }
 
@@ -57,39 +114,66 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  background: #fff7ed;
-  color: #f59e0b;
-  padding: 4px 8px;
-  border-radius: 10px;
+  padding: 4px 12px;
   font-weight: 700;
-  font-size: 0.85rem;
-  white-space: nowrap;
+  font-size: 0.9rem;
+  color: #1e293b;
+
+  ion-icon {
+    color: #f59e0b;
+    font-size: 18px;
+  }
+
+  .reviews {
+    color: #94a3b8;
+    font-weight: 400;
+    margin-left: 4px;
+    text-decoration: underline;
+  }
 }
 
 /* DESCRIPTION */
 .description {
-  margin-top: 12px;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #4b5563;
+  margin-top: 24px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #475569;
 }
 
-/* PRICE */
-.price-row {
-  margin-top: 22px;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+/* HIGHLIGHTS SECTION */
+.highlights {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #f1f5f9;
 
-  .price {
-    font-size: 1.9rem;
-    font-weight: 800;
-    color: #111827;
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 16px;
   }
+}
 
-  .per {
-    font-size: 0.85rem;
-    color: #6b7280;
+/* PRICE SECTION */
+.price-section {
+  margin-top: 32px;
+  padding-bottom: 24px;
+
+  .price-info {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+
+    .price {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .per {
+      font-size: 0.9rem;
+      color: #64748b;
+    }
   }
 }
 
@@ -100,18 +184,17 @@
   left: 0;
   right: 0;
   padding: 16px;
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0.98),
-    rgba(255, 255, 255, 0.9),
-    rgba(255, 255, 255, 0)
-  );
+  z-index: 100;
 
   ion-button {
-    --background: #111827;
-    --border-radius: 999px;
-    height: 52px;
+    --background: #233147;
+    --color: #ffffff;
+    --border-radius: 16px;
+    height: 56px;
+    margin: 0;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+    box-shadow: 0 10px 15px -3px rgba(30, 41, 59, 0.2);
   }
 }

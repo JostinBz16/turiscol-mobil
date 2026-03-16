@@ -1,7 +1,7 @@
 <ion-tabs (ionTabsDidChange)="getCurrentTab($event)" class="main-tabs">
   <ion-tab-bar slot="bottom">
     <!-- TODOS -->
-    <ion-tab-button tab="home">
+    <ion-tab-button tab="home" (click)="handleTabClick('home')">
       <ion-icon [name]="currenTab() === 'home' ? 'home' : 'home-outline'">
       </ion-icon>
       <ion-label>Inicio</ion-label>
@@ -9,7 +9,7 @@
 
     <!-- SOLO TURISTA -->
     @if (role() === 'turista') {
-    <ion-tab-button tab="offers">
+    <ion-tab-button tab="offers" (click)="handleTabClick('offers')">
       <ion-icon
         [name]="currenTab() === 'destination' ? 'map-sharp' : 'map-outline'"
       >
@@ -17,7 +17,7 @@
       <ion-label>Explorar</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="prices">
+    <ion-tab-button tab="prices" (click)="handleTabClick('prices')">
       <ion-icon [name]="currenTab() === 'prices' ? 'cash' : 'cash-outline'">
       </ion-icon>
       <ion-label>Precios</ion-label>
@@ -26,12 +26,12 @@
 
     <!-- SOLO PROVEEDOR -->
     @if (role() === 'proveedor') {
-    <ion-tab-button tab="orders">
+    <ion-tab-button tab="orders" (click)="handleTabClick('orders')">
       <ion-icon name="receipt-outline"></ion-icon>
       <ion-label>Horarios</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="orders">
+    <ion-tab-button tab="orders" (click)="handleTabClick('orders')">
       <ion-icon name="receipt-outline"></ion-icon>
       <ion-label>Mis ventas</ion-label>
     </ion-tab-button>
@@ -39,14 +39,14 @@
 
     <!-- SOLO ADMIN -->
     @if (role() === 'admin') {
-    <ion-tab-button tab="admin">
+    <ion-tab-button tab="admin" (click)="handleTabClick('admin')">
       <ion-icon name="color-palette-outline"></ion-icon>
       <ion-label>Admin</ion-label>
     </ion-tab-button>
     }
 
     <!-- TODOS -->
-    <ion-tab-button tab="account">
+    <ion-tab-button tab="account" (click)="handleTabClick('account')">
       <ion-icon
         [name]="currenTab() === 'account' ? 'person' : 'person-outline'"
       >

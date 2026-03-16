@@ -8,6 +8,7 @@ import {
   IonButtons,
   IonBackButton,
 } from '@ionic/angular/standalone';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-event-details',
@@ -25,7 +26,7 @@ import {
   ],
 })
 export class EventDetailsPage implements OnInit {
-  constructor() {}
+  constructor(public navService: NavigationService) {}
 
   ngOnInit() {}
 }

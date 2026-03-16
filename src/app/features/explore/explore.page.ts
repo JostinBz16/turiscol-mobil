@@ -19,6 +19,7 @@ import { FiltermodalExploreComponent } from './components/filtermodal-explore/fi
 import { offersMock } from 'src/app/core/data/ProductMock';
 import { Offer } from 'src/app/core/models/Offers';
 import { Router } from '@angular/router';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
   selector: 'app-explore',
@@ -48,6 +49,7 @@ export class ExplorePage implements OnInit {
     private router: Router,
     private modalCtrl: ModalController,
     private categoryService: CategoryService,
+    private navService: NavigationService,
   ) {
     addIcons({ optionsOutline, searchOutline });
   }
@@ -57,6 +59,7 @@ export class ExplorePage implements OnInit {
   }
 
   goToDetail(offerId: string) {
+    this.navService.setReturnUrl('/tabs/offers');
     this.router.navigate(['/tabs/offers', offerId]);
   }
 
