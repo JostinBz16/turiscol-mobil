@@ -1,34 +1,35 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Explorar</ion-title>
-
-    <ion-button slot="end" fill="clear" (click)="openFilters()">
-      <ion-icon name="options-outline"></ion-icon>
-    </ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="explore-content">
   <div class="content-wrapper">
     <!-- 🔍 Buscador -->
-    <div class="search-box">
-      <ion-icon name="search-outline"></ion-icon>
-      <input
-        placeholder="Busca planes, destinos o experiencias"
-        [(ngModel)]="searchTerm"
-      />
+    <div class="search-container">
+      <div class="search-box">
+        <ion-icon name="search-outline"></ion-icon>
+        <input
+          placeholder="Busca planes, destinos o experiencias"
+          [(ngModel)]="searchTerm"
+        />
+      </div>
+      <ion-button class="filter-btn" fill="clear" (click)="openFilters()">
+        <ion-icon name="options-outline"></ion-icon>
+      </ion-button>
     </div>
 
-    <!-- 🏷 Categorías -->
-    <div class="section">
+    <!-- 🎭 Tipos de Oferta -->
+    <div class="type-selector">
       <div class="carousel">
-        @for (c of categories; track c.id) {
+        @for (type of offerTypes; track type.value) {
         <div
-          class="carousel-item category-card"
-          [class.active]="selectedCategory === c.id"
-          (click)="selectCategory(c.id)"
+          class="carousel-item type-pill"
+          [class.active]="selectedOfferType === type.value"
+          (click)="selectOfferType(type.value)"
         >
-          <span>{{ c.name }}</span>
+          <span>{{ type.label }}</span>
         </div>
         }
       </div>
