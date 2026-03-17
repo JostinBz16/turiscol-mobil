@@ -28,7 +28,7 @@ export class AuthService {
 
   register(dto: RegisterRequestDTO) {
     return this.http
-      .post<LoginResponse>(`${this.API}/auth/register`, dto)
+      .post<LoginResponse>(`${this.API}/register`, dto)
       .pipe(tap((res) => this.storeSession(res)));
   }
 
