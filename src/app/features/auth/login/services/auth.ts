@@ -1,10 +1,10 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { of, tap, throwError } from 'rxjs';
+import { tap } from 'rxjs';
 import { LoginRequestDTO } from '../models/login-request';
 import { LoginResponse, UserSession } from '../models/auth.models';
-import { environment } from 'src/environments/environment';
 import { RegisterRequestDTO } from '../../register/models/register-request';
+import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

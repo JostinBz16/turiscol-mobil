@@ -14,15 +14,15 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   getProfile(): Observable<User> {
-    return this.http.get<User>(`${this.API}/profile`).pipe(
-      tap(user => this.currentUser$.next(user))
-    );
+    return this.http
+      .get<User>(`${this.API}/profile`)
+      .pipe(tap((user) => this.currentUser$.next(user)));
   }
 
   updateProfile(user: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${this.API}/profile`, user).pipe(
-      tap(updatedUser => this.currentUser$.next(updatedUser))
-    );
+    return this.http
+      .put<User>(`${this.API}/profile`, user)
+      .pipe(tap((updatedUser) => this.currentUser$.next(updatedUser)));
   }
 
   // Backward compatibility or other uses if necessary
