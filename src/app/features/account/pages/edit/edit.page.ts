@@ -15,6 +15,7 @@ import {
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { UserService } from 'src/app/core/services/User';
 
 @Component({
   selector: 'app-edit',
@@ -48,21 +49,34 @@ export class EditPage implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     public navService: NavigationService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
-    this.form.patchValue({
-      name: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      phone: '3001234567',
+    this.userService.getProfile().subscribe({
+      next: (user) => {
+        this.form.patchValue({
+          name: user.name,
+          lastName: user.lastName,
+          email: user.email,
+          phone: user.phone,
+        });
+      },
+      error: (err) => console.error('Error fetching profile', err)
     });
   }
 
   save() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-    console.log('Datos guardados:', this.form.value);
-    this.router.navigate(['/account']);
+    this.userService.updateProfile(this.form.value as any).subscribe({
+      next: () => {
+        this.router.navigate(['/tabs/account']);
+      },
+      error: (err) => console.error('Error updating profile', err)
+    });
   }
 }

@@ -7,12 +7,10 @@ import {
   Validators,
 } from '@angular/forms';
 
-type LoginMode = 'TOURIST' | 'PROVIDER';
 
 import {
   IonItem,
   IonButton,
-  IonIcon,
   IonToast,
   IonImg,
   IonInput,
@@ -20,8 +18,6 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { logoGoogle } from 'ionicons/icons';
-import { addIcons } from 'ionicons';
 import { AuthService } from './services/auth';
 
 @Component({
@@ -35,7 +31,6 @@ import { AuthService } from './services/auth';
     IonToast,
     ReactiveFormsModule,
     IonImg,
-    IonIcon,
     IonButton,
     IonItem,
     CommonModule,
@@ -43,7 +38,6 @@ import { AuthService } from './services/auth';
   ],
 })
 export class LoginPage implements OnInit {
-  loginMode: LoginMode = 'TOURIST';
   loginForm!: FormGroup;
   IsShowingToast: boolean = false;
   toastMessage = '';
@@ -53,9 +47,6 @@ export class LoginPage implements OnInit {
     private authService: AuthService,
     private router: Router,
   ) {
-    addIcons({
-      logoGoogle,
-    });
   }
 
   ngOnInit() {
@@ -65,32 +56,24 @@ export class LoginPage implements OnInit {
     });
   }
 
-  loginProvider() {
+  onLogin() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
     this.authService
-      .loginMocked(this.loginForm.value.email, this.loginForm.value.password)
+      .loginWithPassword(this.loginForm.value)
       .subscribe({
         next: (user) => this.redirectByRole(user.user.role),
         error: (err) => {
-          this.toastMessage = err.message;
+          this.toastMessage = err.error?.message || err.message || 'Error al iniciar sesión';
           this.IsShowingToast = true;
         },
       });
   }
 
-  setMode(mode: LoginMode) {
-    this.loginMode = mode;
-    this.loginForm.reset();
-  }
 
-  // 🔑 TURISTA
-  loginWithGoogle() {
-    this.authService.loginWithGoogle();
-  }
 
   redirectByRole(role: string) {
     if (role === 'PROVIDER') {

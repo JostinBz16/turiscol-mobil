@@ -1,57 +1,44 @@
 <ion-content fullscreen="true">
   <div class="register-wrapper">
-    <!-- STEP: SELECCIÓN DE TIPO DE USUARIO -->
-    @if (step === 'type') {
-    <div class="type-box">
-      <h2 class="title">Create an account</h2>
-      <p class="subtitle">Choose your user type</p>
+    <!-- STEP 1: SELECT TYPE -->
+    <div class="type-box" *ngIf="step === 'type'">
+      <h2 class="title">Únete a Turiscol</h2>
+      <p class="subtitle">Selecciona cómo quieres registrarte</p>
 
       <div class="cards-container">
-        <!-- Tourist card -->
-        <div class="user-card" (click)="selectType('tourist')">
-          <ion-icon name="airplane-outline" class="card-icon"></ion-icon>
-          <h3>Tourist</h3>
-          <p>Continue using your Google account</p>
+        <!-- Turista -->
+        <div class="user-card" (click)="selectType('customer')">
+          <ion-icon name="person-outline" class="card-icon"></ion-icon>
+          <h3>Turista</h3>
+          <p>Explora destinos y vive experiencias únicas.</p>
         </div>
 
-        <!-- Provider card -->
+        <!-- Proveedor -->
         <div class="user-card" (click)="selectType('provider')">
-          <ion-icon name="briefcase-outline" class="card-icon"></ion-icon>
-          <h3>Provider</h3>
-          <p>Register your business to offer services</p>
+          <ion-icon name="business-outline" class="card-icon"></ion-icon>
+          <h3>Proveedor</h3>
+          <p>Publica tus servicios y llega a más viajeros.</p>
         </div>
       </div>
 
-      <p class="back-text" (click)="goBack()">Back to login</p>
+      <p class="back-text" (click)="goBack()">Volver al login</p>
     </div>
-    }
 
-    <!-- STEP: TURISTA GOOGLE -->
-    @if (step === 'tourist') {
-    <div class="tourist-box">
-      <h2 class="title">Continue as Tourist</h2>
-      <p class="subtitle">Use your Google account</p>
-
-      <ion-button expand="block" class="btn" (click)="loginWithGoogle()">
-        <ion-icon name="logo-google" slot="start"></ion-icon>
-        Sign in with Google
-      </ion-button>
-
-      <p class="back-text" (click)="reset()">Back</p>
-    </div>
-    }
-
-    <!-- STEP: PROVIDER FORM -->
-    @if (step === 'provider') {
-    <div class="form-box">
-      <h2 class="title">Register as Provider</h2>
+    <!-- STEP 2: REGISTRATION FORM -->
+    <div class="form-box" *ngIf="step === 'form'">
+      <h2 class="title">
+        {{ selectedRole === 'customer' ? 'Cuenta Turista' : 'Cuenta Proveedor'
+        }}
+      </h2>
+      <p class="subtitle">Completa tus datos para continuar</p>
 
       <form [formGroup]="form" (ngSubmit)="submit()">
+        <!-- COMMON FIELDS -->
         <ion-item class="input-item">
           <ion-input
             labelPlacement="stacked"
-            placeholder="Full name"
-            formControlName="name"
+            placeholder="Nombre completo"
+            formControlName="userName"
           ></ion-input>
         </ion-item>
 
@@ -59,7 +46,7 @@
           <ion-input
             type="email"
             labelPlacement="stacked"
-            placeholder="Email"
+            placeholder="Correo electrónico"
             formControlName="email"
           ></ion-input>
         </ion-item>
@@ -68,18 +55,74 @@
           <ion-input
             type="password"
             labelPlacement="stacked"
-            placeholder="Password"
+            placeholder="Contraseña (mín. 8 caracteres)"
             formControlName="password"
           ></ion-input>
         </ion-item>
 
+        <ion-item class="input-item">
+          <ion-input
+            type="tel"
+            labelPlacement="stacked"
+            placeholder="Teléfono (opcional)"
+            formControlName="phoneNumber"
+          ></ion-input>
+        </ion-item>
+
+        <!-- PROVIDER SPECIFIC FIELDS -->
+        <div *ngIf="selectedRole === 'provider'" class="provider-fields">
+          <ion-item class="input-item">
+            <ion-select
+              label="Tipo de Proveedor"
+              label-placement="stacked"
+              formControlName="type"
+            >
+              <ion-select-option value="COMPANY">Empresa</ion-select-option>
+              <ion-select-option value="NATURAL_PERSON"
+                >Persona Natural</ion-select-option
+              >
+            </ion-select>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-input
+              labelPlacement="stacked"
+              placeholder="Razón Social / Nombre Comercial"
+              formControlName="razonSocial"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-input
+              labelPlacement="stacked"
+              placeholder="NIT / RUT"
+              formControlName="nitRut"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-textarea
+              labelPlacement="stacked"
+              placeholder="Descripción de tus servicios"
+              formControlName="description"
+            ></ion-textarea>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-input
+              labelPlacement="stacked"
+              placeholder="Sitio Web (opcional)"
+              formControlName="website"
+            ></ion-input>
+          </ion-item>
+        </div>
+
         <ion-button expand="block" class="btn" type="submit">
-          Create account
+          Registrarme
         </ion-button>
       </form>
 
-      <p class="back-text" (click)="reset()">Back</p>
+      <p class="back-text" (click)="goBack()">Volver</p>
     </div>
-    }
   </div>
 </ion-content>

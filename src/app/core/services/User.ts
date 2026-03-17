@@ -1,28 +1,32 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User } from '../models/User';
-import { MOCK_USERS } from '../data/UserMock';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private users$ = new BehaviorSubject<User[]>(MOCK_USERS);
+  private API = `${environment.apiUrl}/users`;
+  private currentUser$ = new BehaviorSubject<User | null>(null);
 
+  constructor(private http: HttpClient) {}
+
+  getProfile(): Observable<User> {
+    return this.http.get<User>(`${this.API}/profile`).pipe(
+      tap(user => this.currentUser$.next(user))
+    );
+  }
+
+  updateProfile(user: Partial<User>): Observable<User> {
+    return this.http.put<User>(`${this.API}/profile`, user).pipe(
+      tap(updatedUser => this.currentUser$.next(updatedUser))
+    );
+  }
+
+  // Backward compatibility or other uses if necessary
   getAll(): Observable<User[]> {
-    return this.users$.asObservable();
-  }
-
-  getById(id: string): User | undefined {
-    return this.users$.value.find((u) => u.id === id);
-  }
-
-  add(user: User) {
-    this.users$.next([...this.users$.value, user]);
-  }
-
-  update(user: User) {
-    const updated = this.users$.value.map((u) => (u.id === user.id ? user : u));
-    this.users$.next(updated);
+    return this.http.get<User[]>(this.API);
   }
 }
