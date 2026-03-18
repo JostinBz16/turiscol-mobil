@@ -9,5 +9,5 @@ export interface Environment {
 
 export const environment: Environment = {
   production: false,
-  apiUrl: 'https://api.turiscol.com/api/v1',
+  apiUrl: 'http://localhost:8080/api/v1',
 };

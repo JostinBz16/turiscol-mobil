@@ -65,7 +65,12 @@ export class LoginPage implements OnInit {
     this.authService
       .loginWithPassword(this.loginForm.value)
       .subscribe({
-        next: (user) => this.redirectByRole(user.user.role),
+        next: () => {
+          const user = this.authService.user();
+          if (user) {
+            this.redirectByRole(user.role);
+          }
+        },
         error: (err) => {
           this.toastMessage = err.error?.message || err.message || 'Error al iniciar sesión';
           this.IsShowingToast = true;
@@ -76,7 +81,7 @@ export class LoginPage implements OnInit {
 
 
   redirectByRole(role: string) {
-    if (role === 'PROVIDER') {
+    if (role === 'proveedor') {
       this.router.navigate(['/provider/dashboard'], { replaceUrl: true });
     } else {
       this.router.navigate(['/tabs/home'], { replaceUrl: true });

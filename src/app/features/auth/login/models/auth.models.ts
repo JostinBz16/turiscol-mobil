@@ -10,7 +10,7 @@ export interface UserSession {
 }
 
 export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: UserSession;
+  access_token: string;
+  refresh_token: string;
+  user?: UserSession; // Ahora opcional, lo sacaremos del JWT
 }

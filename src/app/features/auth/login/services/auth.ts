@@ -45,11 +45,36 @@ export class AuthService {
   // SESIÓN
   // ============================
   private storeSession(res: LoginResponse) {
-    localStorage.setItem('access_token', res.accessToken);
-    localStorage.setItem('refresh_token', res.refreshToken);
-    localStorage.setItem('user', JSON.stringify(res.user));
+    localStorage.setItem('access_token', res.access_token);
+    localStorage.setItem('refresh_token', res.refresh_token);
 
-    this.user.set(res.user);
+    const decoded = this.decodeToken(res.access_token);
+    if (decoded) {
+      const user: UserSession = {
+        id: decoded.sub,
+        email: decoded.email || decoded.preferred_username,
+        role: this.mapRole(decoded.realm_access?.roles || [])
+      };
+      localStorage.setItem('user', JSON.stringify(user));
+      this.user.set(user);
+    }
+  }
+
+  private decodeToken(token: string): any {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(window.atob(base64));
+    } catch (e) {
+      console.error('Error decoding token', e);
+      return null;
+    }
+  }
+
+  private mapRole(roles: string[]): any {
+    if (roles.includes('ADMIN')) return 'admin';
+    if (roles.includes('PROVIDER')) return 'proveedor';
+    return 'turista'; // Default or 'USER'/'CONSUMER'
   }
 
   loadFromStorage() {

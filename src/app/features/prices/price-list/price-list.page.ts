@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import {
   IonCard,
@@ -10,12 +11,15 @@ import {
   IonButtons,
   IonBackButton,
 } from '@ionic/angular/standalone';
+import { Price } from 'src/app/core/models/Price';
+import { PriceService } from 'src/app/core/services/price';
 
 @Component({
   selector: 'app-price-list',
   templateUrl: './price-list.page.html',
   styleUrls: ['./price-list.page.scss'],
   imports: [
+    CommonModule,
     IonBackButton,
     IonButtons,
     IonTitle,
@@ -27,71 +31,23 @@ import {
   ],
 })
 export class PriceListPage implements OnInit {
-  cityId!: number;
+  cityId!: string;
   cityName = '';
-  prices: any[] = [];
+  prices: Price[] = [];
 
-  private allPrices = [
-    {
-      name: 'Tour Ciudad',
-      price: 120000,
-      cityId: 1,
-      city: 'Bogotá',
-      category: 'Tours',
-    },
-    {
-      name: 'Tour Graffiti',
-      price: 90000,
-      cityId: 1,
-      city: 'Bogotá',
-      category: 'Tours',
-    },
-    {
-      name: 'Cabalgata',
-      price: 150000,
-      cityId: 2,
-      city: 'Medellín',
-      category: 'Experiencias',
-    },
-    {
-      name: 'Clase de Cocina',
-      price: 180000,
-      cityId: 2,
-      city: 'Medellín',
-      category: 'Experiencias',
-    },
-    {
-      name: 'Visita al Zoológico',
-      price: 80000,
-      cityId: 3,
-      city: 'Cali',
-      category: 'Tours',
-    },
-    {
-      name: 'Paseo en Bicicleta',
-      price: 70000,
-      cityId: 3,
-      city: 'Cali',
-      category: 'Experiencias',
-    },
-    {
-      name: 'Tour Histórico',
-      price: 110000,
-      cityId: 4,
-      city: 'Barranquilla',
-      category: 'Tours',
-    },
-  ];
-
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private priceService: PriceService,
+  ) {}
 
   ngOnInit() {
-    this.cityId = Number(this.route.snapshot.paramMap.get('cityId'));
+    this.cityId = this.route.snapshot.paramMap.get('cityId') || '';
     this.loadPrices();
   }
 
   loadPrices() {
-    this.prices = this.allPrices.filter((p) => p.cityId === this.cityId);
-    this.cityName = this.prices[0]?.city ?? 'Ciudad';
+    this.prices = this.priceService.getPricesByMunicipality(this.cityId);
+    // Note: cityName logic might need a separate lookup if not in Price model
+    this.cityName = 'Lista de Precios';
   }
 }

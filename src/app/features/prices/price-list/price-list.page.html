@@ -24,8 +24,11 @@
           @for (item of prices; track item) {
           <tr>
             <td>{{ item.name }}</td>
-            <td>{{ item.city }}</td>
-            <td>{{ item.price }}</td>
+            <td>{{ item.municipalityId }}</td>
+            <td>
+              {{ item.minPrice | currency:'USD':'symbol':'1.0-0' }} - {{
+              item.maxPrice | currency:'USD':'symbol':'1.0-0' }}
+            </td>
           </tr>
           }
         </tbody>

@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Price } from '../models/Price';
-import { prices } from '../data/PriceMock';
+import { pricesMock } from '../data/PriceMock';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PriceService {
-  private prices$ = new BehaviorSubject<Price[]>(prices);
+  private prices$ = new BehaviorSubject<Price[]>(pricesMock);
 
-  getPricesByCity(cityId: string) {
-    return this.prices$.value.find((p) => p.cityId === cityId);
+  getPricesByMunicipality(municipalityId: string) {
+    return this.prices$.value.filter((p) => p.municipalityId === municipalityId);
   }
 
   getAll() {
