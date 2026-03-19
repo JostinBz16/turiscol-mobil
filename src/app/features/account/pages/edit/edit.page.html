@@ -13,27 +13,11 @@
       <ion-list lines="none" class="form-card">
         <ion-item>
           <ion-input
-            label="Nombre"
-            labelPlacement="stacked"
-            formControlName="name"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-input
-            label="Apellido"
-            labelPlacement="stacked"
-            formControlName="lastName"
-          ></ion-input>
-        </ion-item>
-
-        <!-- <ion-item>
-          <ion-input
             label="Nombre de usuario"
             labelPlacement="stacked"
             formControlName="username"
           ></ion-input>
-        </ion-item> -->
+        </ion-item>
 
         <ion-item>
           <ion-input
@@ -52,6 +36,54 @@
             formControlName="phone"
           ></ion-input>
         </ion-item>
+
+        <!-- PROVIDER SPECIFIC FIELDS -->
+        <ng-container *ngIf="selectedRole === 'proveedor'">
+          <ion-item>
+            <ion-select
+              label="Tipo de Proveedor"
+              label-placement="stacked"
+              formControlName="type"
+            >
+              <ion-select-option value="COMPANY">Empresa</ion-select-option>
+              <ion-select-option value="NATURAL_PERSON"
+                >Persona Natural</ion-select-option
+              >
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              label="Razón Social / Nombre Comercial"
+              labelPlacement="stacked"
+              formControlName="razonSocial"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              label="NIT / RUT"
+              labelPlacement="stacked"
+              formControlName="nitRut"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-textarea
+              label="Descripción de tus servicios"
+              labelPlacement="stacked"
+              formControlName="description"
+            ></ion-textarea>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              label="Sitio Web (opcional)"
+              labelPlacement="stacked"
+              formControlName="website"
+            ></ion-input>
+          </ion-item>
+        </ng-container>
       </ion-list>
 
       <div class="actions">

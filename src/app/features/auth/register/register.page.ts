@@ -87,9 +87,7 @@ export class RegisterPage {
       userName: val.userName!,
       email: val.email!,
       password: val.password!,
-      roles: [this.selectedRole === 'customer' ? 'customer' : 'provider'],
       phoneNumber: val.phoneNumber || undefined,
-      active: true,
     };
 
     let dto: RegisterRequestDTO;
@@ -113,7 +111,7 @@ export class RegisterPage {
 
     this.authService.register(dto).subscribe({
       next: () => {
-        this.router.navigate(['/tabs/home'], { replaceUrl: true });
+        this.router.navigate(['/auth/login'], { replaceUrl: true });
       },
       error: (err) => {
         console.error('Registration error', err);

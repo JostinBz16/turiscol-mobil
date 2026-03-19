@@ -2,10 +2,8 @@ export interface BaseRegisterRequest {
   userName: string;
   email: string;
   password: string;
-  roles: string[];
   phoneNumber?: string;
   userType: 'TOURIST' | 'PROVIDER';
-  active: boolean;
 }
 
 export interface TouristRegisterRequest extends BaseRegisterRequest {

@@ -7,7 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 
-
 import {
   IonItem,
   IonButton,
@@ -46,8 +45,7 @@ export class LoginPage implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.loginForm = this.fb.group({
@@ -62,27 +60,24 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    this.authService
-      .loginWithPassword(this.loginForm.value)
-      .subscribe({
-        next: () => {
-          const user = this.authService.user();
-          if (user) {
-            this.redirectByRole(user.role);
-          }
-        },
-        error: (err) => {
-          this.toastMessage = err.error?.message || err.message || 'Error al iniciar sesión';
-          this.IsShowingToast = true;
-        },
-      });
+    this.authService.loginWithPassword(this.loginForm.value).subscribe({
+      next: () => {
+        const user = this.authService.user();
+        if (user) {
+          this.redirectByRole(user.role);
+        }
+      },
+      error: (err) => {
+        this.toastMessage =
+          err.error?.message || err.message || 'Error al iniciar sesión';
+        this.IsShowingToast = true;
+      },
+    });
   }
-
-
 
   redirectByRole(role: string) {
     if (role === 'proveedor') {
-      this.router.navigate(['/provider/dashboard'], { replaceUrl: true });
+      this.router.navigate(['/tabs/home'], { replaceUrl: true });
     } else {
       this.router.navigate(['/tabs/home'], { replaceUrl: true });
     }
