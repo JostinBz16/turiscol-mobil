@@ -1,22 +1,18 @@
 export interface AccommodationDetailDto {
   id: string;
-  title: string;
+  name: string;
   description: string;
-  categoryId: number;
-  imgs: string[];
-  city_id: number;
-  rating: number;
-  provider_id: number;
-  price: number;
-  is_active: boolean;
-  max_guests: number;
-  rules: {
-    children: boolean;
-    pets: boolean;
-    prices: {
-      adult: number;
-      child: number;
-      pet?: number;
-    };
-  };
+  providerId: string;
+  baseprice: number;
+  cityId: number;
+  active: boolean;
+  images: { imageUrl: string; publicId?: string; isPrimary?: boolean }[];
+  type: string;
+  maxGuests: number;
+  bedrooms: number;
+  bathrooms: number;
+  allowPets: boolean;
+  allowChildren: boolean;
+  pricePerNight: number;
+  accommodationCategory: string;
 }

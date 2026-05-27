@@ -2,9 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AccommodationOffer } from '../../../models/Offers';
 import { OfferDetailStrategy } from './OfferDetailStrategy';
-import { map, Observable } from 'rxjs';
+import { map, Observable, catchError, throwError } from 'rxjs';
 import { AccommodationOfferAdapter } from 'src/app/core/adapters/OfferDetailAdapter';
 import { AccommodationDetailDto } from 'src/app/core/DTO/AccommodationDetailDto';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class AccommodationDetailStrategy implements OfferDetailStrategy<AccommodationOffer> {
@@ -14,7 +15,13 @@ export class AccommodationDetailStrategy implements OfferDetailStrategy<Accommod
 
   getDetail(id: string): Observable<AccommodationOffer> {
     return this.http
-      .get<AccommodationDetailDto>(`/api/accommodations/${id}`)
-      .pipe(map((dto) => this.adapter.adapt(dto)));
+      .get<AccommodationDetailDto>(`${environment.apiUrl}/offers/${id}`)
+      .pipe(
+        map((dto) => this.adapter.adapt(dto)),
+        catchError((err) => {
+          console.error('Error fetching accommodation detail', err);
+          return throwError(() => err);
+        }),
+      );
   }
 }

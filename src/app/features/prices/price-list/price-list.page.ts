@@ -13,6 +13,7 @@ import {
 } from '@ionic/angular/standalone';
 import { Price } from 'src/app/core/models/Price';
 import { PriceService } from 'src/app/core/services/price';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-price-list',
@@ -45,9 +46,9 @@ export class PriceListPage implements OnInit {
     this.loadPrices();
   }
 
-  loadPrices() {
-    this.prices = this.priceService.getPricesByMunicipality(this.cityId);
-    // Note: cityName logic might need a separate lookup if not in Price model
+  async loadPrices() {
+    const res = await firstValueFrom(this.priceService.getPricesByMunicipality(this.cityId));
+    this.prices = res.content ?? res;
     this.cityName = 'Lista de Precios';
   }
 }

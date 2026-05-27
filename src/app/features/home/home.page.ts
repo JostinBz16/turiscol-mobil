@@ -19,6 +19,7 @@ import { DepartmentService } from 'src/app/core/services/DepartmentService';
 import { FavoritesService } from 'src/app/core/services/favorites.services';
 import { Offer } from 'src/app/core/models/Offers';
 import { offersMock } from 'src/app/core/data/ProductMock';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -57,11 +58,15 @@ export class HomePage implements OnInit {
     this.offers = offersMock.filter((o) => o.active);
   }
 
-  private loadData() {
-    this.categories = this.categoryService.getAll();
-    this.destinations = this.municipalityService.getAll();
+  private async loadData() {
+    this.categories = await firstValueFrom(this.categoryService.getAll());
 
-    this.departmentService.getAll().forEach((dep) => {
+    const muns = await firstValueFrom(this.municipalityService.getAll());
+    this.destinations = muns.content ?? muns;
+
+    const depts = await firstValueFrom(this.departmentService.getAll());
+    const list = depts.content ?? depts;
+    list.forEach((dep: any) => {
       this.departmentMap.set(dep.id, dep.name);
     });
   }
@@ -74,7 +79,7 @@ export class HomePage implements OnInit {
     return this.favoriteService.isFavorite(offer.id);
   }
 
-  toggleFavorite(offer: Offer) {
-    this.favoriteService.toggleFavorite(offer.id);
+  async toggleFavorite(offer: Offer) {
+    await this.favoriteService.toggleFavorite(offer.id);
   }
 }

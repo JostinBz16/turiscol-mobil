@@ -17,9 +17,32 @@ import { addIcons } from 'ionicons';
 import { optionsOutline, searchOutline } from 'ionicons/icons';
 import { FiltermodalExploreComponent } from './components/filtermodal-explore/filtermodal-explore.component';
 import { offersMock } from 'src/app/core/data/ProductMock';
-import { BookingFilters, Offer, OfferType, ServiceCategory } from 'src/app/core/models/Offers';
+import {
+  AccommodationOffer,
+  BookingFilters,
+  EventOffer,
+  Offer,
+  OfferType,
+  ProductOffer,
+  ServiceOffer,
+  ServiceCategory,
+} from 'src/app/core/models/Offers';
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { firstValueFrom } from 'rxjs';
+
+function getOfferCategory(offer: Offer): string | undefined {
+  switch (offer.type) {
+    case OfferType.ACCOMMODATION:
+      return (offer as AccommodationOffer).accommodationCategory;
+    case OfferType.SERVICE:
+      return (offer as ServiceOffer).serviceCategory;
+    case OfferType.PRODUCT:
+      return (offer as ProductOffer).productCategory;
+    case OfferType.EVENT:
+      return (offer as EventOffer).eventType;
+  }
+}
 
 @Component({
   selector: 'app-explore',
@@ -43,13 +66,12 @@ export class ExplorePage implements OnInit {
   offers: Offer[] = offersMock;
 
   searchTerm = '';
-  selectedCategory?: number;
+  selectedCategoryName?: string;
   selectedOfferType: OfferType | 'ALL' = 'ALL';
 
   advancedFilters: BookingFilters = {
     minPrice: 0,
     maxPrice: 2000000,
-    minRating: 0,
     adults: 1,
     children: 0,
     pets: false,
@@ -73,12 +95,13 @@ export class ExplorePage implements OnInit {
     addIcons({ optionsOutline, searchOutline });
   }
 
-  ngOnInit() {
-    this.categories = this.categoryService.getAll();
+  async ngOnInit() {
+    this.categories = await firstValueFrom(this.categoryService.getAll());
   }
 
   selectOfferType(type: any) {
     this.selectedOfferType = this.selectedOfferType === type ? 'ALL' : type;
+    this.selectedCategoryName = undefined;
   }
 
   goToDetail(offerId: string) {
@@ -110,58 +133,45 @@ export class ExplorePage implements OnInit {
     }
   }
 
-  selectCategory(categoryId: number) {
-    this.selectedCategory =
-      this.selectedCategory === categoryId ? undefined : categoryId;
+  selectCategory(categoryName: string) {
+    this.selectedCategoryName =
+      this.selectedCategoryName === categoryName ? undefined : categoryName;
   }
 
   get filteredOffers(): Offer[] {
     return this.offers.filter((o) => {
-      // 1. Basic Search & Category
-      const matchesSearch = o.title
+      const matchesSearch = o.name
         .toLowerCase()
         .includes(this.searchTerm.toLowerCase());
-      const matchesCategory =
-        !this.selectedCategory || o.categoryId === this.selectedCategory;
-
-      // 2. Offer Type
       const matchesType =
         this.selectedOfferType === 'ALL' || o.type === this.selectedOfferType;
 
-      // 3. Advanced Filters (Price & Rating)
+      const offerCat = getOfferCategory(o);
+      const matchesCategory =
+        !this.selectedCategoryName ||
+        offerCat === this.selectedCategoryName;
+
       const matchesPrice =
         o.basePrice >= (this.advancedFilters.minPrice || 0) &&
         o.basePrice <= (this.advancedFilters.maxPrice || 2000000);
-      const matchesRating = o.rating >= (this.advancedFilters.minRating || 0);
 
-      // 4. Contextual Filters (Placeholder logic for mock data)
-      // In a real app, these would be part of the backend query
       let matchesContext = true;
       if (this.selectedOfferType === OfferType.ACCOMMODATION) {
-        // Example check: maxGuests from AccommodationOffer
-        const acc = o as any;
+        const acc = o as AccommodationOffer;
         if (acc.maxGuests && this.advancedFilters.adults) {
           matchesContext =
             acc.maxGuests >=
             this.advancedFilters.adults + (this.advancedFilters.children || 0);
         }
-      } else if (this.selectedOfferType === OfferType.EVENT || this.selectedOfferType === OfferType.SERVICE) {
-        // Event/Service: Check "Allowed" rules
-        const item = o as any;
-        if (this.advancedFilters.childrenAllowed && item.rules && !item.rules.allowChildren) {
+      } else if (
+        this.selectedOfferType === OfferType.SERVICE
+      ) {
+        const item = o as ServiceOffer;
+        if (
+          this.advancedFilters.serviceCategory &&
+          item.serviceCategory !== this.advancedFilters.serviceCategory
+        ) {
           matchesContext = false;
-        }
-        if (this.advancedFilters.petsAllowed && item.rules && !item.rules.allowPets) {
-          matchesContext = false;
-        }
-
-        // Service specific: Category check
-        if (this.selectedOfferType === OfferType.SERVICE && this.advancedFilters.serviceCategory) {
-          // Note: Assuming ServiceOffer has a category or subtype field matching ServiceCategory
-          // In this mock, we might need to check a custom property or description for demo
-          if (item.serviceCategory !== this.advancedFilters.serviceCategory) {
-            matchesContext = false;
-          }
         }
       }
 
@@ -170,7 +180,6 @@ export class ExplorePage implements OnInit {
         matchesCategory &&
         matchesType &&
         matchesPrice &&
-        matchesRating &&
         matchesContext
       );
     });

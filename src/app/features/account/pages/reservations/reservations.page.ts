@@ -56,15 +56,16 @@ export class ReservationsPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.bookingService.getBookings().subscribe((bookings) => {
+    this.bookingService.getBookings().subscribe((res) => {
+      const bookings: Booking[] = res.content ?? res;
       this.bookings.set(bookings);
 
-      const requests = bookings.map((b) =>
+      const requests = bookings.map((b: Booking) =>
         this.offerService.findById(b.offerId),
       );
 
-      forkJoin(requests).subscribe((offers) => {
-        this.offersByBooking.set(offers.filter(Boolean) as Offer[]);
+      forkJoin(requests).subscribe((offers: any) => {
+        this.offersByBooking.set((offers ?? []).filter(Boolean) as Offer[]);
       });
     });
   }

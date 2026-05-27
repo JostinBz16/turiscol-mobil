@@ -1,13 +1,11 @@
 export enum OfferType {
-  ACCOMMODATION = 'ACCOMMODATION',
-  EVENT = 'EVENT',
-  SERVICE = 'SERVICE',
-  PRODUCT = 'PRODUCT',
+  ACCOMMODATION = 'accommodation',
+  EVENT = 'event',
+  SERVICE = 'service',
+  PRODUCT = 'product',
 }
 
 export enum ServiceCategory {
-  HOSPEDAJE = 'HOSPEDAJE',
-  PASADIA = 'PASADIA',
   GASTRONOMIA = 'GASTRONOMIA',
   TOUR = 'TOUR',
   ARTESANIA = 'ARTESANIA',
@@ -16,60 +14,78 @@ export enum ServiceCategory {
   SERVICIO_TECNICO = 'SERVICIO_TECNICO',
 }
 
+export enum AccommodationCategory {
+  HOSPEDAJE = 'HOSPEDAJE',
+  PASADIA = 'PASADIA',
+}
+
+export enum ProductCategory {
+  ARTESANIA = 'ARTESANIA',
+  GASTRONOMIA = 'GASTRONOMIA',
+  TEXTIL = 'TEXTIL',
+  BEBIDA = 'BEBIDA',
+  OTRO = 'OTRO',
+}
+
+export enum EventCategory {
+  CONCERT = 'CONCERT',
+  WORKSHOP = 'WORKSHOP',
+  CONFERENCE = 'CONFERENCE',
+  FESTIVAL = 'FESTIVAL',
+  EXHIBITION = 'EXHIBITION',
+  TOUR = 'TOUR',
+  OTHER = 'OTHER',
+}
+
 export interface Offer {
   id: string;
   type: OfferType;
-  title: string;
+  name: string;
   description: string;
-  categoryId: number;
   images: string[];
   cityId: number;
-  rating: number;
-  providerId: number;
+  providerId: string;
   basePrice: number;
   active: boolean;
 }
 
-// --- alojamiento ---
-export interface Rules {
-  allowChildren: boolean;
-  allowPets: boolean;
-  pricing: {
-    adult: number;
-    child: number;
-    pet?: number;
-  };
-}
-
 export interface AccommodationOffer extends Offer {
   maxGuests: number;
-  guestRules: Rules;
+  bedrooms: number;
+  bathrooms: number;
+  allowPets: boolean;
+  allowChildren: boolean;
+  pricePerNight: number;
+  accommodationCategory: AccommodationCategory;
 }
 
 export interface EventOffer extends Offer {
   eventDate: string;
+  endDate: string;
   capacity: number;
-  eventAcces: string;
-  rules: Rules;
+  ticketPrice: number;
+  eventType: EventCategory;
 }
 
-// --- productos ---
-
 export interface ProductOffer extends Offer {
+  productCategory: ProductCategory;
   stock: number;
 }
 
 export interface ServiceOffer extends Offer {
-  rules: Rules;
+  serviceCategory: ServiceCategory;
+  requiresSchedule: boolean;
+  durationInMinutes: number;
+  capacity: number;
+  pricePerPerson: number;
 }
 
 export interface BookingFilters {
   searchTerm?: string;
   offerType?: OfferType | 'ALL';
-  categoryId?: number;
+  categoryName?: string;
   minPrice?: number;
   maxPrice?: number;
-  minRating?: number;
   startDate?: string;
   endDate?: string;
   adults?: number;

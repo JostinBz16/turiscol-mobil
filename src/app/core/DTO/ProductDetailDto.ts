@@ -1,13 +1,14 @@
 export interface ProductDetailDto {
-  uuid: string;
-  title: string;
+  id: string;
+  name: string;
   description: string;
-  categoryId: number;
-  images: string[];
+  providerId: string;
+  baseprice: number;
   cityId: number;
-  rating: number;
-  providerId: number;
-  price: number;
   active: boolean;
-  stock: number;
+  images: { imageUrl: string; publicId?: string; isPrimary?: boolean }[];
+  type: string;
+  productCategory: string;
+  isUnlimitedStock: boolean;
+  currentStock?: number;
 }

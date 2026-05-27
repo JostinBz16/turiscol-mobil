@@ -32,23 +32,6 @@
       </ion-range>
     </div>
 
-    <!-- Calificación -->
-    <div class="filter-section">
-      <ion-label class="section-title">Calificación mínima</ion-label>
-      <div class="rating-selector">
-        @for (star of [1, 2, 3, 4, 5]; track star) {
-          <div
-            class="rating-pill"
-            [class.active]="filters.minRating === star"
-            (click)="filters.minRating = star"
-          >
-            <ion-icon name="star"></ion-icon>
-            <span>{{ star }}+</span>
-          </div>
-        }
-      </div>
-    </div>
-
     <!-- 🏠 Alojamiento (Counters for booking) -->
     @if (filters.offerType === offerTypeEnum.ACCOMMODATION) {
       <div class="filter-section contextual">

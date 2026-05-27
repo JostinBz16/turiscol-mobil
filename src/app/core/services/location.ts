@@ -1,26 +1,49 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { departamentos } from '../data/DepartamentsMock';
-import { Department } from '../models/Deparment';
+import { Observable, catchError, throwError } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocationService {
-  private departamentos$ = new BehaviorSubject<Department[]>(departamentos);
+  private readonly api = `${environment.apiUrl}/locations`;
 
-  getDepartments() {
-    return this.departamentos$.asObservable();
+  constructor(private http: HttpClient) {}
+
+  getDepartments(params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/departments`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching departments', err);
+        return throwError(() => err);
+      }),
+    );
   }
 
-  // getMunicipalities(deptId: string) {
-  //   return (
-  //     this.departamentos$.value.find((d) => d.id === deptId)?.municipalities ??
-  //     []
-  //   );
-  // }
+  getCitiesByDepartment(departmentId: string, params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/departments/${departmentId}/cities`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching cities by department', err);
+        return throwError(() => err);
+      }),
+    );
+  }
 
-  // getCities() {
-  //   return this.departamentos$.value.flatMap((d) => d.municipalities);
-  // }
+  getAllCities(params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/cities`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching cities', err);
+        return throwError(() => err);
+      }),
+    );
+  }
 }

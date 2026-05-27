@@ -58,9 +58,9 @@ export class OfferDetailsPage implements OnInit {
     return this.offer ? this.favoritesService.isFavorite(this.offer.id) : false;
   }
 
-  toggleFavorite() {
+  async toggleFavorite() {
     if (this.offer) {
-      this.favoritesService.toggleFavorite(this.offer.id);
+      await this.favoritesService.toggleFavorite(this.offer.id);
     }
   }
 }

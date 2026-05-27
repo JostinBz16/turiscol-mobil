@@ -1,23 +1,58 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Event } from '../models/Event';
-import { events } from '../data/EventMock';
+import { Observable, catchError, throwError } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EventService {
-  private events$ = new BehaviorSubject<Event[]>(events);
+  private readonly api = `${environment.apiUrl}/offers`;
 
-  getAll() {
-    return this.events$.asObservable();
+  constructor(private http: HttpClient) {}
+
+  getAll(params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/type/EVENT`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching events', err);
+        return throwError(() => err);
+      }),
+    );
   }
 
-  getById(id: string) {
-    return this.events$.value.find((e) => e.id === id);
+  getActive(params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/type/EVENT/active`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching active events', err);
+        return throwError(() => err);
+      }),
+    );
   }
 
-  getByCity(cityId: string) {
-    return this.events$.value.filter((e) => e.cityId === cityId);
+  getById(id: string): Observable<any> {
+    return this.http.get<any>(`${this.api}/${id}`).pipe(
+      catchError((err) => {
+        console.error('Error fetching event detail', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  getByCity(cityId: string, params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/city/${cityId}`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching events by city', err);
+        return throwError(() => err);
+      }),
+    );
   }
 }

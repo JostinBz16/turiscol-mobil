@@ -61,12 +61,12 @@ export class FavoritesPage {
     private navService: NavigationService,
   ) {}
 
-  removeLike(offerId: string) {
-    this.favoritesService.removeFavorite(offerId);
+  async removeLike(offerId: string) {
+    await this.favoritesService.removeFavorite(offerId);
   }
 
-  addLike(offerId: string) {
-    this.favoritesService.addFavorite(offerId);
+  async addLike(offerId: string) {
+    await this.favoritesService.addFavorite(offerId);
   }
 
   goToDetail(offerId: string) {

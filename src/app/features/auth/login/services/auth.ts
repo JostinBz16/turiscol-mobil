@@ -1,6 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { tap, catchError, throwError } from 'rxjs';
 import { LoginRequestDTO } from '../models/login-request';
 import { LoginResponse, UserSession } from '../models/auth.models';
 import { RegisterRequestDTO } from '../../register/models/register-request';
@@ -23,13 +23,41 @@ export class AuthService {
   loginWithPassword(dto: LoginRequestDTO) {
     return this.http
       .post<LoginResponse>(`${this.API}/login`, dto)
-      .pipe(tap((res) => this.storeSession(res)));
+      .pipe(
+        tap((res) => this.storeSession(res)),
+        catchError((err) => {
+          console.error('Login error', err);
+          return throwError(() => err);
+        }),
+      );
   }
 
   register(dto: RegisterRequestDTO) {
     return this.http
       .post<LoginResponse>(`${this.API}/register`, dto)
-      .pipe(tap((res) => this.storeSession(res)));
+      .pipe(
+        tap((res) => this.storeSession(res)),
+        catchError((err) => {
+          console.error('Registration error', err);
+          return throwError(() => err);
+        }),
+      );
+  }
+
+  refreshToken(): any {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) return throwError(() => new Error('No refresh token'));
+
+    return this.http
+      .post<LoginResponse>(`${this.API}/refresh`, refreshToken)
+      .pipe(
+        tap((res) => this.storeSession(res)),
+        catchError((err) => {
+          console.error('Token refresh failed', err);
+          this.logout();
+          return throwError(() => err);
+        }),
+      );
   }
 
   // ============================

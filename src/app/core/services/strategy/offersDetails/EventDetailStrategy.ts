@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { OfferDetailStrategy } from './OfferDetailStrategy';
 import { EventOffer } from 'src/app/core/models/Offers';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, catchError, throwError } from 'rxjs';
 import { EventOfferAdapter } from 'src/app/core/adapters/OfferDetailAdapter';
 import { EventDetailDto } from 'src/app/core/DTO/EventDetailDto';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class EventDetailStrategy implements OfferDetailStrategy<EventOffer> {
@@ -14,7 +15,13 @@ export class EventDetailStrategy implements OfferDetailStrategy<EventOffer> {
 
   getDetail(id: string): Observable<EventOffer> {
     return this.http
-      .get<EventDetailDto>(`/api/events/${id}`)
-      .pipe(map((dto) => this.adapter.adapt(dto)));
+      .get<EventDetailDto>(`${environment.apiUrl}/offers/${id}`)
+      .pipe(
+        map((dto) => this.adapter.adapt(dto)),
+        catchError((err) => {
+          console.error('Error fetching event detail', err);
+          return throwError(() => err);
+        }),
+      );
   }
 }

@@ -2,86 +2,85 @@ import { AccommodationDetailDto } from '../DTO/AccommodationDetailDto';
 import { EventDetailDto } from '../DTO/EventDetailDto';
 import { ProductDetailDto } from '../DTO/ProductDetailDto';
 import {
+  AccommodationCategory,
   AccommodationOffer,
+  EventCategory,
   EventOffer,
   OfferType,
+  ProductCategory,
   ProductOffer,
+  ServiceOffer,
+  ServiceCategory,
 } from '../models/Offers';
 
 export interface OfferDetailAdapter<DTO, DOMAIN> {
   adapt(dto: DTO): DOMAIN;
 }
 
-export class AccommodationOfferAdapter implements OfferDetailAdapter<
-  AccommodationDetailDto,
-  AccommodationOffer
-> {
+export class AccommodationOfferAdapter
+  implements OfferDetailAdapter<AccommodationDetailDto, AccommodationOffer>
+{
   adapt(dto: AccommodationDetailDto): AccommodationOffer {
     return {
       id: dto.id,
       type: OfferType.ACCOMMODATION,
-      title: dto.title,
+      name: dto.name,
       description: dto.description,
-      categoryId: dto.categoryId,
-      images: dto.imgs,
-      cityId: dto.city_id,
-      rating: dto.rating,
-      providerId: dto.provider_id,
-      basePrice: dto.price,
-      active: dto.is_active,
-      maxGuests: dto.max_guests,
-      guestRules: {
-        allowChildren: dto.rules.children,
-        allowPets: dto.rules.pets,
-        pricing: dto.rules.prices,
-      },
+      images: dto.images.map((i) => i.imageUrl),
+      cityId: dto.cityId,
+      providerId: dto.providerId,
+      basePrice: dto.baseprice,
+      active: dto.active,
+      maxGuests: dto.maxGuests,
+      bedrooms: dto.bedrooms,
+      bathrooms: dto.bathrooms,
+      allowPets: dto.allowPets,
+      allowChildren: dto.allowChildren,
+      pricePerNight: dto.pricePerNight,
+      accommodationCategory: dto.accommodationCategory as AccommodationCategory,
     };
   }
 }
 
-export class EventOfferAdapter implements OfferDetailAdapter<
-  EventDetailDto,
-  EventOffer
-> {
+export class EventOfferAdapter
+  implements OfferDetailAdapter<EventDetailDto, EventOffer>
+{
   adapt(dto: EventDetailDto): EventOffer {
     return {
       id: dto.id,
       type: OfferType.EVENT,
-      title: dto.name,
+      name: dto.name,
       description: dto.description,
-      categoryId: dto.categoryId,
-      images: dto.images,
-      cityId: dto.city,
-      rating: dto.score,
-      providerId: dto.provider,
-      basePrice: dto.base_price,
-      active: dto.enabled,
-      eventDate: dto.date,
-      capacity: dto.capacity,
-      eventAcces: dto.access,
-      rules: dto.rules,
+      images: dto.images.map((i) => i.imageUrl),
+      cityId: dto.cityId,
+      providerId: dto.providerId,
+      basePrice: dto.baseprice,
+      active: dto.active,
+      eventDate: dto.startDate,
+      endDate: dto.endDate,
+      capacity: dto.maximumCapacity,
+      ticketPrice: dto.ticketPrice,
+      eventType: dto.eventType as EventCategory,
     };
   }
 }
 
-export class ProductOfferAdapter implements OfferDetailAdapter<
-  ProductDetailDto,
-  ProductOffer
-> {
+export class ProductOfferAdapter
+  implements OfferDetailAdapter<ProductDetailDto, ProductOffer>
+{
   adapt(dto: ProductDetailDto): ProductOffer {
     return {
-      id: dto.uuid,
+      id: dto.id,
       type: OfferType.PRODUCT,
-      title: dto.title,
+      name: dto.name,
       description: dto.description,
-      categoryId: dto.categoryId,
-      images: dto.images,
+      images: dto.images.map((i) => i.imageUrl),
       cityId: dto.cityId,
-      rating: dto.rating,
       providerId: dto.providerId,
-      basePrice: dto.price,
+      basePrice: dto.baseprice,
       active: dto.active,
-      stock: dto.stock,
+      productCategory: dto.productCategory as ProductCategory,
+      stock: dto.currentStock ?? 0,
     };
   }
 }

@@ -61,7 +61,6 @@ export class FiltermodalExploreComponent implements OnInit {
   filters: BookingFilters = {
     minPrice: 0,
     maxPrice: 1000000,
-    minRating: 0,
     offerType: 'ALL',
     adults: 1,
     children: 0,
@@ -96,7 +95,6 @@ export class FiltermodalExploreComponent implements OnInit {
     this.filters = {
       minPrice: 0,
       maxPrice: 1000000,
-      minRating: 0,
       offerType: this.filters.offerType,
       adults: 1,
       children: 0,

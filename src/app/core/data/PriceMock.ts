@@ -1,5 +1,4 @@
 import { Price } from '../models/Price';
-import { ServiceCategory } from '../models/Offers';
 
 export const pricesMock: Price[] = [
   {
@@ -7,10 +6,10 @@ export const pricesMock: Price[] = [
     name: 'Tour por la Candelaria',
     description:
       'Recorrido histórico por el centro de Bogotá, visitando museos y plazas emblemáticas.',
-    category: ServiceCategory.TOUR,
+    category: 'TOUR',
     minPrice: 80000,
     maxPrice: 150000,
-    municipalityId: '1', // Bogotá
+    municipalityId: '1',
     active: true,
   },
   {
@@ -18,20 +17,20 @@ export const pricesMock: Price[] = [
     name: 'Pasadía en Guatapé',
     description:
       'Día completo con transporte, alimentación y visita a la Piedra del Peñol.',
-    category: ServiceCategory.PASADIA,
+    category: 'PASADIA',
     minPrice: 120000,
     maxPrice: 200000,
-    municipalityId: '2', // Medellín (Guatapé logic)
+    municipalityId: '2',
     active: true,
   },
   {
     id: 'p-3',
     name: 'Cena Típica Valluna',
     description: 'Degustación de platos tradicionales como sancocho y lulada.',
-    category: ServiceCategory.GASTRONOMIA,
+    category: 'GASTRONOMIA',
     minPrice: 45000,
     maxPrice: 85000,
-    municipalityId: '3', // Cali
+    municipalityId: '3',
     active: true,
   },
   {
@@ -39,20 +38,20 @@ export const pricesMock: Price[] = [
     name: 'Transporte Aeropuerto',
     description:
       'Servicio de recogida y traslado al aeropuerto con conductor bilingüe.',
-    category: ServiceCategory.TRANSPORTE,
+    category: 'TRANSPORTE',
     minPrice: 60000,
     maxPrice: 90000,
-    municipalityId: '1', // Bogotá
+    municipalityId: '1',
     active: true,
   },
   {
     id: 'p-5',
     name: 'Artesanías en Barro',
     description: 'Taller de cerámica tradicional y venta de productos locales.',
-    category: ServiceCategory.ARTESANIA,
+    category: 'ARTESANIA',
     minPrice: 20000,
     maxPrice: 150000,
-    municipalityId: '4', // Barranquilla (Example)
+    municipalityId: '4',
     active: true,
   },
 ];

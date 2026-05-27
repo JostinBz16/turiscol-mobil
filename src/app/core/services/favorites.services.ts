@@ -1,57 +1,89 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, signal, computed } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
-import { favoritesMock } from '../data/ProductMock';
+import { environment } from 'src/environments/environment';
+
+export interface FavoriteDto {
+  id: string;
+  userId: string;
+  offerId: string;
+  createdAt: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class FavoritesService {
-  private favorites = signal(favoritesMock);
+  private readonly api = `${environment.apiUrl}/favorites`;
 
-  constructor(private auth: AuthService) {}
+  private favorites = signal<FavoriteDto[]>([]);
+  private loaded = false;
 
-  // 🔥 ESTE ES EL MÉTODO QUE FALTABA
-  favoriteOfferIds = computed<string[]>(() => {
-    const userId = this.auth.userId();
-    if (!userId) return [];
-
-    return this.favorites()
-      .filter((f) => f.userId === userId)
-      .map((f) => f.offerId);
+  favoriteOfferIds = computed(() => {
+    return this.favorites().map((f) => f.offerId);
   });
+
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService,
+  ) {}
+
+  private async ensureLoaded(): Promise<void> {
+    if (this.loaded) return;
+    this.loaded = true;
+    const userId = this.auth.userId();
+    if (!userId) return;
+    try {
+      const favs = await firstValueFrom(
+        this.http.get<FavoriteDto[]>(`${this.api}?userId=${userId}`),
+      );
+      this.favorites.set(favs);
+    } catch {
+      console.warn('Error loading favorites, using empty');
+      this.favorites.set([]);
+    }
+  }
 
   isFavorite(offerId: string): boolean {
     return this.favoriteOfferIds().includes(offerId);
   }
 
-  addFavorite(offerId: string) {
+  async addFavorite(offerId: string): Promise<void> {
+    await this.ensureLoaded();
     const userId = this.auth.userId();
     if (!userId || this.isFavorite(offerId)) return;
 
-    this.favorites.set([
-      ...this.favorites(),
-      {
-        // 👇 id ya no es crítico en frontend
-        id: `${userId}_${offerId}`,
-        userId,
-        offerId,
-        createdAt: new Date().toISOString(),
-      },
-    ]);
+    try {
+      const fav = await firstValueFrom(
+        this.http.post<FavoriteDto>(this.api, { userId, offerId }),
+      );
+      this.favorites.set([...this.favorites(), fav]);
+    } catch {
+      console.warn('Error adding favorite');
+    }
   }
 
-  removeFavorite(offerId: string) {
+  async removeFavorite(offerId: string): Promise<void> {
+    await this.ensureLoaded();
     const userId = this.auth.userId();
     if (!userId) return;
 
-    this.favorites.set(
-      this.favorites().filter(
-        (f) => !(f.userId === userId && f.offerId === offerId),
-      ),
-    );
+    try {
+      await firstValueFrom(
+        this.http.delete(`${this.api}/by-offer?userId=${userId}&offerId=${offerId}`),
+      );
+      this.favorites.set(
+        this.favorites().filter((f) => f.offerId !== offerId),
+      );
+    } catch {
+      console.warn('Error removing favorite');
+    }
   }
 
-  toggleFavorite(offerId: string) {
-    this.isFavorite(offerId)
-      ? this.removeFavorite(offerId)
-      : this.addFavorite(offerId);
+  async toggleFavorite(offerId: string): Promise<void> {
+    if (this.isFavorite(offerId)) {
+      await this.removeFavorite(offerId);
+    } else {
+      await this.addFavorite(offerId);
+    }
   }
 }
