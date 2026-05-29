@@ -31,8 +31,12 @@ export class UserService {
   }
 
   updateProfile(user: Partial<User>): Observable<User> {
+    if (!this.user?.id) {
+      return throwError(() => new Error('User ID no disponible'));
+    }
+
     return this.http
-      .put<User>(`${this.API}/profile`, user)
+      .put<User>(`${this.API}/${this.user.id}`, user)
       .pipe(
         tap((updatedUser) => this.currentUser$.next(updatedUser)),
         catchError((err) => {

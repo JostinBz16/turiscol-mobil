@@ -1,6 +1,7 @@
 import { AccommodationDetailDto } from '../DTO/AccommodationDetailDto';
 import { EventDetailDto } from '../DTO/EventDetailDto';
 import { ProductDetailDto } from '../DTO/ProductDetailDto';
+import { ServiceDetailDto } from '../DTO/ServiceDetailDto';
 import {
   AccommodationCategory,
   AccommodationOffer,
@@ -81,6 +82,29 @@ export class ProductOfferAdapter
       active: dto.active,
       productCategory: dto.productCategory as ProductCategory,
       stock: dto.currentStock ?? 0,
+    };
+  }
+}
+
+export class ServiceOfferAdapter
+  implements OfferDetailAdapter<ServiceDetailDto, ServiceOffer>
+{
+  adapt(dto: ServiceDetailDto): ServiceOffer {
+    return {
+      id: dto.id,
+      type: OfferType.SERVICE,
+      name: dto.name,
+      description: dto.description,
+      images: dto.images.map((i) => i.imageUrl),
+      cityId: dto.cityId,
+      providerId: dto.providerId,
+      basePrice: dto.baseprice,
+      active: dto.active,
+      serviceCategory: dto.serviceCategory as ServiceCategory,
+      requiresSchedule: dto.requiresSchedule,
+      durationInMinutes: dto.durationInMinutes,
+      capacity: dto.capacity,
+      pricePerPerson: dto.pricePerPerson,
     };
   }
 }

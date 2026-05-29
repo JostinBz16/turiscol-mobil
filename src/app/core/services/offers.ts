@@ -26,9 +26,15 @@ export class OfferService {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);
-    if (params?.providerId) httpParams = httpParams.set('providerId', params.providerId);
-    if (params?.cityId) httpParams = httpParams.set('cityId', params.cityId);
-    return this.http.get<any>(this.api, { params: httpParams }).pipe(
+
+    let url = this.api;
+    if (params?.providerId) {
+      url = `${this.api}/provider/${params.providerId}`;
+    } else if (params?.cityId) {
+      url = `${this.api}/city/${params.cityId}`;
+    }
+
+    return this.http.get<any>(url, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching offers', err);
         return throwError(() => err);

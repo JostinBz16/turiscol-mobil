@@ -15,7 +15,7 @@ export class EventService {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);
-    return this.http.get<any>(`${this.api}/type/EVENT`, { params: httpParams }).pipe(
+    return this.http.get<any>(`${this.api}/type/event`, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching events', err);
         return throwError(() => err);
@@ -27,7 +27,7 @@ export class EventService {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);
-    return this.http.get<any>(`${this.api}/type/EVENT/active`, { params: httpParams }).pipe(
+    return this.http.get<any>(`${this.api}/type/event/active`, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching active events', err);
         return throwError(() => err);
