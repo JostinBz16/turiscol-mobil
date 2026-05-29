@@ -9,5 +9,5 @@ export interface Environment {
 
 export const environment: Environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api/v1',
+  apiUrl: 'http://192.168.0.105:8080/api/v1',
 };
