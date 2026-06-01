@@ -41,8 +41,8 @@
 
       <div class="status-date">
         <span class="date">
-          {{ booking()!.startDate }} @if (booking()!.endDate) { – {{
-          booking()!.endDate }} }
+          {{ booking()!.serviceStartDate }} @if (booking()!.serviceEndDate) { – {{
+          booking()!.serviceEndDate }} }
         </span>
 
         <span class="status-chip" [ngClass]="booking()!.status.toLowerCase()">

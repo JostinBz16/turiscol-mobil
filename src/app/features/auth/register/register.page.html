@@ -37,10 +37,19 @@
         <ion-item class="input-item">
           <ion-input
             labelPlacement="stacked"
-            placeholder="Nombre completo"
+            placeholder="Nombre de usuario"
             formControlName="userName"
           ></ion-input>
         </ion-item>
+        <ion-note
+          *ngIf="form.get('userName')?.invalid && form.get('userName')?.touched"
+          color="danger"
+          class="error-note"
+        >
+          <span *ngIf="form.get('userName')?.errors?.['required']">
+            El nombre de usuario es obligatorio
+          </span>
+        </ion-note>
 
         <ion-item class="input-item">
           <ion-input
@@ -50,6 +59,18 @@
             formControlName="email"
           ></ion-input>
         </ion-item>
+        <ion-note
+          *ngIf="form.get('email')?.invalid && form.get('email')?.touched"
+          color="danger"
+          class="error-note"
+        >
+          <span *ngIf="form.get('email')?.errors?.['required']">
+            El correo electrónico es obligatorio
+          </span>
+          <span *ngIf="form.get('email')?.errors?.['email']">
+            Ingresa un correo válido
+          </span>
+        </ion-note>
 
         <ion-item class="input-item">
           <ion-input
@@ -59,6 +80,18 @@
             formControlName="password"
           ></ion-input>
         </ion-item>
+        <ion-note
+          *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
+          color="danger"
+          class="error-note"
+        >
+          <span *ngIf="form.get('password')?.errors?.['required']">
+            La contraseña es obligatoria
+          </span>
+          <span *ngIf="form.get('password')?.errors?.['minlength']">
+            Mínimo 8 caracteres
+          </span>
+        </ion-note>
 
         <ion-item class="input-item">
           <ion-input
@@ -91,6 +124,15 @@
               formControlName="razonSocial"
             ></ion-input>
           </ion-item>
+          <ion-note
+            *ngIf="form.get('razonSocial')?.invalid && form.get('razonSocial')?.touched"
+            color="danger"
+            class="error-note"
+          >
+            <span *ngIf="form.get('razonSocial')?.errors?.['required']">
+              La razón social es obligatoria
+            </span>
+          </ion-note>
 
           <ion-item class="input-item">
             <ion-input
@@ -99,6 +141,15 @@
               formControlName="nitRut"
             ></ion-input>
           </ion-item>
+          <ion-note
+            *ngIf="form.get('nitRut')?.invalid && form.get('nitRut')?.touched"
+            color="danger"
+            class="error-note"
+          >
+            <span *ngIf="form.get('nitRut')?.errors?.['required']">
+              El NIT / RUT es obligatorio
+            </span>
+          </ion-note>
 
           <ion-item class="input-item">
             <ion-textarea

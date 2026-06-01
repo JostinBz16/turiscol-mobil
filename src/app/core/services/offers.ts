@@ -22,7 +22,7 @@ export class OfferService {
     private factory: OfferDetailStrategyFactory,
   ) {}
 
-  findAll(params?: { page?: number; size?: number; providerId?: string; cityId?: string }): Observable<any> {
+  findAll(params?: { page?: number; size?: number; providerId?: string; cityId?: string; active?: boolean }): Observable<any> {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);
@@ -31,7 +31,11 @@ export class OfferService {
     if (params?.providerId) {
       url = `${this.api}/provider/${params.providerId}`;
     } else if (params?.cityId) {
-      url = `${this.api}/city/${params.cityId}`;
+      if (params?.active) {
+        url = `${this.api}/city/${params.cityId}/active`;
+      } else {
+        url = `${this.api}/city/${params.cityId}`;
+      }
     }
 
     return this.http.get<any>(url, { params: httpParams }).pipe(
@@ -62,6 +66,53 @@ export class OfferService {
     return this.http.get<any>(`${this.api}/type/${type}${suffix}`, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching offers by type', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  search(filters: { providerId?: string; cityId?: string; active?: boolean; name?: string; type?: string; page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (filters.providerId) httpParams = httpParams.set('providerId', filters.providerId);
+    if (filters.cityId) httpParams = httpParams.set('cityId', filters.cityId);
+    if (filters.active !== undefined) httpParams = httpParams.set('active', filters.active);
+    if (filters.name) httpParams = httpParams.set('name', filters.name);
+    if (filters.type) httpParams = httpParams.set('type', filters.type);
+    if (filters.page) httpParams = httpParams.set('page', filters.page);
+    if (filters.size) httpParams = httpParams.set('size', filters.size);
+    return this.http.get<any>(`${this.api}/search`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error searching offers', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  activate(id: string): Observable<any> {
+    return this.http.patch<any>(`${this.api}/${id}/activate`, {}).pipe(
+      catchError((err) => {
+        console.error('Error activating offer', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  deactivate(id: string): Observable<any> {
+    return this.http.patch<any>(`${this.api}/${id}/deactivate`, {}).pipe(
+      catchError((err) => {
+        console.error('Error deactivating offer', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  getByCityActive(cityId: string, params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/city/${cityId}/active`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching active offers by city', err);
         return throwError(() => err);
       }),
     );

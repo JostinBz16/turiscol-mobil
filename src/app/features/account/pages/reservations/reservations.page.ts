@@ -12,7 +12,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Booking, BookingStatus } from 'src/app/core/models/Reservations';
 import { BookingService } from 'src/app/core/services/booking';
-import { OfferMockService } from 'src/app/core/services/mocks/offer-mock.service';
+import { OfferService } from 'src/app/core/services/offers';
 import { Offer } from 'src/app/core/models/Offers';
 import { forkJoin } from 'rxjs';
 import { NavigationService } from 'src/app/core/services/navigation.service';
@@ -50,7 +50,7 @@ export class ReservationsPage implements OnInit {
 
   constructor(
     private bookingService: BookingService,
-    private offerService: OfferMockService,
+    private offerService: OfferService,
     private router: Router,
     private navService: NavigationService,
   ) {}
@@ -61,7 +61,7 @@ export class ReservationsPage implements OnInit {
       this.bookings.set(bookings);
 
       const requests = bookings.map((b: Booking) =>
-        this.offerService.findById(b.offerId),
+        this.offerService.getById(b.offerId),
       );
 
       forkJoin(requests).subscribe((offers: any) => {
@@ -77,10 +77,13 @@ export class ReservationsPage implements OnInit {
 
   statusLabel(status: BookingStatus): string {
     return {
+      PENDING_PAYMENT: 'Pendiente de pago',
       CONFIRMED: 'Confirmada',
-      PENDING: 'Pendiente',
-      CANCELED: 'Cancelada',
-    }[status];
+      CANCELLED: 'Cancelada',
+      COMPLETED: 'Completada',
+      EXPIRED: 'Expirada',
+      FAILED: 'Fallida',
+    }[status] ?? status;
   }
 }
 

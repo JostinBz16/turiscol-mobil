@@ -13,7 +13,7 @@ import {
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { Offer, OfferType } from 'src/app/core/models/Offers';
-import { OfferMockService } from 'src/app/core/services/mocks/offer-mock.service';
+import { OfferService } from 'src/app/core/services/offers';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
@@ -46,7 +46,7 @@ export class ReservationDetailPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private bookingService: BookingService,
-    private offerService: OfferMockService,
+    private offerService: OfferService,
     public navService: NavigationService,
   ) {}
 
@@ -58,7 +58,7 @@ export class ReservationDetailPage implements OnInit {
 
       this.booking.set(booking);
 
-      this.offerService.findById(booking.offerId).subscribe((offer) => {
+      this.offerService.getById(booking.offerId).subscribe((offer: any) => {
         if (offer) {
           this.offer.set(offer);
         }
@@ -68,10 +68,13 @@ export class ReservationDetailPage implements OnInit {
 
   statusLabel(status: BookingStatus): string {
     return {
+      PENDING_PAYMENT: 'Pendiente de pago',
       CONFIRMED: 'Confirmada',
-      PENDING: 'Pendiente',
-      CANCELED: 'Cancelada',
-    }[status];
+      CANCELLED: 'Cancelada',
+      COMPLETED: 'Completada',
+      EXPIRED: 'Expirada',
+      FAILED: 'Fallida',
+    }[status] ?? status;
   }
 
   offerTypeLabel(type: OfferType): string {
@@ -89,8 +92,7 @@ export class ReservationDetailPage implements OnInit {
   }
 
   peopleCount() {
-    const g = this.booking()?.guests;
-    return g ? g.adults + g.children + g.pets : (this.booking()?.quantity ?? 0);
+    return this.booking()?.quantity ?? 0;
   }
 
   subtotal() {
@@ -98,12 +100,7 @@ export class ReservationDetailPage implements OnInit {
     const offer = this.offer();
     if (!booking || !offer) return 0;
 
-    if (booking.quantity) {
-      return booking.quantity * offer.basePrice;
-    }
-
-    const guests = booking.guests;
-    return guests ? guests.adults * offer.basePrice : offer.basePrice;
+    return (booking.quantity || 1) * offer.basePrice;
   }
 
   taxes() {

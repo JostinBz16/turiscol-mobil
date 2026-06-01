@@ -79,6 +79,16 @@
   width: 100%;
 }
 
+/* Mensajes de error de validación */
+.error-note {
+  font-size: 0.8rem;
+  padding: 0 16px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  width: 100%;
+  text-align: left;
+}
+
 /* Botón principal */
 .btn {
   --background: #0d3b66;

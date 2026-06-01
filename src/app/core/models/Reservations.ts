@@ -2,20 +2,39 @@ export interface Booking {
   id: number;
   offerId: string;
   status: BookingStatus;
-  startDate: string;
-  endDate?: string;
-  guests?: GuestCount;
-  quantity?: number;
+  totalAmount: number;
+  currency: string;
+  serviceStartDate: string;
+  serviceEndDate?: string;
+  quantity: number;
+  expiresAt?: string;
+  createdAt: string;
+}
+
+export interface BookingDetail extends Booking {
+  payments: PaymentResponse[];
+  statusHistory: BookingStatusHistory[];
+}
+
+export interface PaymentResponse {
+  id: number;
+  amount: number;
+  currency: string;
+  status: string;
+  method?: string;
+  createdAt: string;
+}
+
+export interface BookingStatusHistory {
+  status: string;
+  changedAt: string;
 }
 
 export enum BookingStatus {
+  PENDING_PAYMENT = 'PENDING_PAYMENT',
   CONFIRMED = 'CONFIRMED',
-  PENDING = 'PENDING',
-  CANCELED = 'CANCELED',
-}
-
-export interface GuestCount {
-  adults: number;
-  children: number;
-  pets: number;
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+  EXPIRED = 'EXPIRED',
+  FAILED = 'FAILED',
 }

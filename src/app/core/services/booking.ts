@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
-import { Booking } from '../models/Reservations';
+import { Booking, BookingDetail } from '../models/Reservations';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
@@ -24,8 +24,20 @@ export class BookingService {
     );
   }
 
-  getBookingById(id: number | string): Observable<Booking> {
-    return this.http.get<Booking>(`${this.api}/${id}`).pipe(
+  getUserBookings(userId: string, params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/user/${userId}`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching user bookings', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  getBookingById(id: number | string): Observable<BookingDetail> {
+    return this.http.get<BookingDetail>(`${this.api}/${id}`).pipe(
       catchError((err) => {
         console.error('Error fetching booking detail', err);
         return throwError(() => err);
