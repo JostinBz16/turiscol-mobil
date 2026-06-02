@@ -61,8 +61,8 @@ export class HomePage implements OnInit {
   private async loadData() {
     this.categories = await firstValueFrom(this.categoryService.getAll());
 
-    const muns = await firstValueFrom(this.municipalityService.getAll());
-    this.destinations = muns.content ?? muns;
+    const featured = await firstValueFrom(this.municipalityService.getFeatured());
+    this.destinations = featured.content ?? featured;
 
     const depts = await firstValueFrom(this.departmentService.getAll());
     const list = depts.content ?? depts;

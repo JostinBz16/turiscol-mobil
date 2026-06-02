@@ -62,4 +62,16 @@ export class MunicipalityService {
       }),
     );
   }
+
+  getFeatured(params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/featured`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching featured cities', err);
+        return throwError(() => err);
+      }),
+    );
+  }
 }
