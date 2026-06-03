@@ -7,7 +7,7 @@ import { EventOfferAdapter } from 'src/app/core/adapters/OfferDetailAdapter';
 import { EventDetailDto } from 'src/app/core/DTO/EventDetailDto';
 import { environment } from 'src/environments/environment';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class EventDetailStrategy implements OfferDetailStrategy<EventOffer> {
   private adapter = new EventOfferAdapter();
 

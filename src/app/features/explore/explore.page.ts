@@ -16,33 +16,17 @@ import { CategoryService } from 'src/app/core/services/category.service';
 import { addIcons } from 'ionicons';
 import { optionsOutline, searchOutline } from 'ionicons/icons';
 import { FiltermodalExploreComponent } from './components/filtermodal-explore/filtermodal-explore.component';
-import { offersMock } from 'src/app/core/data/ProductMock';
 import {
   AccommodationOffer,
   BookingFilters,
-  EventOffer,
   Offer,
   OfferType,
-  ProductOffer,
   ServiceOffer,
-  ServiceCategory,
 } from 'src/app/core/models/Offers';
+import { OfferService } from 'src/app/core/services/offers';
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { firstValueFrom } from 'rxjs';
-
-function getOfferCategory(offer: Offer): string | undefined {
-  switch (offer.type) {
-    case OfferType.ACCOMMODATION:
-      return (offer as AccommodationOffer).accommodationCategory;
-    case OfferType.SERVICE:
-      return (offer as ServiceOffer).serviceCategory;
-    case OfferType.PRODUCT:
-      return (offer as ProductOffer).productCategory;
-    case OfferType.EVENT:
-      return (offer as EventOffer).eventType;
-  }
-}
 
 @Component({
   selector: 'app-explore',
@@ -63,11 +47,11 @@ function getOfferCategory(offer: Offer): string | undefined {
 })
 export class ExplorePage implements OnInit {
   categories: Category[] = [];
-  offers: Offer[] = offersMock;
+  offers: Offer[] = [];
 
   searchTerm = '';
   selectedCategoryName?: string;
-  selectedOfferType: OfferType | 'ALL' = 'ALL';
+  selectedOfferType: OfferType | 'ALL' = OfferType.ACCOMMODATION;
 
   advancedFilters: BookingFilters = {
     minPrice: 0,
@@ -90,6 +74,7 @@ export class ExplorePage implements OnInit {
     private router: Router,
     private modalCtrl: ModalController,
     private categoryService: CategoryService,
+    private offerService: OfferService,
     private navService: NavigationService,
   ) {
     addIcons({ optionsOutline, searchOutline });
@@ -97,11 +82,51 @@ export class ExplorePage implements OnInit {
 
   async ngOnInit() {
     this.categories = await firstValueFrom(this.categoryService.getAll());
+    this.preselectCategory();
+    await this.fetchOffers();
   }
 
-  selectOfferType(type: any) {
+  get categoriesByType(): Category[] {
+    if (this.selectedOfferType === 'ALL') return [];
+    return this.categories.filter(
+      (c) => c.type.toUpperCase() === this.selectedOfferType.toUpperCase(),
+    );
+  }
+
+  private preselectCategory() {
+    const typeCats = this.categoriesByType;
+    this.selectedCategoryName = typeCats.length > 0 ? typeCats[0].name : undefined;
+  }
+
+  private async fetchOffers() {
+    if (this.selectedOfferType === 'ALL' || !this.selectedCategoryName) {
+      this.offers = [];
+      return;
+    }
+    const res = await firstValueFrom(
+      this.offerService.findByTypeAndCategory(
+        this.selectedOfferType as OfferType,
+        this.selectedCategoryName,
+        { page: 0, size: 20 },
+      ),
+    );
+    this.offers = (res.content ?? []).map((item: any) => ({
+      ...item,
+      type: this.selectedOfferType as OfferType,
+      images: item.images?.map((img: any) => img.imageUrl) ?? [],
+      basePrice: item.baseprice ?? item.basePrice,
+    }));
+  }
+
+  async selectOfferType(type: any) {
     this.selectedOfferType = this.selectedOfferType === type ? 'ALL' : type;
-    this.selectedCategoryName = undefined;
+    if (this.selectedOfferType === 'ALL') {
+      this.offers = [];
+      this.selectedCategoryName = undefined;
+    } else {
+      this.preselectCategory();
+      await this.fetchOffers();
+    }
   }
 
   goToDetail(offerId: string) {
@@ -127,15 +152,18 @@ export class ExplorePage implements OnInit {
     const { data } = await modal.onWillDismiss();
     if (data) {
       this.advancedFilters = data;
-      if (data.offerType) {
+      if (data.offerType && data.offerType !== this.selectedOfferType) {
         this.selectedOfferType = data.offerType;
+        this.preselectCategory();
+        await this.fetchOffers();
       }
     }
   }
 
-  selectCategory(categoryName: string) {
+  async selectCategory(categoryName: string) {
     this.selectedCategoryName =
       this.selectedCategoryName === categoryName ? undefined : categoryName;
+    await this.fetchOffers();
   }
 
   get filteredOffers(): Offer[] {
@@ -143,13 +171,6 @@ export class ExplorePage implements OnInit {
       const matchesSearch = o.name
         .toLowerCase()
         .includes(this.searchTerm.toLowerCase());
-      const matchesType =
-        this.selectedOfferType === 'ALL' || o.type === this.selectedOfferType;
-
-      const offerCat = getOfferCategory(o);
-      const matchesCategory =
-        !this.selectedCategoryName ||
-        offerCat === this.selectedCategoryName;
 
       const matchesPrice =
         o.basePrice >= (this.advancedFilters.minPrice || 0) &&
@@ -163,9 +184,7 @@ export class ExplorePage implements OnInit {
             acc.maxGuests >=
             this.advancedFilters.adults + (this.advancedFilters.children || 0);
         }
-      } else if (
-        this.selectedOfferType === OfferType.SERVICE
-      ) {
+      } else if (this.selectedOfferType === OfferType.SERVICE) {
         const item = o as ServiceOffer;
         if (
           this.advancedFilters.serviceCategory &&
@@ -175,13 +194,7 @@ export class ExplorePage implements OnInit {
         }
       }
 
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesType &&
-        matchesPrice &&
-        matchesContext
-      );
+      return matchesSearch && matchesPrice && matchesContext;
     });
   }
 }

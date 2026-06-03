@@ -18,7 +18,7 @@ import { Municipality } from 'src/app/core/models/Municipality';
 import { DepartmentService } from 'src/app/core/services/DepartmentService';
 import { FavoritesService } from 'src/app/core/services/favorites.services';
 import { Offer } from 'src/app/core/models/Offers';
-import { offersMock } from 'src/app/core/data/ProductMock';
+import { OfferService } from 'src/app/core/services/offers';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -47,6 +47,7 @@ export class HomePage implements OnInit {
     private municipalityService: MunicipalityService,
     private departmentService: DepartmentService,
     private favoriteService: FavoritesService,
+    private offerService: OfferService,
   ) {
     addIcons({ searchOutline, notifications });
   }
@@ -55,14 +56,24 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.loadData();
-    this.offers = offersMock.filter((o) => o.active);
   }
 
   private async loadData() {
     this.categories = await firstValueFrom(this.categoryService.getAll());
 
-    const featured = await firstValueFrom(this.municipalityService.getFeatured());
+    const featured = await firstValueFrom(
+      this.municipalityService.getFeatured(),
+    );
     this.destinations = featured.content ?? featured;
+
+    const featuredOffers = await firstValueFrom(
+      this.offerService.getFeatured(),
+    );
+    this.offers = (featuredOffers.content ?? []).map((item: any) => ({
+      ...item,
+      images: item.images?.map((img: any) => img.imageUrl) ?? [],
+      basePrice: item.baseprice ?? item.basePrice,
+    }));
 
     const depts = await firstValueFrom(this.departmentService.getAll());
     const list = depts.content ?? depts;

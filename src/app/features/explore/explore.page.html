@@ -35,6 +35,22 @@
       </div>
     </div>
 
+    @if (categoriesByType.length > 0) {
+    <div class="category-selector">
+      <div class="carousel">
+        @for (cat of categoriesByType; track cat.name) {
+        <div
+          class="carousel-item category-pill"
+          [class.active]="selectedCategoryName === cat.name"
+          (click)="selectCategory(cat.name)"
+        >
+          <span>{{ cat.name }}</span>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
     <!-- ⭐ Resultados -->
     <div class="section">
       <h3>Ofertas</h3>

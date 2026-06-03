@@ -4,22 +4,36 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 import { environment } from 'src/environments/environment';
 
-export interface FavoriteDto {
+export interface FavoriteOfferDto {
   id: string;
-  userId: string;
-  offerId: string;
+  name: string;
+  description: string;
+  images: { imageUrl: string; isPrimary?: boolean }[];
+  baseprice: number;
+  cityId: number;
+  providerId: string;
+  active: boolean;
   createdAt: string;
+  [key: string]: any;
 }
 
 @Injectable({ providedIn: 'root' })
 export class FavoritesService {
-  private readonly api = `${environment.apiUrl}/favorites`;
+  private readonly api = `${environment.apiUrl}/offers/favorites`;
 
-  private favorites = signal<FavoriteDto[]>([]);
+  private favorites = signal<FavoriteOfferDto[]>([]);
   private loaded = false;
 
   favoriteOfferIds = computed(() => {
-    return this.favorites().map((f) => f.offerId);
+    return this.favorites().map((f) => f.id);
+  });
+
+  favoriteOffers = computed(() => {
+    return this.favorites().map((item) => ({
+      ...item,
+      images: item.images?.map((img: any) => img.imageUrl) ?? [],
+      basePrice: item.baseprice ?? item.baseprice,
+    }));
   });
 
   constructor(
@@ -33,14 +47,18 @@ export class FavoritesService {
     const userId = this.auth.userId();
     if (!userId) return;
     try {
-      const favs = await firstValueFrom(
-        this.http.get<FavoriteDto[]>(`${this.api}?userId=${userId}`),
+      const res: any = await firstValueFrom(
+        this.http.get(`${this.api}?userId=${userId}`),
       );
-      this.favorites.set(favs);
+      this.favorites.set(res.offers ?? []);
     } catch {
       console.warn('Error loading favorites, using empty');
       this.favorites.set([]);
     }
+  }
+
+  async load(): Promise<void> {
+    await this.ensureLoaded();
   }
 
   isFavorite(offerId: string): boolean {
@@ -53,10 +71,15 @@ export class FavoritesService {
     if (!userId || this.isFavorite(offerId)) return;
 
     try {
-      const fav = await firstValueFrom(
-        this.http.post<FavoriteDto>(this.api, { userId, offerId }),
+      const res: any = await firstValueFrom(
+        this.http.post(`${this.api}`, { userId, offerId }),
       );
-      this.favorites.set([...this.favorites(), fav]);
+      const newFav: FavoriteOfferDto = {
+        ...res.offer,
+        id: res.offer.id,
+        createdAt: res.createdAt,
+      };
+      this.favorites.set([...this.favorites(), newFav]);
     } catch {
       console.warn('Error adding favorite');
     }
@@ -69,11 +92,11 @@ export class FavoritesService {
 
     try {
       await firstValueFrom(
-        this.http.delete(`${this.api}/by-offer?userId=${userId}&offerId=${offerId}`),
+        this.http.delete(
+          `${this.api}/by-offer?userId=${userId}&offerId=${offerId}`,
+        ),
       );
-      this.favorites.set(
-        this.favorites().filter((f) => f.offerId !== offerId),
-      );
+      this.favorites.set(this.favorites().filter((f) => f.id !== offerId));
     } catch {
       console.warn('Error removing favorite');
     }

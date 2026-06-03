@@ -7,7 +7,7 @@ import { ServiceOfferAdapter } from 'src/app/core/adapters/OfferDetailAdapter';
 import { ServiceDetailDto } from 'src/app/core/DTO/ServiceDetailDto';
 import { environment } from 'src/environments/environment';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ServiceDetailStrategy implements OfferDetailStrategy<ServiceOffer> {
   private adapter = new ServiceOfferAdapter();
 

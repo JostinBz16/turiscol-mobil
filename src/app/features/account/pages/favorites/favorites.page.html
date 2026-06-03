@@ -16,7 +16,7 @@
   } @for (offer of favoriteOffers(); track offer.id) {
   <ion-card class="offer-card horizontal" (click)="goToDetail(offer.id)">
     <!-- 📸 IMAGEN -->
-    <ion-img class="offer-image" [src]="offer.images"></ion-img>
+    <ion-img class="offer-image" [src]="offer.images[0]"></ion-img>
 
     <!-- 📝 DETALLE -->
     <div class="offer-info">

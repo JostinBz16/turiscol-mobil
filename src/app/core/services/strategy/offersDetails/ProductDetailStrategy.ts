@@ -7,7 +7,7 @@ import { ProductOfferAdapter } from 'src/app/core/adapters/OfferDetailAdapter';
 import { ProductDetailDto } from 'src/app/core/DTO/ProductDetailDto';
 import { environment } from 'src/environments/environment';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ProductDetailStrategy implements OfferDetailStrategy<ProductOffer> {
   private adapter = new ProductOfferAdapter();
 

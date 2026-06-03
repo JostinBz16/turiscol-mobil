@@ -188,7 +188,14 @@
       .price {
         font-weight: 700;
         color: #4facfe;
-      }
-    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+  padding: 24px 0;
+}
   }
 }

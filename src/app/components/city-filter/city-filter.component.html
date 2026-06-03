@@ -9,12 +9,15 @@
 </div>
 
 <div class="grid">
-  @for (city of filteredCities; track city.id) {
+  @for (city of cities; track city.id) {
     <ion-card class="city-card" (click)="onSelect(city)">
       <ion-card-content>
         <h5>{{ city.name }}</h5>
-        <small>{{ city.type }}</small>
       </ion-card-content>
     </ion-card>
   }
 </div>
+
+@if (cities.length === 0) {
+  <p class="empty-state">No se encontraron ciudades</p>
+}

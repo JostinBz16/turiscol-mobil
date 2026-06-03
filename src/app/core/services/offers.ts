@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, map, catchError, throwError } from 'rxjs';
 import {
   AccommodationOffer,
   EventOffer,
@@ -118,8 +118,37 @@ export class OfferService {
     );
   }
 
+  findByTypeAndCategory(type: OfferType, category: string, params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/type/${type}/category/${category}`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching offers by type and category', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  getFeatured(params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/featured`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching featured offers', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
   getById(id: string): Observable<Offer> {
-    return this.http.get<Offer>(`${this.api}/${id}`).pipe(
+    return this.http.get<any>(`${this.api}/${id}`).pipe(
+      map((item) => ({
+        ...item,
+        images: item.images?.map((img: any) => img.imageUrl) ?? [],
+        basePrice: item.baseprice ?? item.basePrice,
+      })),
       catchError((err) => {
         console.error('Error fetching offer detail', err);
         return throwError(() => err);

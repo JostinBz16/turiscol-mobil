@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonCard,
@@ -6,6 +6,8 @@ import {
   IonIcon,
   IonInput,
 } from '@ionic/angular/standalone';
+import { MunicipalityService } from 'src/app/core/services/municipality.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-city-filter',
@@ -13,29 +15,42 @@ import {
   styleUrls: ['./city-filter.component.scss'],
   imports: [IonInput, CommonModule, IonCard, IonCardContent, IonIcon],
 })
-export class CityFilterComponent {
+export class CityFilterComponent implements OnInit {
   @Output() select = new EventEmitter<any>();
 
-  cities: any[] = [
-    { id: 1, name: 'Bogotá', type: 'capital' },
-    { id: 2, name: 'Medellín', type: 'ciudad' },
-    { id: 3, name: 'Cali', type: 'ciudad' },
-    { id: 4, name: 'Barranquilla', type: 'ciudad' },
-  ];
+  cities: any[] = [];
 
-  filter = '';
+  constructor(private municipalityService: MunicipalityService) {}
 
-  get filteredCities() {
-    return this.cities.filter((c) =>
-      c.name.toLowerCase().includes(this.filter.toLowerCase()),
-    );
+  async ngOnInit() {
+    await this.loadFeatured();
+  }
+
+  private async loadFeatured() {
+    try {
+      const res = await firstValueFrom(this.municipalityService.getFeatured());
+      const list = res.content ?? res;
+      this.cities = Array.isArray(list) ? list : [];
+    } catch {
+      this.cities = [];
+    }
+  }
+
+  async onFilterChange(event: CustomEvent) {
+    const value = (event.detail?.value ?? '').toString();
+    if (!value) {
+      await this.loadFeatured();
+      return;
+    }
+    try {
+      const res = await firstValueFrom(this.municipalityService.getByName(value));
+      this.cities = Array.isArray(res) ? res : (res ? [res] : []);
+    } catch {
+      this.cities = [];
+    }
   }
 
   onSelect(city: any) {
     this.select.emit(city);
-  }
-
-  onFilterChange(event: CustomEvent) {
-    this.filter = (event.detail?.value ?? '').toString();
   }
 }

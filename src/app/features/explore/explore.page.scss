@@ -71,7 +71,32 @@ ion-header {
 }
 
 .type-selector {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
+}
+
+.category-selector {
+  margin-bottom: 20px;
+
+  .carousel {
+    gap: 8px;
+  }
+}
+
+.category-pill {
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+  transition: all 0.2s ease;
+  scroll-snap-align: start;
+
+  &.active {
+    background: #1e293b;
+    color: white;
+  }
 }
 
 .type-pill {

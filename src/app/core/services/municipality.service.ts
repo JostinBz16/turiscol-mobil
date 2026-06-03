@@ -45,6 +45,15 @@ export class MunicipalityService {
     );
   }
 
+  getByName(name: string): Observable<any> {
+    return this.http.get<any>(`${this.api}/by-name/${encodeURIComponent(name)}`).pipe(
+      catchError((err) => {
+        console.error('Error searching municipality by name', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
   getByNameAndDepartment(name: string, departmentId: string): Observable<any> {
     return this.http.get<any>(`${this.api}/by-name/${name}/department/${departmentId}`).pipe(
       catchError((err) => {
