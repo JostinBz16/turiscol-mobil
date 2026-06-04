@@ -43,8 +43,8 @@ export class CityFilterComponent implements OnInit {
       return;
     }
     try {
-      const res = await firstValueFrom(this.municipalityService.getByName(value));
-      this.cities = Array.isArray(res) ? res : (res ? [res] : []);
+      const res = await firstValueFrom(this.municipalityService.search(value));
+      this.cities = res.content ?? [];
     } catch {
       this.cities = [];
     }

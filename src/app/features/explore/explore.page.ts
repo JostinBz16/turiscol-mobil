@@ -10,19 +10,14 @@ import {
   IonButton,
   IonIcon,
   IonImg,
+  IonInput,
 } from '@ionic/angular/standalone';
 import { Category } from 'src/app/core/models/CategoryModel';
 import { CategoryService } from 'src/app/core/services/category.service';
 import { addIcons } from 'ionicons';
 import { optionsOutline, searchOutline } from 'ionicons/icons';
 import { FiltermodalExploreComponent } from './components/filtermodal-explore/filtermodal-explore.component';
-import {
-  AccommodationOffer,
-  BookingFilters,
-  Offer,
-  OfferType,
-  ServiceOffer,
-} from 'src/app/core/models/Offers';
+import { BookingFilters, Offer, OfferType } from 'src/app/core/models/Offers';
 import { OfferService } from 'src/app/core/services/offers';
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
@@ -41,6 +36,7 @@ import { firstValueFrom } from 'rxjs';
     IonHeader,
     IonTitle,
     IonToolbar,
+    IonInput,
     CommonModule,
     FormsModule,
   ],
@@ -95,21 +91,68 @@ export class ExplorePage implements OnInit {
 
   private preselectCategory() {
     const typeCats = this.categoriesByType;
-    this.selectedCategoryName = typeCats.length > 0 ? typeCats[0].name : undefined;
+    this.selectedCategoryName =
+      typeCats.length > 0 ? typeCats[0].name : undefined;
+  }
+
+  async onSearchInput() {
+    await this.fetchOffers();
   }
 
   private async fetchOffers() {
-    if (this.selectedOfferType === 'ALL' || !this.selectedCategoryName) {
+    const hasSearch = !!this.searchTerm?.trim();
+    const filters: any = { page: 0, size: 20 };
+
+    if (hasSearch) {
+      filters.name = this.searchTerm.trim();
+      if (this.selectedOfferType !== 'ALL') {
+        filters.type = this.selectedOfferType;
+      }
+    } else if (this.selectedOfferType !== 'ALL') {
+      filters.type = this.selectedOfferType;
+    } else {
       this.offers = [];
       return;
     }
-    const res = await firstValueFrom(
-      this.offerService.findByTypeAndCategory(
-        this.selectedOfferType as OfferType,
-        this.selectedCategoryName,
-        { page: 0, size: 20 },
-      ),
-    );
+
+    if (this.selectedCategoryName && this.selectedOfferType !== 'ALL') {
+      filters.category = this.selectedCategoryName;
+    }
+
+    if (this.advancedFilters.minPrice && this.advancedFilters.minPrice > 0) {
+      filters.minPrice = this.advancedFilters.minPrice;
+    }
+    if (
+      this.advancedFilters.maxPrice &&
+      this.advancedFilters.maxPrice < 2000000
+    ) {
+      filters.maxPrice = this.advancedFilters.maxPrice;
+    }
+
+    if (this.selectedOfferType === OfferType.ACCOMMODATION) {
+      const guests =
+        (this.advancedFilters.adults || 0) +
+        (this.advancedFilters.children || 0);
+      if (guests > 1) filters.maxGuests = guests;
+      if (this.advancedFilters.petsAllowed) filters.allowPets = true;
+      if (this.advancedFilters.childrenAllowed) filters.allowChildren = true;
+    }
+
+    if (
+      this.selectedOfferType === OfferType.SERVICE &&
+      this.advancedFilters.serviceCategory
+    ) {
+      filters.category = this.advancedFilters.serviceCategory;
+    }
+
+    if (this.advancedFilters.startDate) {
+      filters.startDate = this.advancedFilters.startDate;
+    }
+    if (this.advancedFilters.endDate) {
+      filters.endDate = this.advancedFilters.endDate;
+    }
+
+    const res = await firstValueFrom(this.offerService.search(filters));
     this.offers = (res.content ?? []).map((item: any) => ({
       ...item,
       type: this.selectedOfferType as OfferType,
@@ -155,8 +198,8 @@ export class ExplorePage implements OnInit {
       if (data.offerType && data.offerType !== this.selectedOfferType) {
         this.selectedOfferType = data.offerType;
         this.preselectCategory();
-        await this.fetchOffers();
       }
+      await this.fetchOffers();
     }
   }
 
@@ -167,34 +210,9 @@ export class ExplorePage implements OnInit {
   }
 
   get filteredOffers(): Offer[] {
-    return this.offers.filter((o) => {
-      const matchesSearch = o.name
-        .toLowerCase()
-        .includes(this.searchTerm.toLowerCase());
-
-      const matchesPrice =
-        o.basePrice >= (this.advancedFilters.minPrice || 0) &&
-        o.basePrice <= (this.advancedFilters.maxPrice || 2000000);
-
-      let matchesContext = true;
-      if (this.selectedOfferType === OfferType.ACCOMMODATION) {
-        const acc = o as AccommodationOffer;
-        if (acc.maxGuests && this.advancedFilters.adults) {
-          matchesContext =
-            acc.maxGuests >=
-            this.advancedFilters.adults + (this.advancedFilters.children || 0);
-        }
-      } else if (this.selectedOfferType === OfferType.SERVICE) {
-        const item = o as ServiceOffer;
-        if (
-          this.advancedFilters.serviceCategory &&
-          item.serviceCategory !== this.advancedFilters.serviceCategory
-        ) {
-          matchesContext = false;
-        }
-      }
-
-      return matchesSearch && matchesPrice && matchesContext;
-    });
+    if (!this.searchTerm) return this.offers;
+    return this.offers.filter((o) =>
+      o.name.toLowerCase().includes(this.searchTerm.toLowerCase()),
+    );
   }
 }

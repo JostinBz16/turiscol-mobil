@@ -72,6 +72,18 @@ export class MunicipalityService {
     );
   }
 
+  search(q: string, params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams().set('q', q);
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/search`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error searching municipalities', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
   getFeatured(params?: { page?: number; size?: number }): Observable<any> {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);

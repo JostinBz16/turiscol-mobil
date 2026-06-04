@@ -10,10 +10,12 @@
     <div class="search-container">
       <div class="search-box">
         <ion-icon name="search-outline"></ion-icon>
-        <input
+        <ion-input
           placeholder="Busca planes, destinos o experiencias"
+          clear-input="true"
           [(ngModel)]="searchTerm"
-        />
+          (ionInput)="onSearchInput()"
+        ></ion-input>
       </div>
       <ion-button class="filter-btn" fill="clear" (click)="openFilters()">
         <ion-icon name="options-outline"></ion-icon>

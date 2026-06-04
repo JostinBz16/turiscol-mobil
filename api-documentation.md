@@ -181,7 +181,7 @@ Service Discovery. Todos los servicios se registran aquí.
 | 37 | PATCH | `/api/v1/offers/{id}/featured` | Marcar/desmarcar oferta como destacada (query: featured=true/false) |
 | 38 | GET | `/api/v1/offers/type/{type}/category/{category}` | Ofertas activas por tipo y categoría (paginado) |
 
-**Parámetros search:** `providerId`, `cityId`, `active`, `name`, `type`, `page`, `size`
+**Parámetros search:** `providerId`, `cityId`, `active`, `name`, `type`, `category`, `featured`, `minPrice`, `maxPrice`, `maxGuests`, `allowPets`, `allowChildren`, `startDate`, `endDate`, `capacity`, `page`, `size`
 
 #### StockProductController
 
@@ -254,9 +254,10 @@ Service Discovery. Todos los servicios se registran aquí.
 | 73 | PUT | `/api/v1/locations/cities/{id}` | Actualizar ciudad |
 | 74 | DELETE | `/api/v1/locations/cities/{id}` | Eliminar ciudad |
 | 75 | GET | `/api/v1/locations/cities/by-name/{name}` | Buscar ciudad por nombre (sin acentos) |
-| 76 | GET | `/api/v1/locations/cities/by-name/{name}/department/{departmentId}` | Buscar por nombre + departamento |
-| 77 | GET | `/api/v1/locations/cities/{id}/destinations` | Destinos por ciudad |
-| 78 | GET | `/api/v1/locations/cities/featured` | Ciudades destacadas (paginado) |
+| 76 | GET | `/api/v1/locations/cities/search` | Buscar ciudades por nombre (coincidencia parcial, sin acentos, paginado) |
+| 77 | GET | `/api/v1/locations/cities/by-name/{name}/department/{departmentId}` | Buscar por nombre + departamento |
+| 78 | GET | `/api/v1/locations/cities/{id}/destinations` | Destinos por ciudad |
+| 79 | GET | `/api/v1/locations/cities/featured` | Ciudades destacadas (paginado) |
 
 #### DepartmentController
 

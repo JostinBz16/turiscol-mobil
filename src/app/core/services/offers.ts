@@ -71,13 +71,41 @@ export class OfferService {
     );
   }
 
-  search(filters: { providerId?: string; cityId?: string; active?: boolean; name?: string; type?: string; page?: number; size?: number }): Observable<any> {
+  search(filters: {
+    providerId?: string;
+    cityId?: string;
+    active?: boolean;
+    name?: string;
+    type?: string;
+    category?: string;
+    featured?: boolean;
+    minPrice?: number;
+    maxPrice?: number;
+    maxGuests?: number;
+    allowPets?: boolean;
+    allowChildren?: boolean;
+    startDate?: string;
+    endDate?: string;
+    capacity?: number;
+    page?: number;
+    size?: number;
+  }): Observable<any> {
     let httpParams = new HttpParams();
     if (filters.providerId) httpParams = httpParams.set('providerId', filters.providerId);
     if (filters.cityId) httpParams = httpParams.set('cityId', filters.cityId);
     if (filters.active !== undefined) httpParams = httpParams.set('active', filters.active);
     if (filters.name) httpParams = httpParams.set('name', filters.name);
     if (filters.type) httpParams = httpParams.set('type', filters.type);
+    if (filters.category) httpParams = httpParams.set('category', filters.category);
+    if (filters.featured !== undefined) httpParams = httpParams.set('featured', filters.featured);
+    if (filters.minPrice !== undefined) httpParams = httpParams.set('minPrice', filters.minPrice);
+    if (filters.maxPrice !== undefined) httpParams = httpParams.set('maxPrice', filters.maxPrice);
+    if (filters.maxGuests !== undefined) httpParams = httpParams.set('maxGuests', filters.maxGuests);
+    if (filters.allowPets !== undefined) httpParams = httpParams.set('allowPets', filters.allowPets);
+    if (filters.allowChildren !== undefined) httpParams = httpParams.set('allowChildren', filters.allowChildren);
+    if (filters.startDate) httpParams = httpParams.set('startDate', filters.startDate);
+    if (filters.endDate) httpParams = httpParams.set('endDate', filters.endDate);
+    if (filters.capacity !== undefined) httpParams = httpParams.set('capacity', filters.capacity);
     if (filters.page) httpParams = httpParams.set('page', filters.page);
     if (filters.size) httpParams = httpParams.set('size', filters.size);
     return this.http.get<any>(`${this.api}/search`, { params: httpParams }).pipe(
