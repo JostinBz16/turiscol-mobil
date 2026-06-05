@@ -2,24 +2,16 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
   IonButton,
   IonContent,
   IonList,
-  IonItem,
   IonLabel,
-  IonRange,
   IonDatetime,
   IonToggle,
-  IonSelect,
-  IonSelectOption,
-  IonIcon,
   ModalController,
   IonAccordion,
   IonAccordionGroup,
+  IonFooter,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { closeOutline, star } from 'ionicons/icons';
@@ -35,33 +27,24 @@ import {
   styleUrls: ['./filtermodal-explore.component.scss'],
   standalone: true,
   imports: [
+    IonFooter,
     CommonModule,
     FormsModule,
-    IonHeader,
     IonAccordion,
     IonAccordionGroup,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
     IonButton,
     IonContent,
     IonList,
-    IonItem,
     IonLabel,
-    IonRange,
     IonDatetime,
     IonToggle,
-    IonSelect,
-    IonSelectOption,
-    IonIcon,
   ],
 })
 export class FiltermodalExploreComponent implements OnInit {
   @Input() initialFilters!: BookingFilters;
   filters: BookingFilters = {
     minPrice: 0,
-    maxPrice: 1000000,
-    offerType: 'ALL',
+    maxPrice: undefined,
     adults: 1,
     children: 0,
     pets: false,
@@ -94,7 +77,7 @@ export class FiltermodalExploreComponent implements OnInit {
   reset() {
     this.filters = {
       minPrice: 0,
-      maxPrice: 1000000,
+      maxPrice: 0,
       offerType: this.filters.offerType,
       adults: 1,
       children: 0,

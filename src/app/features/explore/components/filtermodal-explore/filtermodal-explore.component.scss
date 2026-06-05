@@ -77,18 +77,29 @@ ion-content {
   font-size: 1rem;
 }
 
-.price-display {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #1e293b;
-  letter-spacing: -0.01em;
-}
+.price-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 4px 16px;
 
-ion-range {
-  --bar-background-active: #1e293b;
-  --knob-background: #1e293b;
-  --knob-size: 24px;
-  padding-top: 0;
+  .currency-symbol {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #94a3b8;
+  }
+
+  .price-input {
+    --background: transparent;
+    --padding-start: 0;
+    --padding-end: 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    --color: #1e293b;
+  }
 }
 
 .rating-selector {
@@ -185,15 +196,21 @@ ion-range {
   }
 }
 
-.toggle-item {
-  --padding-start: 0;
-  --inner-padding-end: 0;
-  --background: transparent;
-  margin-top: 10px;
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f5f9;
 
-  ion-label {
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .toggle-label {
     font-weight: 700;
     color: #475569;
+    font-size: 1rem;
   }
 }
 
@@ -203,43 +220,33 @@ ion-toggle {
   padding-inline-end: 0;
 }
 
-.action-bar-container {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 20px 24px;
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 1) 80%,
-    rgba(255, 255, 255, 0)
-  );
-  pointer-events: none;
-}
+ion-footer {
+  padding: 16px 24px 24px;
+  background: #ffffff;
 
-.action-bar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  pointer-events: auto;
+  .action-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 
-  ion-button[fill="clear"] {
-    --color: #64748b;
-    font-weight: 700;
-    font-size: 0.95rem;
-    text-decoration: underline;
-    margin: 0;
-  }
+    ion-button[fill="clear"] {
+      --color: #64748b;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: underline;
+      margin: 0;
+    }
 
-  .apply-btn {
-    flex: 1;
-    --background: #1e293b;
-    --background-activated: #0f172a;
-    --box-shadow: 0 10px 20px rgba(30, 41, 59, 0.25);
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    margin: 0;
-    height: 56px;
+    .apply-btn {
+      flex: 1;
+      --background: #1e293b;
+      --background-activated: #0f172a;
+      --box-shadow: 0 10px 20px rgba(30, 41, 59, 0.25);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin: 0;
+      height: 56px;
+    }
   }
 }
 

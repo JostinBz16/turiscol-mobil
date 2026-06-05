@@ -85,7 +85,7 @@ export interface BookingFilters {
   offerType?: OfferType | 'ALL';
   categoryName?: string;
   minPrice?: number;
-  maxPrice?: number;
+  maxPrice?: number | undefined;
   startDate?: string;
   endDate?: string;
   adults?: number;

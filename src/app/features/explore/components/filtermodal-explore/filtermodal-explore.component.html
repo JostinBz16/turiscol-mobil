@@ -1,35 +1,17 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-title>Filtros</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="dismiss()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
   <ion-list lines="none">
-    <!-- Rango de Precio -->
+    <!-- Precio máximo -->
     <div class="filter-section">
-      <ion-label class="section-title">Rango de precio</ion-label>
-      <div class="price-display">
-        {{ filters.minPrice | currency: "COP" : "symbol" : "1.0-0" }} -
-        {{ filters.maxPrice | currency: "COP" : "symbol" : "1.0-0" }}
+      <ion-label class="section-title">Precio máximo</ion-label>
+      <div class="price-input-wrapper">
+        <span class="currency-symbol">$</span>
+        <ion-input
+          type="number"
+          placeholder="0"
+          [(ngModel)]="filters.maxPrice"
+          class="price-input"
+        ></ion-input>
       </div>
-      <ion-range
-        [dualKnobs]="true"
-        [min]="0"
-        [max]="2000000"
-        [step]="10000"
-        [(ngModel)]="filters.minPrice"
-        (ionChange)="
-          filters.minPrice = $any($event).detail.value.lower;
-          filters.maxPrice = $any($event).detail.value.upper
-        "
-      >
-      </ion-range>
     </div>
 
     <!-- 🏠 Alojamiento (Counters for booking) -->
@@ -72,10 +54,10 @@
           </div>
         </div>
 
-        <ion-item class="toggle-item">
-          <ion-label>¿Mascotas?</ion-label>
+        <div class="toggle-row">
+          <span class="toggle-label">¿Mascotas?</span>
           <ion-toggle [(ngModel)]="filters.pets"></ion-toggle>
-        </ion-item>
+        </div>
       </div>
 
       <div class="filter-section">
@@ -126,35 +108,16 @@
       filters.offerType === offerTypeEnum.EVENT ||
       filters.offerType === offerTypeEnum.SERVICE
     ) {
-      @if (filters.offerType === offerTypeEnum.SERVICE) {
-        <div class="filter-section">
-          <ion-label class="section-title">Tipo de servicio</ion-label>
-          <ion-select
-            class="custom-select"
-            interface="popover"
-            placeholder="Cualquier tipo"
-            [(ngModel)]="filters.serviceCategory"
-          >
-            <ion-select-option [value]="undefined">Todos</ion-select-option>
-            @for (cat of serviceCategories; track cat) {
-              <ion-select-option [value]="cat">{{
-                cat | titlecase
-              }}</ion-select-option>
-            }
-          </ion-select>
-        </div>
-      }
-
       <div class="filter-section contextual">
         <ion-label class="section-title">Preferencias</ion-label>
-        <ion-item class="toggle-item">
-          <ion-label>Permitir niños</ion-label>
+        <div class="toggle-row">
+          <span class="toggle-label">Permitir niños</span>
           <ion-toggle [(ngModel)]="filters.childrenAllowed"></ion-toggle>
-        </ion-item>
-        <ion-item class="toggle-item">
-          <ion-label>Permitir mascotas</ion-label>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Permitir mascotas</span>
           <ion-toggle [(ngModel)]="filters.petsAllowed"></ion-toggle>
-        </ion-item>
+        </div>
       </div>
 
       <div class="filter-section">
@@ -180,13 +143,8 @@
         </ion-accordion-group>
       </div>
     }
-
-    <!-- Spacer at the bottom to allow scrolling past the fixed footer -->
-    <div class="bottom-spacer"></div>
   </ion-list>
-
-  <!-- Botones de Acción (Fijos visualmente vía CSS) -->
-  <div class="action-bar-container">
+  <ion-footer class="ion-no-border">
     <div class="action-bar">
       <ion-button fill="clear" color="dark" (click)="reset()"
         >Limpiar</ion-button
@@ -199,5 +157,5 @@
         >Aplicar filtros</ion-button
       >
     </div>
-  </div>
+  </ion-footer>
 </ion-content>

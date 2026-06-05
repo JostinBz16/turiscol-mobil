@@ -51,7 +51,7 @@ export class ExplorePage implements OnInit {
 
   advancedFilters: BookingFilters = {
     minPrice: 0,
-    maxPrice: 2000000,
+    maxPrice: undefined,
     adults: 1,
     children: 0,
     pets: false,
@@ -122,10 +122,7 @@ export class ExplorePage implements OnInit {
     if (this.advancedFilters.minPrice && this.advancedFilters.minPrice > 0) {
       filters.minPrice = this.advancedFilters.minPrice;
     }
-    if (
-      this.advancedFilters.maxPrice &&
-      this.advancedFilters.maxPrice < 2000000
-    ) {
+    if (this.advancedFilters.maxPrice) {
       filters.maxPrice = this.advancedFilters.maxPrice;
     }
 
