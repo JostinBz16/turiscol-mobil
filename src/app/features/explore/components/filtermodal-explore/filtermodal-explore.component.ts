@@ -12,6 +12,7 @@ import {
   IonAccordion,
   IonAccordionGroup,
   IonFooter,
+  IonInput,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { closeOutline, star } from 'ionicons/icons';
@@ -38,6 +39,7 @@ import {
     IonLabel,
     IonDatetime,
     IonToggle,
+    IonInput,
   ],
 })
 export class FiltermodalExploreComponent implements OnInit {
@@ -77,7 +79,7 @@ export class FiltermodalExploreComponent implements OnInit {
   reset() {
     this.filters = {
       minPrice: 0,
-      maxPrice: 0,
+      maxPrice: undefined,
       offerType: this.filters.offerType,
       adults: 1,
       children: 0,

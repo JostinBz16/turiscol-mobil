@@ -106,8 +106,8 @@ export class OfferService {
     if (filters.startDate) httpParams = httpParams.set('startDate', filters.startDate);
     if (filters.endDate) httpParams = httpParams.set('endDate', filters.endDate);
     if (filters.capacity !== undefined) httpParams = httpParams.set('capacity', filters.capacity);
-    if (filters.page) httpParams = httpParams.set('page', filters.page);
-    if (filters.size) httpParams = httpParams.set('size', filters.size);
+    if (filters.page !== undefined) httpParams = httpParams.set('page', filters.page);
+    if (filters.size !== undefined) httpParams = httpParams.set('size', filters.size);
     return this.http.get<any>(`${this.api}/search`, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error searching offers', err);

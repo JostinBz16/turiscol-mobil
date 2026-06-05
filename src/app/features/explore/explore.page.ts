@@ -105,24 +105,25 @@ export class ExplorePage implements OnInit {
 
     if (hasSearch) {
       filters.name = this.searchTerm.trim();
-      if (this.selectedOfferType !== 'ALL') {
-        filters.type = this.selectedOfferType;
-      }
-    } else if (this.selectedOfferType !== 'ALL') {
-      filters.type = this.selectedOfferType;
-    } else {
-      this.offers = [];
-      return;
     }
-
+    if (this.selectedOfferType !== 'ALL') {
+      filters.type = this.selectedOfferType;
+    }
     if (this.selectedCategoryName && this.selectedOfferType !== 'ALL') {
       filters.category = this.selectedCategoryName;
     }
 
-    if (this.advancedFilters.minPrice && this.advancedFilters.minPrice > 0) {
+    if (
+      this.advancedFilters.minPrice !== undefined &&
+      this.advancedFilters.minPrice > 0
+    ) {
       filters.minPrice = this.advancedFilters.minPrice;
     }
-    if (this.advancedFilters.maxPrice) {
+    if (
+      this.advancedFilters.maxPrice !== null &&
+      this.advancedFilters.maxPrice !== undefined &&
+      this.advancedFilters.maxPrice > 0
+    ) {
       filters.maxPrice = this.advancedFilters.maxPrice;
     }
 
@@ -147,6 +148,15 @@ export class ExplorePage implements OnInit {
     }
     if (this.advancedFilters.endDate) {
       filters.endDate = this.advancedFilters.endDate;
+    }
+
+    if (
+      !hasSearch &&
+      this.selectedOfferType === 'ALL' &&
+      Object.keys(filters).length <= 2
+    ) {
+      this.offers = [];
+      return;
     }
 
     const res = await firstValueFrom(this.offerService.search(filters));
