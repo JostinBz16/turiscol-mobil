@@ -25,11 +25,7 @@ import {
 } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { OfferType } from 'src/app/core/models/Offers';
-import {
-  accommodationOffers,
-  eventOffers,
-  productOffers,
-} from 'src/app/core/data/ProductMock';
+import { OfferService } from 'src/app/core/services/offers';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
@@ -53,6 +49,7 @@ export class OfferDetailsPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private favoritesService: FavoritesService,
+    private offerService: OfferService,
     public navService: NavigationService,
   ) {
     addIcons({
@@ -75,11 +72,21 @@ export class OfferDetailsPage implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    this.offer =
-      accommodationOffers.find((o) => o.id === id) ??
-      eventOffers.find((o) => o.id === id) ??
-      productOffers.find((o) => o.id === id) ??
-      null;
+    if (id) {
+      this.offerService.getById(id).subscribe((offer) => {
+        this.offer = offer;
+      });
+    }
+  }
+
+  typeLabel(type: string): string {
+    const map: Record<string, string> = {
+      accommodation: 'Alojamiento',
+      event: 'Evento',
+      service: 'Servicio',
+      product: 'Producto',
+    };
+    return map[type] ?? type;
   }
 
   isFavorite(): boolean {
