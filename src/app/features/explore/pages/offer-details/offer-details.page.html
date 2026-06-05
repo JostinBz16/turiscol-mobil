@@ -1,6 +1,5 @@
 <ion-content fullscreen class="detail-content" [scrollEvents]="true">
   @if (offer) {
-  <!-- Floating Header Buttons -->
   <div class="floating-header">
     <ion-button
       fill="clear"
@@ -19,21 +18,15 @@
     </ion-button>
   </div>
 
-  <!-- HERO -->
   <div class="hero">
     <ion-img [src]="offer.images[0]"></ion-img>
     <div class="hero-gradient"></div>
   </div>
 
-  <!-- BODY -->
   <div class="body-wrapper">
     <div class="body">
       <div class="header-info">
         <div class="category-chip">{{ offer.type }}</div>
-        <div class="rating">
-          <ion-icon name="star"></ion-icon>
-          <!-- rating removed, no longer in backend model -->
-        </div>
       </div>
 
       <div class="title-row">
@@ -42,8 +35,105 @@
 
       <p class="description">{{ offer.description }}</p>
 
+      @if (offer.type === OfferType.ACCOMMODATION) {
       <div class="highlights">
         <h3>Lo que ofrece este lugar</h3>
+        <div class="features-grid">
+          <div class="feature-item">
+            <ion-icon name="person-outline"></ion-icon>
+            <span>Hasta {{ offer.maxGuests }} huéspedes</span>
+          </div>
+          <div class="feature-item">
+            <ion-icon name="bed-outline"></ion-icon>
+            <span>{{ offer.bedrooms }} habitaciones</span>
+          </div>
+          <div class="feature-item">
+            <ion-icon name="water-outline"></ion-icon>
+            <span>{{ offer.bathrooms }} baños</span>
+          </div>
+          @if (offer.allowPets) {
+          <div class="feature-item">
+            <ion-icon name="paw-outline"></ion-icon>
+            <span>Se admiten mascotas</span>
+          </div>
+          } @if (offer.allowChildren) {
+          <div class="feature-item">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Acepta niños</span>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="price-section">
+        <div class="price-info">
+          <span class="price">
+            {{ offer.pricePerNight | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <span class="per">/ noche</span>
+        </div>
+      </div>
+      } @if (offer.type === OfferType.EVENT) {
+      <div class="highlights">
+        <h3>Detalles del evento</h3>
+        <div class="features-grid">
+          <div class="feature-item">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>{{ offer.eventDate | date:'dd MMM, yyyy' }}</span>
+          </div>
+          <div class="feature-item">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Capacidad: {{ offer.capacity }} personas</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="price-section">
+        <div class="price-info">
+          <span class="price">
+            {{ offer.ticketPrice | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <span class="per">/ entrada</span>
+        </div>
+      </div>
+      } @if (offer.type === OfferType.SERVICE) {
+      <div class="highlights">
+        <h3>Detalles del servicio</h3>
+        <div class="features-grid">
+          <div class="feature-item">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ offer.durationInMinutes }} min</span>
+          </div>
+          <div class="feature-item">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Capacidad: {{ offer.capacity }} personas</span>
+          </div>
+          @if (offer.requiresSchedule) {
+          <div class="feature-item">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>Requiere agendamiento</span>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="price-section">
+        <div class="price-info">
+          <span class="price">
+            {{ offer.pricePerPerson | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <span class="per">/ persona</span>
+        </div>
+      </div>
+      } @if (offer.type === OfferType.PRODUCT) {
+      <div class="highlights">
+        <h3>Detalles del producto</h3>
+        <div class="features-grid">
+          <div class="feature-item">
+            <ion-icon name="cube-outline"></ion-icon>
+            <span>Stock: {{ offer.stock ?? 0 }} unidades</span>
+          </div>
+        </div>
       </div>
 
       <div class="price-section">
@@ -51,9 +141,9 @@
           <span class="price">
             {{ offer.basePrice | currency:'COP':'symbol':'1.0-0' }}
           </span>
-          <span class="per">/ persona</span>
         </div>
       </div>
+      }
     </div>
   </div>
   } @if (offer) {

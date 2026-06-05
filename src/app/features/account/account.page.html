@@ -11,8 +11,8 @@
       <ion-icon name="person-outline"></ion-icon>
     </div>
 
-    <h2 class="name">John Doe</h2>
-    <p class="email">john.doe@example.com</p>
+    <h2 class="name">{{ authService.user()?.userName ?? 'Usuario' }}</h2>
+    <p class="email">{{ authService.user()?.email ?? '' }}</p>
   </div>
 
   <!-- Opciones -->

@@ -12,7 +12,6 @@ import {
   IonCard,
   IonCardHeader,
   IonCardTitle,
-  IonCardSubtitle,
   IonButton,
   IonImg,
 } from '@ionic/angular/standalone';
@@ -28,7 +27,6 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   imports: [
     IonImg,
     IonButton,
-    IonCardSubtitle,
     IonCardTitle,
     IonCardHeader,
     IonCard,

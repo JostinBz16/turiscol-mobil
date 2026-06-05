@@ -2,7 +2,7 @@
   <ion-toolbar>
     <div class="header-content">
       <div class="header-text">
-        <span class="welcome">Hola, Jostin 👋</span>
+        <span class="welcome">Hola, {{ authService.user()?.userName ?? 'Viajero' }} 👋</span>
         <h2>Explora Colombia</h2>
       </div>
     </div>

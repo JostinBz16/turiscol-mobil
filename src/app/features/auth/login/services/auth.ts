@@ -81,7 +81,8 @@ export class AuthService {
       const user: UserSession = {
         id: decoded.sub,
         email: decoded.email || decoded.preferred_username,
-        role: this.mapRole(decoded.realm_access?.roles || [])
+        role: this.mapRole(decoded.realm_access?.roles || []),
+        userName: res.userName
       };
       localStorage.setItem('user', JSON.stringify(user));
       this.user.set(user);

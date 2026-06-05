@@ -48,7 +48,7 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
 export class AccountPage implements OnInit {
   constructor(
     private router: Router,
-    private authService: AuthService,
+    public authService: AuthService,
     private navService: NavigationService,
   ) {
     addIcons({

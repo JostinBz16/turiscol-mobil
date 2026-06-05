@@ -12,6 +12,7 @@ import {
 import { addIcons } from 'ionicons';
 import { notifications, searchOutline } from 'ionicons/icons';
 import { CategoryService } from 'src/app/core/services/category.service';
+import { AuthService } from '../auth/login/services/auth';
 import { MunicipalityService } from 'src/app/core/services/municipality.service';
 import { Category } from 'src/app/core/models/CategoryModel';
 import { Municipality } from 'src/app/core/models/Municipality';
@@ -44,6 +45,7 @@ export class HomePage implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
+    public authService: AuthService,
     private municipalityService: MunicipalityService,
     private departmentService: DepartmentService,
     private favoriteService: FavoritesService,

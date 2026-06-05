@@ -41,7 +41,7 @@ export const offersMock: Offer[] = [
     cityId: 4,
     providerId: '15',
     basePrice: 35,
-    active: false,
+    active: true,
   },
 ];
 

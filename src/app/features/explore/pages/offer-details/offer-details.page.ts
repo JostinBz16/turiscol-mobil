@@ -3,9 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
   IonImg,
   IonIcon,
   IonButton,
@@ -17,10 +14,22 @@ import {
   heart,
   heartOutline,
   star,
+  personOutline,
+  bedOutline,
+  waterOutline,
+  pawOutline,
+  peopleOutline,
+  calendarOutline,
+  timeOutline,
+  cubeOutline,
 } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
-import { offersMock } from 'src/app/core/data/ProductMock';
-import { Offer } from 'src/app/core/models/Offers';
+import { OfferType } from 'src/app/core/models/Offers';
+import {
+  accommodationOffers,
+  eventOffers,
+  productOffers,
+} from 'src/app/core/data/ProductMock';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
@@ -39,19 +48,38 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   ],
 })
 export class OfferDetailsPage implements OnInit {
+  OfferType = OfferType;
+
   constructor(
     private route: ActivatedRoute,
     private favoritesService: FavoritesService,
     public navService: NavigationService,
   ) {
-    addIcons({ heart, heartOutline, star, chevronBackOutline });
+    addIcons({
+      chevronBackOutline,
+      personOutline,
+      bedOutline,
+      waterOutline,
+      pawOutline,
+      peopleOutline,
+      calendarOutline,
+      timeOutline,
+      cubeOutline,
+      heart,
+      heartOutline,
+      star,
+    });
   }
 
-  offer?: Offer;
+  offer: any;
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    this.offer = offersMock.find((o) => o.id === id);
+    this.offer =
+      accommodationOffers.find((o) => o.id === id) ??
+      eventOffers.find((o) => o.id === id) ??
+      productOffers.find((o) => o.id === id) ??
+      null;
   }
 
   isFavorite(): boolean {

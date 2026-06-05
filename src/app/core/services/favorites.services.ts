@@ -50,7 +50,10 @@ export class FavoritesService {
       const res: any = await firstValueFrom(
         this.http.get(`${this.api}?userId=${userId}`),
       );
-      this.favorites.set(res.offers ?? []);
+      this.favorites.set((res.offers ?? []).map((item: any) => ({
+        ...item.offer,
+        createdAt: item.createdAt,
+      })));
     } catch {
       console.warn('Error loading favorites, using empty');
       this.favorites.set([]);
