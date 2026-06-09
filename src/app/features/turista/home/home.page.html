@@ -1,0 +1,110 @@
+@if (role() === 'proveedor') {
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-title>Inicio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-provider-dashboard />
+</ion-content>
+} @else {
+<ion-header class="home-header">
+  <ion-toolbar>
+    <div class="header-content">
+      <div class="header-text">
+        <span class="welcome"
+          >Hola, {{ authService.user()?.userName ?? 'Viajero' }} 👋</span
+        >
+        <h2>Explora Colombia</h2>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="home-content">
+  @if (loading) {
+  <div class="loading-state">
+    <ion-spinner></ion-spinner>
+    <p>Cargando...</p>
+  </div>
+  } @else if (error) {
+  <div class="empty-state">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <h4>{{ errorMessage }}</h4>
+    <ion-button fill="clear" (click)="loadData()">Reintentar</ion-button>
+  </div>
+  } @else {
+  <div class="content-wrapper">
+    <div class="search-box">
+      <ion-icon name="search-outline"></ion-icon>
+      <input placeholder="¿A dónde quieres viajar?" />
+    </div>
+
+    <div class="section">
+      <h3>Categorías</h3>
+
+      <div class="carousel">
+        @for (c of categories; track c.type + c.name) {
+        <div class="carousel-item category-card">
+          <span>{{ c.name }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Destinos destacados</h3>
+
+      <div class="carousel destinations-carousel">
+        @for (d of destinations; track d.id) {
+        <div class="carousel-item destination-card">
+          <ion-img [src]="d.image" />
+          <div class="overlay">
+            <h4>{{ d.name }}</h4>
+            <span>{{ getDepartmentName(d.departmentId) }}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Planes destacados</h3>
+
+      @if (offers.length > 0) { @for (offer of offers; track offer.id) {
+      <div class="plan-card">
+        <ion-img [src]="offer.images[0]" />
+
+        <div class="plan-info">
+          <div>
+            <h4>{{ offer.name }}</h4>
+            <p>{{ offer.description }}</p>
+          </div>
+
+          <div class="plan-footer">
+            <span class="price"> {{ offer.basePrice | currency:'COP' }} </span>
+
+            <ion-button
+              fill="clear"
+              size="small"
+              color="danger"
+              (click)="toggleFavorite(offer)"
+            >
+              <ion-icon [name]="isFavorite(offer) ? 'heart' : 'heart-outline'">
+              </ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
+      } } @else {
+      <div class="empty-section">
+        <ion-icon name="sparkles-outline"></ion-icon>
+        <p>No se encontraron ofertas destacadas</p>
+      </div>
+      }
+    </div>
+  </div>
+  }
+</ion-content>
+}

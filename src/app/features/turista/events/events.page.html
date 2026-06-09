@@ -1,0 +1,56 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>Eventos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="events-container">
+    <!-- FILTRO DE CIUDAD -->
+    <app-city-filter (select)="filterByCity($event)"></app-city-filter>
+
+    <!-- BOTÓN MOSTRAR/OCULTAR FILTRO AVANZADO -->
+    <ion-button
+      expand="block"
+      [fill]="showAdvancedFilter ? 'outline' : 'solid'"
+      (click)="toggleAdvancedFilter()"
+      class="px-4"
+    >
+      {{ showAdvancedFilter ? 'Ocultar Filtro Avanzado' : 'Mostrar Filtro
+      Avanzado' }}
+    </ion-button>
+
+    <!-- FILTRO AVANZADO -->
+    @if (showAdvancedFilter) {
+    <app-event-advance-filter
+      (dateFromChange)="onDateFrom($event)"
+      (dateToChange)="onDateTo($event)"
+      (statusChange)="onStatusChange($event)"
+      (clearFilters)="resetAdvancedFilters()"
+    ></app-event-advance-filter>
+
+    }
+
+    <!-- LISTA DE EVENTOS -->
+    @if (loading) {
+    <div class="loading-state">
+      <ion-spinner></ion-spinner>
+      <p>Cargando eventos...</p>
+    </div>
+    } @else if (error) {
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <h4>{{ errorMessage }}</h4>
+      <ion-button fill="clear" (click)="applyFilters()">Reintentar</ion-button>
+    </div>
+    } @else if (filteredEvents.length > 0) {
+    <app-event-list [events]="filteredEvents"></app-event-list>
+    } @else {
+    <div class="empty-state">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <h4>No hay eventos que coincidan</h4>
+      <p>Prueba con otros filtros o fechas diferentes</p>
+    </div>
+    }
+  </div>
+</ion-content>

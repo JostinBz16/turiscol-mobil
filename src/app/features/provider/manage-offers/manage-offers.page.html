@@ -1,0 +1,88 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mis Ofertas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+  <div class="loading-state">
+    <ion-spinner></ion-spinner>
+    <p>Cargando ofertas...</p>
+  </div>
+  } @else if (offers.length === 0) {
+  <div class="empty-state">
+    <ion-icon name="storefront-outline"></ion-icon>
+    <h4>No tienes ofertas aún</h4>
+    <p>Crea tu primera oferta para empezar a vender</p>
+    <ion-button expand="block" (click)="createOffer()">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Crear Oferta
+    </ion-button>
+  </div>
+  } @else {
+  <div class="offer-list">
+    @for (offer of offers; track offer.id) {
+    <div class="offer-card">
+      <div class="offer-image">
+        @if (offer.image) {
+        <ion-img [src]="offer.image" />
+        } @else {
+        <div class="img-placeholder">
+          <ion-icon name="storefront-outline"></ion-icon>
+        </div>
+        }
+      </div>
+      <div class="offer-body">
+        <div class="offer-header">
+          <h4>{{ offer.name }}</h4>
+        </div>
+        <div class="offer-meta">
+          <span class="price"
+            >{{ offer.basePrice | currency:'COP':'symbol':'1.0-0' }}</span
+          >
+          <ion-toggle
+            [checked]="offer.active"
+            (ionChange)="toggleActive(offer, $event)"
+            color="success"
+            [attr.aria-label]="offer.active ? 'Desactivar' : 'Activar'"
+          ></ion-toggle>
+        </div>
+        <div class="offer-actions">
+          <ion-button fill="clear" size="small" (click)="viewOffer(offer.id)">
+            <ion-icon slot="start" name="eye-outline"></ion-icon>
+            Ver
+          </ion-button>
+          <ion-button fill="clear" size="small" (click)="editOffer(offer.id)">
+            <ion-icon slot="start" name="create-outline"></ion-icon>
+            Editar
+          </ion-button>
+          <ion-button
+            fill="clear"
+            size="small"
+            color="danger"
+            (click)="deleteOffer(offer)"
+          >
+            <ion-icon slot="start" name="trash-outline"></ion-icon>
+            Eliminar
+          </ion-button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="createOffer()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

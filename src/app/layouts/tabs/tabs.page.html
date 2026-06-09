@@ -26,14 +26,20 @@
 
     <!-- SOLO PROVEEDOR -->
     @if (role() === 'proveedor') {
-    <ion-tab-button tab="orders" (click)="handleTabClick('orders')">
-      <ion-icon name="receipt-outline"></ion-icon>
-      <ion-label>Horarios</ion-label>
+    <ion-tab-button tab="manage-offers" (click)="handleTabClick('manage-offers')">
+      <ion-icon
+        [name]="currenTab() === 'manage-offers' ? 'grid' : 'grid-outline'"
+      >
+      </ion-icon>
+      <ion-label>Mis Ofertas</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="orders" (click)="handleTabClick('orders')">
-      <ion-icon name="receipt-outline"></ion-icon>
-      <ion-label>Mis ventas</ion-label>
+    <ion-tab-button tab="provider-sales" (click)="handleTabClick('provider-sales')">
+      <ion-icon
+        [name]="currenTab() === 'provider-sales' ? 'receipt' : 'receipt-outline'"
+      >
+      </ion-icon>
+      <ion-label>Ventas</ion-label>
     </ion-tab-button>
     }
 

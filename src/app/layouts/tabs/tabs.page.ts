@@ -24,6 +24,8 @@ import {
   cash,
   cashOutline,
   mapSharp,
+  gridOutline,
+  grid,
 } from 'ionicons/icons';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 
@@ -70,6 +72,8 @@ export class TabsPage {
       colorPaletteOutline,
       cash,
       cashOutline,
+      gridOutline,
+      grid,
     });
   }
 }

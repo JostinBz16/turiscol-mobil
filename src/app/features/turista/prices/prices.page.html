@@ -1,0 +1,11 @@
+<ion-content>
+  <div class="prices-container">
+    <app-city-filter (select)="goToCity($event)"></app-city-filter>
+
+    <div class="empty-state">
+      <ion-icon name="location-outline"></ion-icon>
+      <h4>Selecciona una ciudad</h4>
+      <p>Elige una ciudad para ver los precios de referencia</p>
+    </div>
+  </div>
+</ion-content>

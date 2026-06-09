@@ -1,0 +1,166 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/manage-offers"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Oferta</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goEdit()" color="primary">
+        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading) {
+  <div class="loading-state">
+    <ion-spinner></ion-spinner>
+    <p>Cargando...</p>
+  </div>
+  } @else if (offer) {
+  <div class="offer-detail">
+    <!-- Imagen -->
+    @if (firstImage) {
+    <div class="hero">
+      <ion-img [src]="firstImage"></ion-img>
+    </div>
+    }
+
+    <div class="body">
+      <!-- Header -->
+      <div class="header-row">
+        <div class="title-section">
+          <ion-chip class="type-chip">{{ typeLabel(offer.type) }}</ion-chip>
+          <h1>{{ offer.name }}</h1>
+        </div>
+        <div class="status-badge" [class.active]="offer.active">
+          <ion-icon
+            [name]="offer.active ? 'checkmark-circle' : 'close-circle'"
+          ></ion-icon>
+          <span>{{ offer.active ? 'Activa' : 'Inactiva' }}</span>
+        </div>
+      </div>
+
+      <p class="description">{{ offer.description }}</p>
+
+      <!-- Precio -->
+      <div class="info-section">
+        <h3>Precio</h3>
+        <div class="price-row">
+          <ion-icon name="cash-outline"></ion-icon>
+          <span class="price">{{ formattedPrice }}</span>
+        </div>
+      </div>
+
+      <!-- Detalles por tipo -->
+      @if (offer.type === 'accommodation') {
+      <div class="info-section">
+        <h3>Detalles del Alojamiento</h3>
+        <div class="features-grid">
+          <div class="feature">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>{{ offer.maxGuests ?? '—' }} huéspedes</span>
+          </div>
+          <div class="feature">
+            <ion-icon name="bed-outline"></ion-icon>
+            <span>{{ offer.bedrooms ?? '—' }} habitaciones</span>
+          </div>
+          <div class="feature">
+            <ion-icon name="water-outline"></ion-icon>
+            <span>{{ offer.bathrooms ?? '—' }} baños</span>
+          </div>
+          <div class="feature">
+            <ion-icon name="paw-outline"></ion-icon>
+            <span
+              >{{ offer.allowPets ? 'Mascotas permitidas' : 'No mascotas'
+              }}</span
+            >
+          </div>
+        </div>
+      </div>
+      } @else if (offer.type === 'event') {
+      <div class="info-section">
+        <h3>Detalles del Evento</h3>
+        <div class="features-grid">
+          <div class="feature">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span
+              >{{ offer.startDate ? (offer.startDate | date:'dd MMM yyyy') : '—'
+              }}</span
+            >
+          </div>
+          <div class="feature">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Capacidad: {{ offer.maximumCapacity ?? '—' }}</span>
+          </div>
+        </div>
+      </div>
+      } @else if (offer.type === 'service') {
+      <div class="info-section">
+        <h3>Detalles del Servicio</h3>
+        <div class="features-grid">
+          <div class="feature">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ offer.durationInMinutes ?? '—' }} min</span>
+          </div>
+          <div class="feature">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Capacidad: {{ offer.capacity ?? '—' }} personas</span>
+          </div>
+        </div>
+      </div>
+      } @else if (offer.type === 'product') {
+      <div class="info-section">
+        <h3>Detalles del Producto</h3>
+        <div class="features-grid">
+          <div class="feature">
+            <ion-icon name="cube-outline"></ion-icon>
+            <span>Stock: {{ offer.currentStock ?? offer.stock ?? '—' }}</span>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- IDs -->
+      <div class="info-section meta">
+        <h3>Información adicional</h3>
+        <div class="meta-row">
+          <span class="label">ID:</span>
+          <span class="value">{{ offer.id }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="label">Ciudad ID:</span>
+          <span class="value">{{ offer.cityId ?? '—' }}</span>
+        </div>
+      </div>
+
+      <!-- Galería -->
+      @if (offer.images && offer.images.length > 1) {
+      <div class="info-section">
+        <h3>Galería ({{ offer.images.length }})</h3>
+        <div class="gallery">
+          @for (img of offer.images; track $index) {
+          <ion-img [src]="img"></ion-img>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Botón editar -->
+    <div class="actions">
+      <ion-button expand="block" color="primary" (click)="goEdit()">
+        <ion-icon slot="start" name="create-outline"></ion-icon>
+        Editar Oferta
+      </ion-button>
+    </div>
+  </div>
+  } @else if (error) {
+  <div class="empty-state">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <h4>{{ errorMessage }}</h4>
+    <ion-button fill="clear" (click)="loadOffer()">Reintentar</ion-button>
+  </div>
+  }
+</ion-content>

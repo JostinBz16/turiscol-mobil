@@ -1,0 +1,92 @@
+<ion-content class="explore-content">
+  <div class="content-wrapper">
+    <!-- 🔍 Buscador -->
+    <div class="search-container">
+      <div class="search-box">
+        <ion-icon name="search-outline"></ion-icon>
+        <ion-input
+          placeholder="Busca planes, destinos o experiencias"
+          clear-input="true"
+          [(ngModel)]="searchTerm"
+          (ionInput)="onSearchInput()"
+        ></ion-input>
+      </div>
+      <ion-button class="filter-btn" fill="clear" (click)="openFilters()">
+        <ion-icon name="options-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- 🎭 Tipos de Oferta -->
+    <div class="type-selector">
+      <div class="carousel">
+        @for (type of offerTypes; track type.value) {
+        <div
+          class="carousel-item type-pill"
+          [class.active]="selectedOfferType === type.value"
+          (click)="selectOfferType(type.value)"
+        >
+          <span>{{ type.label }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    @if (categoriesByType.length > 0) {
+    <div class="category-selector">
+      <div class="carousel">
+        @for (cat of categoriesByType; track cat.name) {
+        <div
+          class="carousel-item category-pill"
+          [class.active]="selectedCategoryName === cat.name"
+          (click)="selectCategory(cat.name)"
+        >
+          <span>{{ cat.name }}</span>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- ⭐ Resultados -->
+    <div class="section">
+      <h3>Ofertas</h3>
+
+      @if (loading) {
+      <div class="loading-state">
+        <ion-spinner></ion-spinner>
+        <p>Buscando ofertas...</p>
+      </div>
+      } @else if (error) {
+      <div class="empty-state">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <h4>{{ errorMessage }}</h4>
+        <ion-button fill="clear" (click)="fetchOffers()">
+          Reintentar
+        </ion-button>
+      </div>
+      } @else if (filteredOffers.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="search-outline"></ion-icon>
+        <h4>No se encontraron ofertas</h4>
+        <p>Intenta con otros filtros o términos de búsqueda</p>
+      </div>
+      } @else { @for (offer of filteredOffers; track offer.id) {
+      <div class="plan-card" (click)="goToDetail(offer.id)">
+        <ion-img [src]="offer.images[0]" />
+
+        <div class="plan-info">
+          <div>
+            <h4>{{ offer.name }}</h4>
+            <p>{{ offer.description }}</p>
+          </div>
+
+          <div class="plan-footer">
+            <span class="rating">⭐ {{ 0 }}</span>
+            <span class="price"> {{ offer.basePrice | currency:'COP' }} </span>
+          </div>
+        </div>
+      </div>
+      } }
+    </div>
+  </div>
+</ion-content>

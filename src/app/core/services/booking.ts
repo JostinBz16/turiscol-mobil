@@ -24,6 +24,18 @@ export class BookingService {
     );
   }
 
+  getProviderBookings(params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${this.api}/provider`, { params: httpParams }).pipe(
+      catchError((err) => {
+        console.error('Error fetching provider bookings', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
   getUserBookings(userId: string, params?: { page?: number; size?: number }): Observable<any> {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);

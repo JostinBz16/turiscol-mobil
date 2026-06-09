@@ -1,0 +1,199 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/manage-offers"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isNew ? 'Nueva Oferta' : 'Editar Oferta' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading) {
+  <div class="loading-state">
+    <ion-spinner></ion-spinner>
+    <p>Cargando...</p>
+  </div>
+  } @else {
+  <div class="form-wrapper">
+    <!-- Información básica -->
+    <div class="section-card">
+      <div class="section-title">Información básica</div>
+
+      <ion-item>
+        <ion-label position="stacked">Nombre</ion-label>
+        <ion-input [(ngModel)]="form.name" placeholder="Nombre de la oferta"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Descripción</ion-label>
+        <ion-textarea [(ngModel)]="form.description" rows="4" placeholder="Describe tu oferta"></ion-textarea>
+      </ion-item>
+
+      @if (isNew) {
+      <ion-item>
+        <ion-label position="stacked">Tipo</ion-label>
+        <ion-select [(ngModel)]="form.type">
+          <ion-select-option value="accommodation">Alojamiento</ion-select-option>
+          <ion-select-option value="event">Evento</ion-select-option>
+          <ion-select-option value="service">Servicio</ion-select-option>
+          <ion-select-option value="product">Producto</ion-select-option>
+        </ion-select>
+      </ion-item>
+      }
+
+      <ion-item>
+        <ion-label position="stacked">Precio base</ion-label>
+        <ion-input type="number" [(ngModel)]="form.baseprice" placeholder="0"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Activa</ion-label>
+        <ion-toggle slot="end" [(ngModel)]="form.active" color="success"></ion-toggle>
+      </ion-item>
+    </div>
+
+    <!-- Detalles del alojamiento -->
+    @if (form.type === 'accommodation') {
+    <div class="section-card">
+      <div class="section-title">Detalles del alojamiento</div>
+
+      <ion-item>
+        <ion-label position="stacked">Precio por noche</ion-label>
+        <ion-input type="number" [(ngModel)]="form.pricePerNight" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Máx. huéspedes</ion-label>
+        <ion-input type="number" [(ngModel)]="form.maxGuests" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Habitaciones</ion-label>
+        <ion-input type="number" [(ngModel)]="form.bedrooms" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Baños</ion-label>
+        <ion-input type="number" [(ngModel)]="form.bathrooms" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Mascotas</ion-label>
+        <ion-toggle slot="end" [(ngModel)]="form.allowPets" color="success"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label>Niños</ion-label>
+        <ion-toggle slot="end" [(ngModel)]="form.allowChildren" color="success"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Categoría</ion-label>
+        <ion-select [(ngModel)]="form.accommodationCategory">
+          <ion-select-option value="HOSPEDAJE">Hospedaje</ion-select-option>
+          <ion-select-option value="PASADIA">Pasadia</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+    }
+
+    <!-- Detalles del evento -->
+    @if (form.type === 'event') {
+    <div class="section-card">
+      <div class="section-title">Detalles del evento</div>
+
+      <ion-item>
+        <ion-label position="stacked">Precio por entrada</ion-label>
+        <ion-input type="number" [(ngModel)]="form.ticketPrice" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Inicio</ion-label>
+        <ion-input type="datetime-local" [(ngModel)]="form.startDate"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Fin</ion-label>
+        <ion-input type="datetime-local" [(ngModel)]="form.endDate"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Capacidad máxima</ion-label>
+        <ion-input type="number" [(ngModel)]="form.maximumCapacity" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Tipo de evento</ion-label>
+        <ion-select [(ngModel)]="form.eventType">
+          <ion-select-option value="CONCERT">Concierto</ion-select-option>
+          <ion-select-option value="WORKSHOP">Taller</ion-select-option>
+          <ion-select-option value="CONFERENCE">Conferencia</ion-select-option>
+          <ion-select-option value="FESTIVAL">Festival</ion-select-option>
+          <ion-select-option value="EXHIBITION">Exhibición</ion-select-option>
+          <ion-select-option value="TOUR">Tour</ion-select-option>
+          <ion-select-option value="OTHER">Otro</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+    }
+
+    <!-- Detalles del servicio -->
+    @if (form.type === 'service') {
+    <div class="section-card">
+      <div class="section-title">Detalles del servicio</div>
+
+      <ion-item>
+        <ion-label position="stacked">Precio por persona</ion-label>
+        <ion-input type="number" [(ngModel)]="form.pricePerPerson" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Duración (minutos)</ion-label>
+        <ion-input type="number" [(ngModel)]="form.durationInMinutes" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Capacidad</ion-label>
+        <ion-input type="number" [(ngModel)]="form.capacity" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Requiere agenda</ion-label>
+        <ion-toggle slot="end" [(ngModel)]="form.requiresSchedule" color="success"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Categoría</ion-label>
+        <ion-select [(ngModel)]="form.serviceCategory">
+          <ion-select-option value="GASTRONOMIA">Gastronomía</ion-select-option>
+          <ion-select-option value="TOUR">Tour</ion-select-option>
+          <ion-select-option value="ARTESANIA">Artesanía</ion-select-option>
+          <ion-select-option value="TRANSPORTE">Transporte</ion-select-option>
+          <ion-select-option value="GUIA">Guía</ion-select-option>
+          <ion-select-option value="SERVICIO_TECNICO">Servicio Técnico</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+    }
+
+    <!-- Detalles del producto -->
+    @if (form.type === 'product') {
+    <div class="section-card">
+      <div class="section-title">Detalles del producto</div>
+
+      <ion-item>
+        <ion-label position="stacked">Stock</ion-label>
+        <ion-input type="number" [(ngModel)]="form.currentStock" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Categoría</ion-label>
+        <ion-select [(ngModel)]="form.productCategory">
+          <ion-select-option value="ARTESANIA">Artesanía</ion-select-option>
+          <ion-select-option value="GASTRONOMIA">Gastronomía</ion-select-option>
+          <ion-select-option value="TEXTIL">Textil</ion-select-option>
+          <ion-select-option value="BEBIDA">Bebida</ion-select-option>
+          <ion-select-option value="OTRO">Otro</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+    }
+
+    <div class="actions">
+      <ion-button expand="block" color="primary" (click)="save()" [disabled]="saving">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        {{ saving ? 'Guardando...' : 'Guardar' }}
+      </ion-button>
+      <ion-button expand="block" color="medium" fill="outline" (click)="cancel()">
+        <ion-icon slot="start" name="close-outline"></ion-icon>
+        Cancelar
+      </ion-button>
+    </div>
+  </div>
+  }
+</ion-content>
