@@ -1,13 +1,11 @@
 <ion-header>
   <ion-toolbar>
-    <div class="header-row">
-      <span class="page-title">Precios</span>
-      <ion-buttons>
-        <ion-button (click)="goToProfile()" color="light">
-          <ion-icon slot="icon-only" name="person" size="small"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </div>
+    <span class="page-title">Precios</span>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToProfile()" color="light">
+        <ion-icon slot="icon-only" name="person" size="small"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -15,12 +13,45 @@
 
 <ion-content>
   <div class="prices-container">
-    <app-city-filter (select)="goToCity($event)"></app-city-filter>
-
+    @if (!city()) {
     <div class="empty-state">
       <ion-icon name="location-outline"></ion-icon>
       <h4>Selecciona una ciudad</h4>
-      <p>Elige una ciudad para ver los precios de referencia</p>
+      <p>Usa el selector de ciudad arriba para ver los precios de referencia</p>
     </div>
+    } @else if (loading()) {
+    <div class="loading-state">
+      <ion-spinner></ion-spinner>
+      <p>Cargando precios...</p>
+    </div>
+    } @else if (error()) {
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <h4>{{ errorMessage() }}</h4>
+      <ion-button fill="clear" (click)="loadPrices()">Reintentar</ion-button>
+    </div>
+    } @else if (groupedPrices().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="pricetags-outline"></ion-icon>
+      <h4>Sin precios disponibles</h4>
+      <p>No encontramos precios de referencia para {{ city()?.name }}</p>
+    </div>
+    } @else { @for (group of groupedPrices(); track group.category) {
+    <div class="category-group">
+      <h3 class="category-title">{{ group.category }}</h3>
+      @for (item of group.items; track item.id) {
+      <div class="price-card">
+        <div class="price-info">
+          <h4>{{ item.name }}</h4>
+          <p>{{ item.description }}</p>
+        </div>
+        <span class="price"
+          >{{ item.minPrice | currency:'COP':'symbol-narrow':'1.0-0' }} - {{
+          item.maxPrice | currency:'COP':'symbol-narrow':'1.0-0' }}</span
+        >
+      </div>
+      }
+    </div>
+    } }
   </div>
 </ion-content>

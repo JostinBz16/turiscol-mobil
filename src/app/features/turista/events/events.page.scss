@@ -1,15 +1,6 @@
 ion-toolbar {
-  --padding-start: 0;
+  --padding-start: 16px;
   --padding-end: 0;
-}
-
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 100%;
-  padding: 0 16px;
 }
 
 .page-title {

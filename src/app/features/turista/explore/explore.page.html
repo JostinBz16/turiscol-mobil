@@ -1,30 +1,27 @@
 <ion-header>
   <ion-toolbar>
-    <div class="header-row">
-      <span class="page-title">Explorar</span>
-      <ion-buttons>
-        <ion-button (click)="goToProfile()" color="light">
-          <ion-icon slot="icon-only" name="person" size="small"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </div>
+    <span class="page-title">Explorar</span>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToProfile()" color="light">
+        <ion-icon slot="icon-only" name="person" size="small"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<app-city-bar/>
+<app-city-bar />
 
 <ion-content class="explore-content">
   <div class="content-wrapper">
     <!-- 🔍 Buscador -->
     <div class="search-container">
       <div class="search-box">
-        <ion-icon name="search-outline"></ion-icon>
         <ion-input
-          placeholder="Busca planes, destinos o experiencias"
-          clear-input="true"
+          placeholder="Busca tus próximas aventuras.."
           [(ngModel)]="searchTerm"
           (ionInput)="onSearchInput()"
         ></ion-input>
+        <ion-icon name="search-outline"></ion-icon>
       </div>
       <ion-button class="filter-btn" fill="clear" (click)="openFilters()">
         <ion-icon name="options-outline"></ion-icon>
