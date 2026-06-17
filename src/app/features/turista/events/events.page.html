@@ -1,55 +1,86 @@
-<ion-header translucent>
+<ion-header>
   <ion-toolbar>
-    <ion-title>Eventos</ion-title>
+    <div class="header-row">
+      <span class="page-title">Calendario Cultural</span>
+      <ion-buttons>
+        <ion-button routerLink="/tabs/account" color="light">
+          <ion-icon slot="icon-only" name="person" size="small"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </div>
   </ion-toolbar>
 </ion-header>
 
+<app-city-bar/>
+
 <ion-content>
   <div class="events-container">
-    <!-- FILTRO DE CIUDAD -->
-    <app-city-filter (select)="filterByCity($event)"></app-city-filter>
+    <!-- NAVEGACIÓN POR MES -->
+    <div class="month-nav">
+      <ion-button fill="clear" (click)="prevMonth()">
+        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      <span class="month-label">
+        {{ monthNames[currentMonth()] }} {{ currentYear() }}
+      </span>
+      <ion-button fill="clear" (click)="nextMonth()">
+        <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
 
-    <!-- BOTÓN MOSTRAR/OCULTAR FILTRO AVANZADO -->
-    <ion-button
-      expand="block"
-      [fill]="showAdvancedFilter ? 'outline' : 'solid'"
-      (click)="toggleAdvancedFilter()"
-      class="px-4"
-    >
-      {{ showAdvancedFilter ? 'Ocultar Filtro Avanzado' : 'Mostrar Filtro
-      Avanzado' }}
-    </ion-button>
-
-    <!-- FILTRO AVANZADO -->
-    @if (showAdvancedFilter) {
-    <app-event-advance-filter
-      (dateFromChange)="onDateFrom($event)"
-      (dateToChange)="onDateTo($event)"
-      (statusChange)="onStatusChange($event)"
-      (clearFilters)="resetAdvancedFilters()"
-    ></app-event-advance-filter>
-
-    }
+    <!-- FILTRO POR CATEGORÍA -->
+    <div class="category-chips">
+      <ion-chip
+        [color]="selectedCategory() === null ? 'primary' : 'medium'"
+        (click)="setCategory(null)"
+      >
+        <ion-label>Todos</ion-label>
+      </ion-chip>
+      <ion-chip
+        [color]="selectedCategory() === 'FESTIVAL' ? 'tertiary' : 'medium'"
+        (click)="setCategory('FESTIVAL')"
+      >
+        <ion-label>Festivales</ion-label>
+      </ion-chip>
+      <ion-chip
+        [color]="selectedCategory() === 'CONCERT' ? 'tertiary' : 'medium'"
+        (click)="setCategory('CONCERT')"
+      >
+        <ion-label>Conciertos</ion-label>
+      </ion-chip>
+      <ion-chip
+        [color]="selectedCategory() === 'EXHIBITION' ? 'tertiary' : 'medium'"
+        (click)="setCategory('EXHIBITION')"
+      >
+        <ion-label>Exposiciones</ion-label>
+      </ion-chip>
+      <ion-chip
+        [color]="selectedCategory() === 'WORKSHOP' ? 'tertiary' : 'medium'"
+        (click)="setCategory('WORKSHOP')"
+      >
+        <ion-label>Talleres</ion-label>
+      </ion-chip>
+    </div>
 
     <!-- LISTA DE EVENTOS -->
-    @if (loading) {
+    @if (loading()) {
     <div class="loading-state">
       <ion-spinner></ion-spinner>
       <p>Cargando eventos...</p>
     </div>
-    } @else if (error) {
+    } @else if (error()) {
     <div class="empty-state">
       <ion-icon name="alert-circle-outline"></ion-icon>
       <h4>{{ errorMessage }}</h4>
-      <ion-button fill="clear" (click)="applyFilters()">Reintentar</ion-button>
+      <ion-button fill="clear" (click)="loadEvents()">Reintentar</ion-button>
     </div>
     } @else if (filteredEvents.length > 0) {
     <app-event-list [events]="filteredEvents"></app-event-list>
     } @else {
     <div class="empty-state">
       <ion-icon name="calendar-outline"></ion-icon>
-      <h4>No hay eventos que coincidan</h4>
-      <p>Prueba con otros filtros o fechas diferentes</p>
+      <h4>Sin eventos este mes</h4>
+      <p>Prueba con otro mes o categoría</p>
     </div>
     }
   </div>

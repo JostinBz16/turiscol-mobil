@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
   IonHeader,
-  IonTitle,
   IonToolbar,
   ModalController,
   IonButton,
@@ -12,6 +11,8 @@ import {
   IonImg,
   IonInput,
   IonSpinner,
+  IonButtons,
+  NavController,
 } from '@ionic/angular/standalone';
 import { Category } from 'src/app/core/models/CategoryModel';
 import { CategoryService } from 'src/app/core/services/category.service';
@@ -20,12 +21,16 @@ import {
   optionsOutline,
   searchOutline,
   alertCircleOutline,
+  person,
+  locationOutline,
 } from 'ionicons/icons';
 import { FiltermodalExploreComponent } from './components/filtermodal-explore/filtermodal-explore.component';
 import { BookingFilters, Offer, OfferType } from 'src/app/core/models/Offers';
 import { OfferService } from 'src/app/core/services/offers';
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { SelectedCityService } from 'src/app/core/services/selected-city.service';
+import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -40,6 +45,11 @@ import { firstValueFrom } from 'rxjs';
     IonButton,
     IonContent,
     IonInput,
+    IonHeader,
+    IonToolbar,
+
+    IonButtons,
+    CitySelectorBarComponent,
     CommonModule,
     FormsModule,
   ],
@@ -54,6 +64,10 @@ export class ExplorePage implements OnInit {
   searchTerm = '';
   selectedCategoryName?: string;
   selectedOfferType: OfferType | 'ALL' = OfferType.ACCOMMODATION;
+
+  private selectedCityService = inject(SelectedCityService);
+  private navCtrl = inject(NavController);
+  city = this.selectedCityService.city;
 
   advancedFilters: BookingFilters = {
     minPrice: 0,
@@ -79,7 +93,11 @@ export class ExplorePage implements OnInit {
     private offerService: OfferService,
     private navService: NavigationService,
   ) {
-    addIcons({ searchOutline, optionsOutline, alertCircleOutline });
+    addIcons({ searchOutline, optionsOutline, alertCircleOutline, person, locationOutline });
+  }
+
+  goToProfile() {
+    this.navCtrl.navigateRoot('/tabs/account');
   }
 
   async ngOnInit() {

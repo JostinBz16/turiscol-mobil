@@ -1,21 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
-  IonTitle,
   IonContent,
   IonButton,
   IonSpinner,
   IonIcon,
+  IonChip,
+  IonLabel,
+  IonButtons,
+  IonRouterLink,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { EventListComponent } from './components/event-list/event-list.component';
-import { CityFilterComponent } from 'src/app/components/city-filter/city-filter.component';
 import { addIcons } from 'ionicons';
-import { filterOutline, refreshCircleOutline } from 'ionicons/icons';
-import { EventAdvanceFilterComponent } from './components/event-advance-filter/event-advance-filter.component';
+import {
+  filterOutline,
+  refreshCircleOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
+  person,
+} from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { EventService } from 'src/app/core/services/event';
+import { SelectedCityService } from 'src/app/core/services/selected-city.service';
+import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
 
 @Component({
   selector: 'app-events',
@@ -26,57 +36,40 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
     CommonModule,
     IonHeader,
     IonToolbar,
-    IonTitle,
+
     IonContent,
     IonButton,
     IonSpinner,
     IonIcon,
+    IonChip,
+    IonLabel,
+    IonButtons,
+    IonRouterLink,
+    CitySelectorBarComponent,
     EventListComponent,
-    CityFilterComponent,
-    EventAdvanceFilterComponent,
   ],
 })
 export class EventsPage implements OnInit {
-  selectedCity: any = null;
-  loading = false;
-  error = false;
+  private eventService = inject(EventService);
+  private selectedCityService = inject(SelectedCityService);
+
+  city = this.selectedCityService.city;
+  loading = signal(false);
+  error = signal(false);
   errorMessage = '';
 
-  showAdvancedFilter = false;
-
-  events = [
-    {
-      id: 1,
-      title: 'Festival del Café',
-      city: 'Bogotá',
-      date: '2025-04-12',
-      status: 'activo',
-      image: 'https://picsum.photos/300?1',
-    },
-    {
-      id: 2,
-      title: 'Feria de las Flores',
-      city: 'Medellín',
-      date: '2025-06-01',
-      status: 'inactivo',
-      image: 'https://picsum.photos/300?2',
-    },
-    {
-      id: 3,
-      title: 'Maratón de Cali',
-      city: 'Cali',
-      date: '2025-02-20',
-      status: 'activo',
-      image: 'https://picsum.photos/300?3',
-    },
-  ];
-
+  allEvents: any[] = [];
   filteredEvents: any[] = [];
 
-  // Filtros avanzados
-  dateFrom: string | null = null;
-  dateTo: string | null = null;
-  statusFilter = 'todos';
+  currentMonth = signal(new Date().getMonth());
+  currentYear = signal(new Date().getFullYear());
+
+  selectedCategory = signal<string | null>(null);
+
+  readonly monthNames = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+  ];
 
   constructor(
     private router: Router,
@@ -84,63 +77,82 @@ export class EventsPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    addIcons({ filterOutline, refreshCircleOutline });
+    addIcons({
+      filterOutline,
+      refreshCircleOutline,
+      chevronBackOutline,
+      chevronForwardOutline,
+      person,
+    });
+    this.loadEvents();
+  }
+
+  loadEvents() {
+    this.loading.set(true);
+    this.error.set(false);
+
+    const currentCity = this.city();
+    const obs = currentCity
+      ? this.eventService.getByCity(currentCity.id)
+      : this.eventService.getAll();
+
+    obs.subscribe({
+      next: (res: any) => {
+        this.allEvents = res.content || res || [];
+        this.applyFilters();
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.error.set(true);
+        this.errorMessage = 'Error al cargar eventos';
+      },
+    });
+  }
+
+  prevMonth() {
+    if (this.currentMonth() === 0) {
+      this.currentMonth.set(11);
+      this.currentYear.set(this.currentYear() - 1);
+    } else {
+      this.currentMonth.set(this.currentMonth() - 1);
+    }
     this.applyFilters();
   }
 
-  toggleAdvancedFilter() {
-    this.showAdvancedFilter = !this.showAdvancedFilter;
+  nextMonth() {
+    if (this.currentMonth() === 11) {
+      this.currentMonth.set(0);
+      this.currentYear.set(this.currentYear() + 1);
+    } else {
+      this.currentMonth.set(this.currentMonth() + 1);
+    }
+    this.applyFilters();
   }
 
   applyFilters() {
-    this.filteredEvents = this.events
-      .filter((ev) => !this.selectedCity || ev.city === this.selectedCity.name)
-      .filter(
-        (ev) =>
-          this.statusFilter === 'todos' || ev.status === this.statusFilter,
-      )
-      .filter((ev) => !this.dateFrom || ev.date >= this.dateFrom)
-      .filter((ev) => !this.dateTo || ev.date <= this.dateTo);
+    const month = this.currentMonth();
+    const year = this.currentYear();
+    const category = this.selectedCategory();
+
+    this.filteredEvents = this.allEvents.filter((ev) => {
+      const eventDate = new Date(ev.eventDate || ev.date);
+      if (eventDate.getMonth() !== month || eventDate.getFullYear() !== year) {
+        return false;
+      }
+      if (category && ev.eventType !== category) {
+        return false;
+      }
+      return true;
+    });
   }
 
-  filterByCity(cityObj: any) {
-    this.selectedCity = cityObj;
+  setCategory(cat: string | null) {
+    this.selectedCategory.set(cat);
     this.applyFilters();
   }
 
-  onDateFrom(value: string | null) {
-    this.dateFrom = value;
-    this.applyFilters();
-  }
-
-  onDateTo(value: string | null) {
-    this.dateTo = value;
-    this.applyFilters();
-  }
-
-  onStatusChange(value: string) {
-    this.statusFilter = value;
-    this.applyFilters();
-  }
-
-  toggleStatus(ev: any) {
-    ev.status = ev.status === 'activo' ? 'inactivo' : 'activo';
-    this.applyFilters();
-  }
-
-  resetCityFilter() {
-    this.selectedCity = null;
-    this.applyFilters();
-  }
-
-  resetAdvancedFilters() {
-    this.dateFrom = null;
-    this.dateTo = null;
-    this.statusFilter = 'todos';
-    this.applyFilters();
-  }
-
-  goToDetail(id: number) {
+  goToDetail(id: string) {
     this.navService.setReturnUrl('/tabs/events');
     this.router.navigate(['/tabs/events', id]);
   }

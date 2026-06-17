@@ -295,6 +295,91 @@ Se analizaron y modificaron ambos proyectos (`turiscol-mobilapp` y `turiscol-bac
 
 ---
 
+---
+
+## Parte 4: Plan de Mejoras — Navegación, Mapa, Calendario Cultural
+
+### 4.1 Arquitectura: Contexto global de ciudad
+
+**Archivo nuevo:** `src/app/core/services/selected-city.service.ts`
+
+**Qué:** Service con `signal<Municipality | null>` que persiste la ciudad seleccionada en localStorage. Todas las páginas turista leen de este signal para filtrar contenido. Se inyecta como `providedIn: 'root'`.
+
+### 4.2 Navegación: Nuevos tabs turista
+
+**Archivos modificados:** `tabs.page.html`, `tabs.page.ts`, `tabs.routes.ts`
+
+**Qué:**
+- Quitado tab `account` (Perfil) del tab bar turista
+- Agregado tab `map` (Mapa) con Leaflet
+- Renombrado events route como calendario cultural
+- Perfil movido a icono global en el header de cada página turista
+
+**Nuevos tabs turista:**
+| Tab | Label | Ícono | Página |
+|-----|-------|-------|--------|
+| home | Inicio | home | HomePage |
+| offers | Explorar | map | ExplorePage |
+| prices | Precios | cash | PricesPage |
+| events | Calendario | calendar | EventsPage (conectado a API real) |
+| map | Mapa | globe | MapPage (Leaflet + destinos) |
+
+### 4.3 Frontend: DestinationService
+
+**Archivo nuevo:** `src/app/core/services/destination.service.ts`
+
+**Qué:** Consume `GET /locations/destinations/by-city/{cityId}` y `GET /locations/destinations/by-city/{cityId}/type/{type}`.
+
+### 4.4 Frontend: MapPage
+
+**Archivo nuevo:** `src/app/features/turista/map/map.page.ts`
+
+**Dependencia:** `leaflet` + `@types/leaflet`
+
+**Qué:** Mapa interactivo con Leaflet centrado en la ciudad seleccionada. Muestra marcadores por cada destino cultural (MUSEUM, PARK, BEACH, HISTORICAL_SITE, etc.) con popups de información. Filtros flotantes por tipo de destino.
+
+### 4.5 Frontend: EventsPage conectada a API real
+
+**Archivo modificado:** `events.page.ts`, `events.page.html`
+
+**Qué:** Reemplaza datos mock por llamadas reales a `EventService.getAll()` y `EventService.getByCity()`. Agrega navegación por mes y calendario visual. Here da la ciudad de `SelectedCityService`.
+
+### 4.6 Frontend: Home rediseñado
+
+**Archivo modificado:** `home.page.ts`, `home.page.html`, `home.page.scss`
+
+**Qué:**
+- Agrega sección de **dato curioso** rotativo (hardcoded, 15 datos culturales colombianos)
+- Convierte categorías en **chips de tipo de oferta** ("¿Qué buscas?")
+- Muestra **destinos de la ciudad seleccionada** vía DestinationService
+- Conecta ofertas destacadas a la ciudad global
+
+### 4.7 Backend: Festividades culturales (PENDIENTE)
+
+**Archivos nuevos (experience-service):**
+
+| Archivo | Descripción |
+|---------|-------------|
+| `entities/Festivity.java` | Entidad JPA: id, name, description, startDate, endDate, cityId, image, category, culturalImportance, active |
+| `controllers/FestivityController.java` | `GET /festivities`, `GET /festivities/by-city/{cityId}`, `GET /festivities/upcoming` |
+| `services/FestivityServiceImpl.java` | CRUD con caché |
+| `repositories/FestivityRepository.java` | Consultas por ciudad, mes, rango de fechas |
+| `config/FestivityDataInitializer.java` | Seed con 20+ festividades colombianas |
+
+**Endpoint planeados:**
+```
+GET /api/v1/festivities
+GET /api/v1/festivities/by-city/{cityId}
+GET /api/v1/festivities/upcoming
+GET /api/v1/festivities/{id}
+```
+
+### 4.8 Backend: Seed data de destinos (PENDIENTE)
+
+Poblar `destinations` con puntos culturales reales por ciudad (museos, plazas, iglesias, parques) con coordenadas geográficas.
+
+---
+
 ## Cómo Iniciar
 
 ```bash

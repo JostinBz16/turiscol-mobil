@@ -388,3 +388,62 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 | Cleanup de notificaciones viejas (TTL) | Baja |
 
 **Contexto:** Para push notifications se necesita Firebase Cloud Messaging (FCM) + plugin `@capacitor/push-notifications` en Ionic.
+
+---
+
+## 8. Pendientes — Backend
+
+### 8.1 Festividades culturales (FestivityController)
+
+Nueva entidad para el calendario cultural. Festividades recurrentes como Carnaval de Barranquilla,
+Feria de las Flores, etc. No deben confundirse con EventOffer (ofertas de tipo evento vendibles).
+
+| Método | Path | Descripción |
+|--------|------|-------------|
+| POST | `/api/v1/festivities` | Crear festividad |
+| GET | `/api/v1/festivities` | Listar todas (paginado) |
+| GET | `/api/v1/festivities/{id}` | Obtener por ID |
+| PUT | `/api/v1/festivities/{id}` | Actualizar |
+| DELETE | `/api/v1/festivities/{id}` | Eliminar |
+| GET | `/api/v1/festivities/by-city/{cityId}` | Festividades por ciudad |
+| GET | `/api/v1/festivities/upcoming` | Próximas festividades (desde hoy) |
+
+**Entidad Festivity:**
+```java
+@Entity @Table(name = "festivities")
+public class Festivity {
+    @Id @GeneratedValue(strategy = GenerationType.UUID) private UUID id;
+    private String name;
+    private String description;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Long cityId;
+    private String image;
+    private String category; // FIESTA, MUSICA, GASTRONOMIA, RELIGIOSA, FERIA
+    private String culturalImportance; // "Patrimonio UNESCO", "Tradicional", etc.
+    private Boolean active = true;
+}
+```
+
+### 8.2 Seed data: Destinos culturales por ciudad
+
+Poblar tabla `destinations` con puntos culturales reales con coordenadas (lat/long):
+
+| Ciudad | Destinos sugeridos |
+|--------|-------------------|
+| Medellín | Plaza Botero, Museo de Antioquia, Parque Arví, Pueblito Paisa, Comuna 13, Jardín Botánico |
+| Bogotá | Monserrate, Museo del Oro, La Candelaria, Plaza de Bolívar, Usaquén, Museo Botero |
+| Cartagena | Castillo San Felipe, Centro Histórico, Getsemaní, Islas del Rosario, Boca Grande |
+| Cali | Cristo Rey, Parque del Perro, Zoológico, San Antonio, Río Cali |
+| Santa Marta | Parque Tayrona, Quinta de San Pedro, Ciudad Perdida, Rodadero, Taganga |
+
+### 8.3 Gateway: Rutas para festividades
+
+Agregar en `gateway-service`:
+```yaml
+- id: experience-festivities
+  uri: lb://EXPERIENCE-SERVICE
+  predicates:
+    - Path=/api/v1/festivities/**
+  filters:
+    - StripPrefix=2

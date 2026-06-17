@@ -23,6 +23,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { saveOutline, closeOutline } from 'ionicons/icons';
 import { OfferService } from 'src/app/core/services/offers';
+import { AuthService } from 'src/app/features/auth/login/services/auth';
+import { MunicipalityService } from 'src/app/core/services/municipality.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -57,12 +59,17 @@ export class OfferEditorPage implements OnInit {
   saving = false;
   offerId: string | null = null;
 
+  searchResults: any[] = [];
+  selectedCity: any = null;
+  searchText = '';
+
   form: any = {
     name: '',
     description: '',
     baseprice: 0,
     type: 'accommodation',
     active: true,
+    cityId: null,
     // accommodation
     pricePerNight: null,
     maxGuests: null,
@@ -92,6 +99,8 @@ export class OfferEditorPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private offerService: OfferService,
+    private authStore: AuthService,
+    private municipalityService: MunicipalityService,
   ) {
     addIcons({ saveOutline, closeOutline });
   }
@@ -101,6 +110,48 @@ export class OfferEditorPage implements OnInit {
     if (this.offerId) {
       this.isNew = false;
       await this.loadOffer();
+    } else if (this.form.cityId) {
+      await this.resolveCityName(this.form.cityId);
+    }
+  }
+
+  async searchCities(event?: any) {
+    const value = event ? (event.detail?.value ?? '') : this.searchText;
+    const q = value.trim();
+    if (!q || q.length < 2) {
+      this.searchResults = [];
+      return;
+    }
+    try {
+      const res = await firstValueFrom(this.municipalityService.search(q));
+      this.searchResults = res.content ?? [];
+    } catch {
+      this.searchResults = [];
+    }
+  }
+
+  selectCity(city: any) {
+    this.selectedCity = city;
+    this.form.cityId = city.id;
+    this.searchText = '';
+    this.searchResults = [];
+  }
+
+  clearCity() {
+    this.selectedCity = null;
+    this.form.cityId = null;
+    this.searchText = '';
+    this.searchResults = [];
+  }
+
+  private async resolveCityName(cityId: any) {
+    if (!cityId) return;
+    try {
+      this.selectedCity = await firstValueFrom(
+        this.municipalityService.getById(String(cityId)),
+      );
+    } catch {
+      this.selectedCity = null;
     }
   }
 
@@ -118,6 +169,7 @@ export class OfferEditorPage implements OnInit {
         baseprice: offer.baseprice ?? offer.basePrice ?? 0,
         type: offer.type ?? 'accommodation',
         active: offer.active ?? true,
+        cityId: offer.cityId ?? null,
         pricePerNight: offer.pricePerNight ?? null,
         maxGuests: offer.maxGuests ?? null,
         bedrooms: offer.bedrooms ?? null,
@@ -138,6 +190,9 @@ export class OfferEditorPage implements OnInit {
         currentStock: offer.currentStock ?? offer.stock ?? null,
         productCategory: offer.productCategory ?? null,
       };
+      if (offer.cityId) {
+        await this.resolveCityName(offer.cityId);
+      }
     } catch (err) {
       console.error('Error loading offer', err);
     }
@@ -153,6 +208,8 @@ export class OfferEditorPage implements OnInit {
         baseprice: this.form.baseprice,
         type: this.form.type,
         active: this.form.active,
+        providerId: this.authStore.userId(),
+        cityId: this.form.cityId,
       };
 
       const type = this.form.type;

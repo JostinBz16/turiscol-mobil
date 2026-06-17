@@ -21,19 +21,28 @@
 
       <ion-item>
         <ion-label position="stacked">Nombre</ion-label>
-        <ion-input [(ngModel)]="form.name" placeholder="Nombre de la oferta"></ion-input>
+        <ion-input
+          [(ngModel)]="form.name"
+          placeholder="Nombre de la oferta"
+        ></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Descripción</ion-label>
-        <ion-textarea [(ngModel)]="form.description" rows="4" placeholder="Describe tu oferta"></ion-textarea>
+        <ion-textarea
+          [(ngModel)]="form.description"
+          rows="4"
+          placeholder="Describe tu oferta"
+        ></ion-textarea>
       </ion-item>
 
       @if (isNew) {
       <ion-item>
         <ion-label position="stacked">Tipo</ion-label>
         <ion-select [(ngModel)]="form.type">
-          <ion-select-option value="accommodation">Alojamiento</ion-select-option>
+          <ion-select-option value="accommodation"
+            >Alojamiento</ion-select-option
+          >
           <ion-select-option value="event">Evento</ion-select-option>
           <ion-select-option value="service">Servicio</ion-select-option>
           <ion-select-option value="product">Producto</ion-select-option>
@@ -43,13 +52,48 @@
 
       <ion-item>
         <ion-label position="stacked">Precio base</ion-label>
-        <ion-input type="number" [(ngModel)]="form.baseprice" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.baseprice"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
 
+      @if (selectedCity) {
+      <ion-item>
+        <ion-label>Ciudad</ion-label>
+        <span>{{ selectedCity.name }}</span>
+        <ion-button slot="end" fill="clear" size="small" (click)="clearCity()">
+          Cambiar
+        </ion-button>
+      </ion-item>
+      } @else {
+      <ion-item>
+        <ion-label position="stacked">Ciudad</ion-label>
+        <ion-input
+          [(ngModel)]="searchText"
+          (ionInput)="searchCities($event)"
+          placeholder="Escribe el nombre de la ciudad..."
+        ></ion-input>
+      </ion-item>
+      @if (searchResults.length) {
+      <div class="city-results">
+        @for (city of searchResults; track city.id) {
+        <ion-item button (click)="selectCity(city)">
+          <ion-label>{{ city.name }}</ion-label>
+        </ion-item>
+        }
+      </div>
+      } } @if (!isNew) {
       <ion-item>
         <ion-label>Activa</ion-label>
-        <ion-toggle slot="end" [(ngModel)]="form.active" color="success"></ion-toggle>
+        <ion-toggle
+          slot="end"
+          [(ngModel)]="form.active"
+          color="success"
+        ></ion-toggle>
       </ion-item>
+      }
     </div>
 
     <!-- Detalles del alojamiento -->
@@ -59,27 +103,51 @@
 
       <ion-item>
         <ion-label position="stacked">Precio por noche</ion-label>
-        <ion-input type="number" [(ngModel)]="form.pricePerNight" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.pricePerNight"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Máx. huéspedes</ion-label>
-        <ion-input type="number" [(ngModel)]="form.maxGuests" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.maxGuests"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Habitaciones</ion-label>
-        <ion-input type="number" [(ngModel)]="form.bedrooms" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.bedrooms"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Baños</ion-label>
-        <ion-input type="number" [(ngModel)]="form.bathrooms" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.bathrooms"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Mascotas</ion-label>
-        <ion-toggle slot="end" [(ngModel)]="form.allowPets" color="success"></ion-toggle>
+        <ion-toggle
+          slot="end"
+          [(ngModel)]="form.allowPets"
+          color="success"
+        ></ion-toggle>
       </ion-item>
       <ion-item>
         <ion-label>Niños</ion-label>
-        <ion-toggle slot="end" [(ngModel)]="form.allowChildren" color="success"></ion-toggle>
+        <ion-toggle
+          slot="end"
+          [(ngModel)]="form.allowChildren"
+          color="success"
+        ></ion-toggle>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Categoría</ion-label>
@@ -98,11 +166,18 @@
 
       <ion-item>
         <ion-label position="stacked">Precio por entrada</ion-label>
-        <ion-input type="number" [(ngModel)]="form.ticketPrice" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.ticketPrice"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Inicio</ion-label>
-        <ion-input type="datetime-local" [(ngModel)]="form.startDate"></ion-input>
+        <ion-input
+          type="datetime-local"
+          [(ngModel)]="form.startDate"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Fin</ion-label>
@@ -110,7 +185,11 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Capacidad máxima</ion-label>
-        <ion-input type="number" [(ngModel)]="form.maximumCapacity" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.maximumCapacity"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Tipo de evento</ion-label>
@@ -134,19 +213,35 @@
 
       <ion-item>
         <ion-label position="stacked">Precio por persona</ion-label>
-        <ion-input type="number" [(ngModel)]="form.pricePerPerson" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.pricePerPerson"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Duración (minutos)</ion-label>
-        <ion-input type="number" [(ngModel)]="form.durationInMinutes" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.durationInMinutes"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Capacidad</ion-label>
-        <ion-input type="number" [(ngModel)]="form.capacity" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.capacity"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Requiere agenda</ion-label>
-        <ion-toggle slot="end" [(ngModel)]="form.requiresSchedule" color="success"></ion-toggle>
+        <ion-toggle
+          slot="end"
+          [(ngModel)]="form.requiresSchedule"
+          color="success"
+        ></ion-toggle>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Categoría</ion-label>
@@ -156,7 +251,9 @@
           <ion-select-option value="ARTESANIA">Artesanía</ion-select-option>
           <ion-select-option value="TRANSPORTE">Transporte</ion-select-option>
           <ion-select-option value="GUIA">Guía</ion-select-option>
-          <ion-select-option value="SERVICIO_TECNICO">Servicio Técnico</ion-select-option>
+          <ion-select-option value="SERVICIO_TECNICO"
+            >Servicio Técnico</ion-select-option
+          >
         </ion-select>
       </ion-item>
     </div>
@@ -169,7 +266,11 @@
 
       <ion-item>
         <ion-label position="stacked">Stock</ion-label>
-        <ion-input type="number" [(ngModel)]="form.currentStock" placeholder="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="form.currentStock"
+          placeholder="0"
+        ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Categoría</ion-label>
@@ -185,11 +286,21 @@
     }
 
     <div class="actions">
-      <ion-button expand="block" color="primary" (click)="save()" [disabled]="saving">
+      <ion-button
+        expand="block"
+        color="primary"
+        (click)="save()"
+        [disabled]="saving"
+      >
         <ion-icon slot="start" name="save-outline"></ion-icon>
         {{ saving ? 'Guardando...' : 'Guardar' }}
       </ion-button>
-      <ion-button expand="block" color="medium" fill="outline" (click)="cancel()">
+      <ion-button
+        expand="block"
+        color="medium"
+        fill="outline"
+        (click)="cancel()"
+      >
         <ion-icon slot="start" name="close-outline"></ion-icon>
         Cancelar
       </ion-button>

@@ -51,13 +51,23 @@
     </ion-tab-button>
     }
 
-    <!-- TODOS -->
-    <ion-tab-button tab="account" (click)="handleTabClick('account')">
+    <!-- TURISTA - CALENDARIO -->
+    @if (role() === 'turista') {
+    <ion-tab-button tab="events" (click)="handleTabClick('events')">
       <ion-icon
-        [name]="currenTab() === 'account' ? 'person' : 'person-outline'"
+        [name]="currenTab() === 'events' ? 'calendar' : 'calendar-outline'"
       >
       </ion-icon>
-      <ion-label>Perfil</ion-label>
+      <ion-label>Calendario</ion-label>
     </ion-tab-button>
+
+    <ion-tab-button tab="map" (click)="handleTabClick('map')">
+      <ion-icon
+        [name]="currenTab() === 'map' ? 'globe' : 'globe-outline'"
+      >
+      </ion-icon>
+      <ion-label>Mapa</ion-label>
+    </ion-tab-button>
+    }
   </ion-tab-bar>
 </ion-tabs>

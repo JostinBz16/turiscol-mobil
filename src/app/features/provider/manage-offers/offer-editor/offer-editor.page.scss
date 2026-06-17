@@ -68,6 +68,23 @@ ion-toggle {
   }
 }
 
+.city-results {
+  background: var(--ion-card-background, #fff);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: -8px 0 8px;
+  overflow: hidden;
+
+  ion-item {
+    --min-height: 44px;
+    cursor: pointer;
+
+    &:hover {
+      --background: var(--ion-color-light);
+    }
+  }
+}
+
 .loading-state {
   display: flex;
   flex-direction: column;

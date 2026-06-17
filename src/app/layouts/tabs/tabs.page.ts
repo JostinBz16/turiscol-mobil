@@ -26,6 +26,8 @@ import {
   mapSharp,
   gridOutline,
   grid,
+  calendarOutline,
+  globeOutline,
 } from 'ionicons/icons';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 
@@ -55,6 +57,10 @@ export class TabsPage {
     }
   }
 
+  goToProfile() {
+    this.navCtrl.navigateRoot('/tabs/account');
+  }
+
   constructor() {
     addIcons({
       heart,
@@ -74,6 +80,8 @@ export class TabsPage {
       cashOutline,
       gridOutline,
       grid,
+      calendarOutline,
+      globeOutline,
     });
   }
 }

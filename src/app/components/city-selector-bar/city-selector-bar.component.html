@@ -1,0 +1,49 @@
+<div class="city-bar" (click)="open()">
+  <ion-icon name="location-outline"></ion-icon>
+  @if (city()) {
+    <span class="city-name">{{ city()?.name }}</span>
+    <ion-icon name="chevron-down-outline" class="chevron"></ion-icon>
+  } @else {
+    <span class="prompt">Selecciona una ciudad</span>
+  }
+</div>
+
+<ion-modal [isOpen]="isOpen()" (didDismiss)="close()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Seleccionar ciudad</ion-title>
+        <ion-buttons slot="end">
+          @if (city()) {
+            <ion-button (click)="clear()">Quitar</ion-button>
+          }
+          <ion-button (click)="close()">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-searchbar
+        [value]="searchText()"
+        (ionInput)="searchText.set($event.detail.value ?? ''); search()"
+        placeholder="Buscar ciudad..."
+        debounce="300"
+      ></ion-searchbar>
+      @if (results().length > 0) {
+        <ion-list>
+          @for (city of results(); track city.id) {
+            <ion-item button (click)="select(city)">
+              <ion-label>
+                <h3>{{ city.name }}</h3>
+                <p>{{ getDepartmentName(city.departmentId) }}</p>
+              </ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      } @else if (searchText().length >= 2) {
+        <div class="empty-state">
+          <p>No se encontraron ciudades</p>
+        </div>
+      }
+    </ion-content>
+  </ng-template>
+</ion-modal>

@@ -33,6 +33,7 @@ import {
   alertCircleOutline,
 } from 'ionicons/icons';
 import { OfferService } from 'src/app/core/services/offers';
+import { MunicipalityService } from 'src/app/core/services/municipality.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -62,11 +63,13 @@ export class OfferViewPage implements OnInit {
   errorMessage = '';
   offer: any = null;
   offerId: string | null = null;
+  cityName = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private offerService: OfferService,
+    private municipalityService: MunicipalityService,
   ) {
     addIcons({
       createOutline,
@@ -103,6 +106,12 @@ export class OfferViewPage implements OnInit {
       this.offer = await firstValueFrom(
         this.offerService.getById(this.offerId),
       );
+      if (this.offer.cityId) {
+        const city = await firstValueFrom(
+          this.municipalityService.getById(String(this.offer.cityId)),
+        );
+        this.cityName = city.name ?? '';
+      }
     } catch (err) {
       this.error = true;
       this.errorMessage = 'No se pudo cargar la oferta';
