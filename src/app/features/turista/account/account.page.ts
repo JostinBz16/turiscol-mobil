@@ -10,6 +10,8 @@ import {
   IonIcon,
   IonList,
   IonButton,
+  IonButtons,
+  IonBackButton,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
@@ -36,6 +38,8 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   standalone: true,
   imports: [
     IonButton,
+    IonButtons,
+    IonBackButton,
     IonList,
     IonIcon,
     IonItem,
