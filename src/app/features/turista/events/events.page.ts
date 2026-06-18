@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, effect, untracked } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -13,19 +13,32 @@ import {
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { EventListComponent } from './components/event-list/event-list.component';
+import { FestivityListComponent } from './components/festivity-list/festivity-list.component';
 import { addIcons } from 'ionicons';
 import {
   filterOutline,
   refreshCircleOutline,
-  chevronBackOutline,
-  chevronForwardOutline,
   person,
 } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { EventService } from 'src/app/core/services/event';
+import { CategoryService } from 'src/app/core/services/category.service';
+import { FestivityService } from 'src/app/core/services/festivity.service';
+import { Festivity } from 'src/app/core/models/Festivity';
 import { SelectedCityService } from 'src/app/core/services/selected-city.service';
 import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
+import { firstValueFrom } from 'rxjs';
+
+const EVENT_CATEGORY_LABELS: Record<string, string> = {
+  CONCERT: 'Conciertos',
+  WORKSHOP: 'Talleres',
+  CONFERENCE: 'Conferencias',
+  FESTIVAL: 'Festivales',
+  ART_EXHIBITION: 'Exposiciones',
+  CULTURAL: 'Cultural',
+  FOOD: 'Gastronomía',
+};
 
 @Component({
   selector: 'app-events',
@@ -36,7 +49,6 @@ import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/c
     CommonModule,
     IonHeader,
     IonToolbar,
-
     IonContent,
     IonButton,
     IonSpinner,
@@ -47,10 +59,13 @@ import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/c
     IonRouterLink,
     CitySelectorBarComponent,
     EventListComponent,
+    FestivityListComponent,
   ],
 })
 export class EventsPage implements OnInit {
   private eventService = inject(EventService);
+  private categoryService = inject(CategoryService);
+  private festivityService = inject(FestivityService);
   private selectedCityService = inject(SelectedCityService);
 
   city = this.selectedCityService.city;
@@ -58,33 +73,52 @@ export class EventsPage implements OnInit {
   error = signal(false);
   errorMessage = '';
 
+  viewMode = signal<'events' | 'festivities'>('events');
+
   allEvents: any[] = [];
   filteredEvents: any[] = [];
 
-  currentMonth = signal(new Date().getMonth());
-  currentYear = signal(new Date().getFullYear());
+  allFestivities: Festivity[] = [];
 
   selectedCategory = signal<string | null>(null);
 
-  readonly monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-  ];
+  eventCategories: string[] = [];
+
+  readonly EVENT_CATEGORY_LABELS = EVENT_CATEGORY_LABELS;
 
   constructor(
     private router: Router,
     private navService: NavigationService,
-  ) {}
-
-  ngOnInit() {
+  ) {
     addIcons({
       filterOutline,
       refreshCircleOutline,
-      chevronBackOutline,
-      chevronForwardOutline,
       person,
     });
-    this.loadEvents();
+
+    effect(() => {
+      this.city();
+      untracked(() => {
+        if (this.viewMode() === 'events') {
+          this.loadEvents();
+        } else {
+          this.loadFestivities();
+        }
+      });
+    });
+  }
+
+  ngOnInit() {
+    this.loadEventCategories();
+  }
+
+  async loadEventCategories() {
+    try {
+      const categories = await firstValueFrom(this.categoryService.getByType('event'));
+      this.eventCategories = categories;
+    } catch {
+      this.eventCategories = [];
+    }
   }
 
   loadEvents() {
@@ -98,8 +132,9 @@ export class EventsPage implements OnInit {
 
     obs.subscribe({
       next: (res: any) => {
-        this.allEvents = res.content || res || [];
-        this.applyFilters();
+        const raw = res.content || res || [];
+        this.allEvents = raw.filter((item: any) => item.cityId || item);
+        this.filterEvents();
         this.loading.set(false);
       },
       error: () => {
@@ -110,46 +145,58 @@ export class EventsPage implements OnInit {
     });
   }
 
-  prevMonth() {
-    if (this.currentMonth() === 0) {
-      this.currentMonth.set(11);
-      this.currentYear.set(this.currentYear() - 1);
-    } else {
-      this.currentMonth.set(this.currentMonth() - 1);
-    }
-    this.applyFilters();
-  }
+  loadFestivities() {
+    this.loading.set(true);
+    this.error.set(false);
 
-  nextMonth() {
-    if (this.currentMonth() === 11) {
-      this.currentMonth.set(0);
-      this.currentYear.set(this.currentYear() + 1);
-    } else {
-      this.currentMonth.set(this.currentMonth() + 1);
-    }
-    this.applyFilters();
-  }
+    const currentCity = this.city();
 
-  applyFilters() {
-    const month = this.currentMonth();
-    const year = this.currentYear();
-    const category = this.selectedCategory();
+    const obs = currentCity
+      ? this.festivityService.getByCity(currentCity.id)
+      : this.festivityService.getAll();
 
-    this.filteredEvents = this.allEvents.filter((ev) => {
-      const eventDate = new Date(ev.eventDate || ev.date);
-      if (eventDate.getMonth() !== month || eventDate.getFullYear() !== year) {
-        return false;
-      }
-      if (category && ev.eventType !== category) {
-        return false;
-      }
-      return true;
+    obs.subscribe({
+      next: (res: any) => {
+        this.allFestivities = res.content || res || [];
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.error.set(true);
+        this.errorMessage = 'Error al cargar festividades';
+      },
     });
+  }
+
+  switchView(mode: 'events' | 'festivities') {
+    this.viewMode.set(mode);
+    this.selectedCategory.set(null);
+
+    if (mode === 'events') {
+      this.filterEvents();
+    } else if (this.allFestivities.length === 0) {
+      this.loadFestivities();
+    }
+  }
+
+  filterEvents() {
+    const category = this.selectedCategory();
+    this.filteredEvents = category
+      ? this.allEvents.filter((ev) => ev.eventType === category)
+      : [...this.allEvents];
   }
 
   setCategory(cat: string | null) {
     this.selectedCategory.set(cat);
-    this.applyFilters();
+
+    if (this.viewMode() === 'events') {
+      this.filterEvents();
+    }
+  }
+
+  goToProfile() {
+    localStorage.setItem('account_return_url', '/tabs/events');
+    this.router.navigate(['/tabs/account']);
   }
 
   goToDetail(id: string) {

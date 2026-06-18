@@ -19,10 +19,12 @@ import {
   leafOutline,
   umbrellaOutline,
   businessOutline,
-      person,
+  person,
 } from 'ionicons/icons';
+import { Router } from '@angular/router';
 import { MunicipalityService } from 'src/app/core/services/municipality.service';
 import { SelectedCityService } from 'src/app/core/services/selected-city.service';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
 import * as L from 'leaflet';
 
@@ -45,7 +47,6 @@ interface Destination {
     CommonModule,
     IonHeader,
     IonToolbar,
-
     IonContent,
     IonButtons,
     IonButton,
@@ -81,14 +82,17 @@ export class MapPage implements OnInit, OnDestroy {
     { value: 'SPOT', label: 'Lugares', icon: 'locate-outline' },
   ];
 
-  constructor() {
+  constructor(
+    private router: Router,
+    private navService: NavigationService,
+  ) {
     addIcons({
       locateOutline,
       funnelOutline,
       leafOutline,
       umbrellaOutline,
       businessOutline,
-  person,
+      person,
     });
   }
 
@@ -216,6 +220,11 @@ export class MapPage implements OnInit, OnDestroy {
       iconAnchor: [12, 24],
       popupAnchor: [0, -24],
     });
+  }
+
+  goToProfile() {
+    localStorage.setItem('account_return_url', '/tabs/map');
+    this.router.navigate(['/tabs/account']);
   }
 
   centerOnCity() {

@@ -18,16 +18,17 @@ export interface OfferDetailAdapter<DTO, DOMAIN> {
   adapt(dto: DTO): DOMAIN;
 }
 
-export class AccommodationOfferAdapter
-  implements OfferDetailAdapter<AccommodationDetailDto, AccommodationOffer>
-{
+export class AccommodationOfferAdapter implements OfferDetailAdapter<
+  AccommodationDetailDto,
+  AccommodationOffer
+> {
   adapt(dto: AccommodationDetailDto): AccommodationOffer {
     return {
       id: dto.id,
       type: OfferType.ACCOMMODATION,
       name: dto.name,
       description: dto.description,
-      images: dto.images.map((i) => i.imageUrl),
+      images: (dto.images || []).map((i) => i.imageUrl),
       cityId: dto.cityId,
       providerId: dto.providerId,
       basePrice: dto.baseprice,
@@ -43,16 +44,17 @@ export class AccommodationOfferAdapter
   }
 }
 
-export class EventOfferAdapter
-  implements OfferDetailAdapter<EventDetailDto, EventOffer>
-{
+export class EventOfferAdapter implements OfferDetailAdapter<
+  EventDetailDto,
+  EventOffer
+> {
   adapt(dto: EventDetailDto): EventOffer {
     return {
       id: dto.id,
       type: OfferType.EVENT,
       name: dto.name,
       description: dto.description,
-      images: dto.images.map((i) => i.imageUrl),
+      images: (dto.images || []).map((i) => i.imageUrl),
       cityId: dto.cityId,
       providerId: dto.providerId,
       basePrice: dto.baseprice,
@@ -66,16 +68,17 @@ export class EventOfferAdapter
   }
 }
 
-export class ProductOfferAdapter
-  implements OfferDetailAdapter<ProductDetailDto, ProductOffer>
-{
+export class ProductOfferAdapter implements OfferDetailAdapter<
+  ProductDetailDto,
+  ProductOffer
+> {
   adapt(dto: ProductDetailDto): ProductOffer {
     return {
       id: dto.id,
       type: OfferType.PRODUCT,
       name: dto.name,
       description: dto.description,
-      images: dto.images.map((i) => i.imageUrl),
+      images: (dto.images || []).map((i) => i.imageUrl),
       cityId: dto.cityId,
       providerId: dto.providerId,
       basePrice: dto.baseprice,
@@ -86,16 +89,17 @@ export class ProductOfferAdapter
   }
 }
 
-export class ServiceOfferAdapter
-  implements OfferDetailAdapter<ServiceDetailDto, ServiceOffer>
-{
+export class ServiceOfferAdapter implements OfferDetailAdapter<
+  ServiceDetailDto,
+  ServiceOffer
+> {
   adapt(dto: ServiceDetailDto): ServiceOffer {
     return {
       id: dto.id,
       type: OfferType.SERVICE,
       name: dto.name,
       description: dto.description,
-      images: dto.images.map((i) => i.imageUrl),
+      images: (dto.images || []).map((i) => i.imageUrl),
       cityId: dto.cityId,
       providerId: dto.providerId,
       basePrice: dto.baseprice,

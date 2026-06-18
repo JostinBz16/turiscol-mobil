@@ -1,0 +1,47 @@
+<ion-content>
+  <ion-header class="ion-no-border" slot="fixed">
+    <ion-toolbar>
+      <ion-buttons>
+        <ion-back-button
+          mode="md"
+          defaultHref="/tabs/events"
+          class="btnbg btnbglight"
+        ></ion-back-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  @if (loading) {
+  <div class="loading-state">
+    <ion-spinner></ion-spinner>
+    <p>Cargando festividad...</p>
+  </div>
+  } @else if (error || !festivity) {
+  <div class="error-state">
+    <h4>No se pudo cargar la festividad</h4>
+  </div>
+  } @else {
+  <div class="detail-container">
+    @if (festivity.image) {
+    <div class="hero-image">
+      <ion-img [src]="festivity.image" />
+    </div>
+    }
+
+    <div class="detail-content">
+      <h1>{{ festivity.name }}</h1>
+
+      @if (festivity.description) {
+      <p class="description">{{ festivity.description }}</p>
+      }
+
+      <div class="dates">
+        <span
+          >{{ festivity.startDate | date:'d MMM' }} — {{ festivity.endDate |
+          date:'d MMM yyyy' }}</span
+        >
+      </div>
+    </div>
+  </div>
+  }
+</ion-content>

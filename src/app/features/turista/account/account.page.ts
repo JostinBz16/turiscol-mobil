@@ -11,11 +11,11 @@ import {
   IonList,
   IonButton,
   IonButtons,
-  IonBackButton,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
+  arrowBack,
   bookmarkOutline,
   chevronForwardOutline,
   createOutline,
@@ -39,7 +39,6 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   imports: [
     IonButton,
     IonButtons,
-    IonBackButton,
     IonList,
     IonIcon,
     IonItem,
@@ -60,6 +59,7 @@ export class AccountPage implements OnInit {
     private navService: NavigationService,
   ) {
     addIcons({
+      arrowBack,
       personOutline,
       createOutline,
       chevronForwardOutline,
@@ -84,9 +84,14 @@ export class AccountPage implements OnInit {
     });
   }
 
+  goBack() {
+    const returnUrl = localStorage.getItem('account_return_url');
+    localStorage.removeItem('account_return_url');
+    this.router.navigate([returnUrl || '/tabs/home'], { replaceUrl: true });
+  }
+
   logout() {
     this.authService.logout();
-    // Aquí puedes limpiar estado, token, etc.
     this.router.navigate(['/auth/login'], {
       replaceUrl: true,
     });

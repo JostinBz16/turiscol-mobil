@@ -1,21 +1,40 @@
 <div class="event-card-list">
   @for (e of events; track e.id) {
-  <ion-card class="event-card" [routerLink]="['/tabs/events', e?.id]">
-    <img [src]="e.image" class="event-img" />
+    <ion-card class="event-card" [routerLink]="['/tabs/events', e.id]">
+      @if (getImage(e)) {
+        <div class="event-img-wrapper">
+          <ion-img [src]="getImage(e)" class="event-img" />
+          @if (getPrice(e) !== null) {
+            <span class="price-badge">{{
+              getPrice(e) | currency: "COP" : "symbol-narrow" : "1.0-0"
+            }}</span>
+          }
+        </div>
+      }
 
-    <ion-card-content>
-      <h2>{{ e.title }}</h2>
-      <p class="city">{{ e.city }}</p>
-      <p class="date">📅 {{ e.date }}</p>
+      <ion-card-content>
+        <div class="event-header">
+          <h2>{{ getName(e) }}</h2>
+          @if (e.eventType) {
+            <ion-chip class="category-chip">
+              <ion-label>{{ getCategoryLabel(e.eventType) }}</ion-label>
+            </ion-chip>
+          }
+        </div>
 
-      <span
-        class="status"
-        [class.active]="e.status === 'activo'"
-        [class.inactive]="e.status === 'inactivo'"
-      >
-        {{ e.status }}
-      </span>
-    </ion-card-content>
-  </ion-card>
+        @if (getDescription(e)) {
+          <p class="description">{{ getDescription(e) }}</p>
+        }
+
+        <div class="event-footer">
+          @if (getDate(e)) {
+            <span class="meta-item">{{ getDate(e) | date: "d MMM yyyy" }}</span>
+          }
+          @if (getLocation(e)) {
+            <span class="meta-item">{{ getLocation(e) }}</span>
+          }
+        </div>
+      </ion-card-content>
+    </ion-card>
   }
 </div>

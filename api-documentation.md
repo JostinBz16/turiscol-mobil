@@ -14,6 +14,7 @@ A los servicios se puede acceder mediante el Gateway en `http://localhost:8080` 
 | `/api/v1/prices/**` | experience-service |
 | `/api/v1/categories/**` | experience-service |
 | `/api/v1/offers/favorites/**` | experience-service |
+| `/api/v1/festivities/**` | experience-service |
 | `/api/v1/booking/**` | booking-service |
 | `/api/v1/payments/**` | booking-service |
 | `/api/v1/notifications/**` | notification-service |
@@ -25,7 +26,7 @@ A los servicios se puede acceder mediante el Gateway en `http://localhost:8080` 
 Gestiona usuarios, autenticación y roles. Se integra con Keycloak para el manejo de identidades.
 
 ### 1.1.2 Experience Service (8803)
-Catálogo de la plataforma. Maneja ubicaciones, ofertas, reseñas, imágenes y precios.
+Catálogo de la plataforma. Maneja ubicaciones, ofertas, reseñas, imágenes, precios y festividades culturales.
 
 ### 1.1.3 Booking Service (8804)
 Reservas y pagos. Se comunica con experience-service vía Feign para validar ofertas y stock.
@@ -56,7 +57,7 @@ Service Discovery. Todos los servicios se registran aquí.
 | **API Docs** | Swagger/OpenAPI (springdoc-openapi) |
 | **Trazabilidad** | Micrometer Tracing + Zipkin |
 | **Migraciones BD** | Flyway |
-| **Total endpoints** | 96 → 111 |
+| **Total endpoints** | 115 |
 | **Total controladores** | 18 |
 | **Redis** | Cache (ofertas, ubicaciones, precios) + Rate Limiting |
 | **WebSocket** | STOMP con autenticación JWT, colas privadas por usuario. Raw WebSocket (mobile) + SockJS (browser) |
@@ -314,7 +315,52 @@ Service Discovery. Todos los servicios se registran aquí.
 
 ---
 
-### 3.4 Notification Service API
+### 3.4 FestivityController (experience-service)
+
+Festividades culturales colombianas (Carnaval de Barranquilla, Feria de las Flores, etc.).
+Son entidades informativas de calendario cultural, **no** ofertas vendibles — a diferencia de `EventOffer`,
+las festividades no tienen proveedor, precio, ni capacidad.
+
+| # | Método | Path | Descripción | Request | Response |
+|---|--------|------|-------------|---------|----------|
+| 109 | POST | `/api/v1/festivities` | Crear festividad | `FestivityRequest` | `FestivityResponse` (201) |
+| 110 | GET | `/api/v1/festivities` | Listar todas (paginado) | `page`, `size` (query) | `Page<FestivityResponse>` |
+| 111 | GET | `/api/v1/festivities/{id}` | Obtener por ID | `id` (UUID path) | `FestivityResponse` |
+| 112 | PUT | `/api/v1/festivities/{id}` | Actualizar | `id` (UUID path), `FestivityRequest` | `FestivityResponse` |
+| 113 | DELETE | `/api/v1/festivities/{id}` | Eliminar | `id` (UUID path) | 204 No Content |
+| 114 | GET | `/api/v1/festivities/by-city/{cityId}` | Festividades activas por ciudad | `cityId` (Long path), `page`, `size` | `Page<FestivityResponse>` |
+| 115 | GET | `/api/v1/festivities/upcoming` | Próximas festividades (desde hoy) | — | `List<FestivityResponse>` |
+
+**FestivityRequest:**
+```json
+{
+  "name": "Feria de las Flores",
+  "description": "Evento tradicional de Medellín...",
+  "startDate": "2026-08-01",
+  "endDate": "2026-08-10",
+  "cityId": 1,
+  "image": "https://...",
+  "active": true
+}
+```
+
+**FestivityResponse:**
+```json
+{
+  "id": "uuid",
+  "name": "Feria de las Flores",
+  "description": "Evento tradicional de Medellín...",
+  "startDate": "2026-08-01",
+  "endDate": "2026-08-10",
+  "cityId": 1,
+  "image": "https://...",
+  "active": true
+}
+```
+
+---
+
+### 3.5 Notification Service API
 
 | # | Método | Path | Descripción | Parámetros | Response |
 |---|--------|------|-------------|------------|----------|
@@ -392,58 +438,3 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 ---
 
 ## 8. Pendientes — Backend
-
-### 8.1 Festividades culturales (FestivityController)
-
-Nueva entidad para el calendario cultural. Festividades recurrentes como Carnaval de Barranquilla,
-Feria de las Flores, etc. No deben confundirse con EventOffer (ofertas de tipo evento vendibles).
-
-| Método | Path | Descripción |
-|--------|------|-------------|
-| POST | `/api/v1/festivities` | Crear festividad |
-| GET | `/api/v1/festivities` | Listar todas (paginado) |
-| GET | `/api/v1/festivities/{id}` | Obtener por ID |
-| PUT | `/api/v1/festivities/{id}` | Actualizar |
-| DELETE | `/api/v1/festivities/{id}` | Eliminar |
-| GET | `/api/v1/festivities/by-city/{cityId}` | Festividades por ciudad |
-| GET | `/api/v1/festivities/upcoming` | Próximas festividades (desde hoy) |
-
-**Entidad Festivity:**
-```java
-@Entity @Table(name = "festivities")
-public class Festivity {
-    @Id @GeneratedValue(strategy = GenerationType.UUID) private UUID id;
-    private String name;
-    private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private Long cityId;
-    private String image;
-    private String category; // FIESTA, MUSICA, GASTRONOMIA, RELIGIOSA, FERIA
-    private String culturalImportance; // "Patrimonio UNESCO", "Tradicional", etc.
-    private Boolean active = true;
-}
-```
-
-### 8.2 Seed data: Destinos culturales por ciudad
-
-Poblar tabla `destinations` con puntos culturales reales con coordenadas (lat/long):
-
-| Ciudad | Destinos sugeridos |
-|--------|-------------------|
-| Medellín | Plaza Botero, Museo de Antioquia, Parque Arví, Pueblito Paisa, Comuna 13, Jardín Botánico |
-| Bogotá | Monserrate, Museo del Oro, La Candelaria, Plaza de Bolívar, Usaquén, Museo Botero |
-| Cartagena | Castillo San Felipe, Centro Histórico, Getsemaní, Islas del Rosario, Boca Grande |
-| Cali | Cristo Rey, Parque del Perro, Zoológico, San Antonio, Río Cali |
-| Santa Marta | Parque Tayrona, Quinta de San Pedro, Ciudad Perdida, Rodadero, Taganga |
-
-### 8.3 Gateway: Rutas para festividades
-
-Agregar en `gateway-service`:
-```yaml
-- id: experience-festivities
-  uri: lb://EXPERIENCE-SERVICE
-  predicates:
-    - Path=/api/v1/festivities/**
-  filters:
-    - StripPrefix=2

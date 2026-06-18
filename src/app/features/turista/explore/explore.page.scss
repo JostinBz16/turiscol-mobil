@@ -10,7 +10,7 @@ ion-toolbar {
 }
 
 .content-wrapper {
-  padding: 14px;
+  padding: 0 15px;
 }
 
 /* 🔍 Buscador */
@@ -106,8 +106,7 @@ ion-toolbar {
 
 .type-pill {
   padding: 10px 16px;
-  background: white;
-  border: 1px solid #f1f5f9;
+  background: rgb(255, 255, 255);
   border-radius: 999px;
   white-space: nowrap;
   font-size: 0.85rem;
@@ -165,17 +164,20 @@ ion-toolbar {
 /* ⭐ Plan cards */
 .plan-card {
   display: flex;
-  gap: 10px;
+  gap: 0;
   background: white;
-  border-radius: 18px;
-  margin-bottom: 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   cursor: pointer;
+  min-height: 150px;
 
   ion-img {
     width: 160px;
+    min-height: 150px;
     object-fit: cover;
+    flex-shrink: 0;
   }
 
   .plan-info {
@@ -194,6 +196,10 @@ ion-toolbar {
       font-size: 0.8rem;
       color: #6b7280;
       margin: 4px 0 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
   }
 }

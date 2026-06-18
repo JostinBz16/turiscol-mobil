@@ -1,7 +1,9 @@
 <ion-header class="home-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>Mi Cuenta</ion-title>
   </ion-toolbar>
@@ -63,9 +65,7 @@
         class="chevron"
       ></ion-icon>
     </ion-item>
-    }
-
-    @if (role() === 'proveedor') {
+    } @if (role() === 'proveedor') {
     <ion-item button detail="false" (click)="goToManageOffers()">
       <div class="item-left">
         <div class="icon-box">

@@ -52,6 +52,13 @@ export const routes: Routes = [
                 (m) => m.EventDetailsPage,
               ),
           },
+          {
+            path: 'festivity/:id',
+            loadComponent: () =>
+              import('../../features/turista/events/components/festivity-details/festivity-details.page').then(
+                (m) => m.FestivityDetailsPage,
+              ),
+          },
         ],
       },
 

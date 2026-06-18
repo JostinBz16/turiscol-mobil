@@ -44,11 +44,13 @@ export class EventService {
     );
   }
 
-  getByCity(cityId: string, params?: { page?: number; size?: number }): Observable<any> {
-    let httpParams = new HttpParams();
+  getByCity(cityId: string | number, params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams()
+      .set('type', 'event')
+      .set('cityId', cityId);
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);
-    return this.http.get<any>(`${this.api}/city/${cityId}`, { params: httpParams }).pipe(
+    return this.http.get<any>(`${this.api}/search`, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching events by city', err);
         return throwError(() => err);

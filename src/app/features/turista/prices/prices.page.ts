@@ -1,4 +1,5 @@
 import { Component, effect, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -7,7 +8,6 @@ import {
   IonButtons,
   IonButton,
   IonSpinner,
-  NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, person, locationOutline } from 'ionicons/icons';
@@ -28,7 +28,7 @@ import { firstValueFrom } from 'rxjs';
 export class PricesPage {
   private selectedCityService = inject(SelectedCityService);
   private priceService = inject(PriceService);
-  private navCtrl = inject(NavController);
+  private router = inject(Router);
 
   city = this.selectedCityService.city;
   groupedPrices = signal<{ category: string; items: Price[] }[]>([]);
@@ -84,6 +84,7 @@ export class PricesPage {
   }
 
   goToProfile() {
-    this.navCtrl.navigateRoot('/tabs/account');
+    localStorage.setItem('account_return_url', '/tabs/prices');
+    this.router.navigate(['/tabs/account']);
   }
 }

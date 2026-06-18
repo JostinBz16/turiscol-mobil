@@ -1,0 +1,28 @@
+<div class="festivity-card-list">
+  @for (f of festivities; track f.id) {
+    <ion-card class="festivity-card" [routerLink]="['/tabs/events/festivity', f.id]">
+      @if (getImage(f)) {
+        <div class="festivity-img-wrapper">
+          <ion-img [src]="getImage(f)" class="festivity-img" />
+        </div>
+      }
+
+      <ion-card-content>
+        <h2>{{ f.name }}</h2>
+
+        @if (f.description) {
+          <p class="description">{{ f.description }}</p>
+        }
+
+        <div class="festivity-footer">
+          <div class="dates">
+            <span
+              >{{ f.startDate | date: "d MMM" }} —
+              {{ f.endDate | date: "d MMM yyyy" }}</span
+            >
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  }
+</div>

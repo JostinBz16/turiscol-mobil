@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   IonContent,
   IonHeader,
@@ -13,7 +14,6 @@ import {
   IonChip,
   IonLabel,
   IonButtons,
-  NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -75,7 +75,6 @@ export class HomePage implements OnInit {
 
   private authStore = inject(AuthService);
   private selectedCityService = inject(SelectedCityService);
-  private navCtrl = inject(NavController);
   role = this.authStore.role;
   selectedCity = this.selectedCityService.city;
 
@@ -108,6 +107,7 @@ export class HomePage implements OnInit {
   offers: Offer[] = [];
 
   constructor(
+    private router: Router,
     private categoryService: CategoryService,
     public authService: AuthService,
     private municipalityService: MunicipalityService,
@@ -192,6 +192,7 @@ export class HomePage implements OnInit {
   }
 
   goToProfile() {
-    this.navCtrl.navigateRoot('/tabs/account');
+    localStorage.setItem('account_return_url', '/tabs/home');
+    this.router.navigate(['/tabs/account']);
   }
 }

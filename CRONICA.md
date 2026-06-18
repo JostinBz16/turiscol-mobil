@@ -354,25 +354,24 @@ Se analizaron y modificaron ambos proyectos (`turiscol-mobilapp` y `turiscol-bac
 - Muestra **destinos de la ciudad seleccionada** vía DestinationService
 - Conecta ofertas destacadas a la ciudad global
 
-### 4.7 Backend: Festividades culturales (PENDIENTE)
+### 4.7 ✔ Backend: Festividades culturales (COMPLETADO)
 
-**Archivos nuevos (experience-service):**
+Entidad independiente simplificada (sin herencia de `Offer`, sin categorías, sin `culturalImportance`) en `experience-service/festivities/`.
 
-| Archivo | Descripción |
-|---------|-------------|
-| `entities/Festivity.java` | Entidad JPA: id, name, description, startDate, endDate, cityId, image, category, culturalImportance, active |
-| `controllers/FestivityController.java` | `GET /festivities`, `GET /festivities/by-city/{cityId}`, `GET /festivities/upcoming` |
-| `services/FestivityServiceImpl.java` | CRUD con caché |
-| `repositories/FestivityRepository.java` | Consultas por ciudad, mes, rango de fechas |
-| `config/FestivityDataInitializer.java` | Seed con 20+ festividades colombianas |
+**Archivos creados:**
 
-**Endpoint planeados:**
-```
-GET /api/v1/festivities
-GET /api/v1/festivities/by-city/{cityId}
-GET /api/v1/festivities/upcoming
-GET /api/v1/festivities/{id}
-```
+| Archivo | Ruta |
+|---------|------|
+| `Festivity.java` | Entidad JPA: id, name, description, startDate, endDate, cityId, image, active |
+| `FestivityController.java` | CRUD + `/by-city/{cityId}` + `/upcoming` |
+| `FestivityServiceImpl.java` | Implementación con paginación |
+| `FestivityRepository.java` | Consultas por ciudad y próximas |
+| `FestivityRequest.java` | DTO de creación/actualización |
+| `FestivityResponse.java` | DTO de respuesta (record) |
+
+**Ruta Gateway agregada en `application-dev.yml`:** `/api/v1/festivities/**` → experience-service
+
+**Frontend actualizado:** Modelo `Festivity.ts` simplificado (sin category/culturalImportance), componentes de UI actualizados.
 
 ### 4.8 Backend: Seed data de destinos (PENDIENTE)
 

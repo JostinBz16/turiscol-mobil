@@ -81,7 +81,6 @@ export class ExplorePage implements OnInit {
 
   offerTypes = [
     { label: 'Alojamientos', value: OfferType.ACCOMMODATION },
-    { label: 'Eventos', value: OfferType.EVENT },
     { label: 'Servicios', value: OfferType.SERVICE },
     { label: 'Productos', value: OfferType.PRODUCT },
   ];
@@ -97,7 +96,8 @@ export class ExplorePage implements OnInit {
   }
 
   goToProfile() {
-    this.navCtrl.navigateRoot('/tabs/account');
+    localStorage.setItem('account_return_url', '/tabs/offers');
+    this.router.navigate(['/tabs/account']);
   }
 
   async ngOnInit() {

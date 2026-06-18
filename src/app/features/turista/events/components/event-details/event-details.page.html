@@ -1,19 +1,78 @@
-<ion-content [fullscreen]="true">
+<ion-content>
   <ion-header class="ion-no-border" slot="fixed">
     <ion-toolbar>
       <ion-buttons>
         <ion-back-button
           mode="md"
-          [defaultHref]="navService.returnUrl()"
+          defaultHref="/tabs/events"
           class="btnbg btnbglight"
         ></ion-back-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-  @let product = {};
+  @if (loading) {
+  <div class="loading-state">
+    <ion-spinner></ion-spinner>
+    <p>Cargando evento...</p>
+  </div>
+  } @else if (error || !event) {
+  <div class="error-state">
+    <h4>No se pudo cargar el evento</h4>
+  </div>
+  } @else {
+  <div class="detail-container">
+    @if (getMainImage()) {
+    <div class="hero-image">
+      <ion-img [src]="getMainImage()" />
+    </div>
+    }
 
-  <ion-content>
-    <p>{{ product | json }}</p>
-  </ion-content>
+    <div class="detail-content">
+      <div class="title-row">
+        <h1>{{ event.name }}</h1>
+        @if (event.eventType) {
+        <ion-chip class="category-chip">
+          <ion-label>{{ getCategoryLabel(event.eventType) }}</ion-label>
+        </ion-chip>
+        }
+      </div>
+
+      @if (event.description) {
+      <p class="description">{{ event.description }}</p>
+      }
+
+      <div class="info-grid">
+        @if (event.eventDate) {
+        <div class="info-item">
+          <span class="info-label">📅 Fecha</span>
+          <span class="info-value"
+            >{{ event.eventDate | date:'d MMM yyyy' }}</span
+          >
+        </div>
+        } @if (event.endDate) {
+        <div class="info-item">
+          <span class="info-label">📅 Hasta</span>
+          <span class="info-value"
+            >{{ event.endDate | date:'d MMM yyyy' }}</span
+          >
+        </div>
+        } @if (event.ticketPrice) {
+        <div class="info-item">
+          <span class="info-label">💰 Precio</span>
+          <span class="info-value price"
+            >{{ event.ticketPrice | currency:'COP':'symbol-narrow':'1.0-0'
+            }}</span
+          >
+        </div>
+        } @if (event.capacity) {
+        <div class="info-item">
+          <span class="info-label">🎟️ Capacidad</span>
+          <span class="info-value">{{ event.capacity }} personas</span>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  }
 </ion-content>
