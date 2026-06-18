@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 import {
   IonCard,
   IonCardContent,
-  IonAccordion,
   IonImg,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
@@ -12,7 +11,7 @@ import { Festivity } from 'src/app/core/models/Festivity';
 @Component({
   selector: 'app-festivity-list',
   standalone: true,
-  imports: [RouterLink, IonImg, CommonModule, IonCard, IonCardContent, IonAccordion],
+  imports: [RouterLink, CommonModule, IonCard, IonCardContent, IonImg],
   templateUrl: './festivity-list.component.html',
   styleUrls: ['./festivity-list.component.scss'],
 })

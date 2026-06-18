@@ -22,6 +22,7 @@ import { EventOffer } from 'src/app/core/models/Offers';
   styleUrls: ['./event-details.page.scss'],
   standalone: true,
   imports: [
+    IonImg,
     CommonModule,
     IonContent,
     IonHeader,
@@ -31,7 +32,6 @@ import { EventOffer } from 'src/app/core/models/Offers';
     IonSpinner,
     IonChip,
     IonLabel,
-    IonImg,
   ],
 })
 export class EventDetailsPage implements OnInit {

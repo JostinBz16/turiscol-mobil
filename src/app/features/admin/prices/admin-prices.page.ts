@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-  IonIcon, IonButton, IonItem, IonLabel, IonInput, IonList,
+  IonIcon, IonButton,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, createOutline } from 'ionicons/icons';
@@ -13,7 +13,7 @@ import { addCircleOutline, createOutline } from 'ionicons/icons';
   imports: [
     CommonModule,
     IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-    IonIcon, IonButton, IonItem, IonLabel, IonInput, IonList,
+    IonIcon, IonButton,
   ],
   templateUrl: './admin-prices.page.html',
   styleUrls: ['./admin-prices.page.scss'],

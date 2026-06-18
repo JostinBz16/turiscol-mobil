@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-  IonIcon, IonButton, IonChip, IonImg, IonFab, IonFabButton,
+    IonIcon, IonButton, IonImg, IonFab, IonFabButton,
   IonToggle, IonSpinner, IonRefresher, IonRefresherContent,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -30,7 +30,7 @@ interface OfferItem {
   imports: [
     CommonModule, RouterModule,
     IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-    IonIcon, IonButton, IonChip, IonImg, IonFab, IonFabButton,
+  IonIcon, IonButton, IonImg, IonFab, IonFabButton,
     IonToggle, IonSpinner, IonRefresher, IonRefresherContent,
   ],
   templateUrl: './manage-offers.page.html',

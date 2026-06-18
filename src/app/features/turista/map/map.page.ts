@@ -9,7 +9,6 @@ import {
   IonChip,
   IonLabel,
   IonSpinner,
-  IonRouterLink,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
@@ -54,7 +53,6 @@ interface Destination {
     IonChip,
     IonLabel,
     IonSpinner,
-    IonRouterLink,
     CitySelectorBarComponent,
   ],
 })

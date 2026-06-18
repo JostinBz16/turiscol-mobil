@@ -9,7 +9,6 @@ import {
   IonChip,
   IonLabel,
   IonButtons,
-  IonRouterLink,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { EventListComponent } from './components/event-list/event-list.component';
@@ -56,7 +55,6 @@ const EVENT_CATEGORY_LABELS: Record<string, string> = {
     IonChip,
     IonLabel,
     IonButtons,
-    IonRouterLink,
     CitySelectorBarComponent,
     EventListComponent,
     FestivityListComponent,
