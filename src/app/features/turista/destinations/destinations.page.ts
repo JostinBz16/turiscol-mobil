@@ -1,4 +1,12 @@
-import { Component, OnInit, OnDestroy, inject, signal, effect, untracked } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  signal,
+  effect,
+  untracked,
+} from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -22,6 +30,8 @@ import {
   person,
   listOutline,
   mapOutline,
+  alertCircleOutline,
+  locationOutline,
 } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { DestinationService } from 'src/app/core/services/destination.service';
@@ -99,18 +109,18 @@ export class DestinationsPage implements OnInit, OnDestroy {
     SPOT: '#e67e22',
   };
 
-  constructor(
-    private router: Router,
-  ) {
+  constructor(private router: Router) {
     addIcons({
+      person,
+      listOutline,
+      mapOutline,
+      alertCircleOutline,
+      locationOutline,
       locateOutline,
       funnelOutline,
       leafOutline,
       umbrellaOutline,
       businessOutline,
-      person,
-      listOutline,
-      mapOutline,
     });
 
     effect(() => {
@@ -152,9 +162,10 @@ export class DestinationsPage implements OnInit, OnDestroy {
 
   filterDestinations() {
     const type = this.selectedType();
-    const filtered = type === 'todos'
-      ? this.allDestinations
-      : this.allDestinations.filter((d) => d.type === type);
+    const filtered =
+      type === 'todos'
+        ? this.allDestinations
+        : this.allDestinations.filter((d) => d.type === type);
     this.destinations.set(filtered);
     this.updateMarkers();
   }
@@ -208,7 +219,8 @@ export class DestinationsPage implements OnInit, OnDestroy {
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(this.map);
 
     this.map.addControl(L.control.zoom({ position: 'bottomright' }));

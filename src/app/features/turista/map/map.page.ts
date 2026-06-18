@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  signal,
+  effect,
+} from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -92,11 +99,24 @@ export class MapPage implements OnInit, OnDestroy {
       businessOutline,
       person,
     });
+
+    effect(() => {
+      const currentCity = this.city();
+      if (currentCity) {
+        this.loadDestinations();
+      } else {
+        this.allDestinations = [];
+        this.destinations.set([]);
+        if (this.map) {
+          this.map.remove();
+          this.map = undefined;
+        }
+        this.initMap();
+      }
+    });
   }
 
-  ngOnInit() {
-    this.loadDestinations();
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.map?.remove();
@@ -113,7 +133,9 @@ export class MapPage implements OnInit, OnDestroy {
         this.allDestinations = list;
         this.filterDestinations();
         this.loading.set(false);
-        this.initMap();
+        if (!this.map) {
+          setTimeout(() => this.initMap(), 100);
+        }
       },
       error: () => {
         this.loading.set(false);
@@ -137,15 +159,16 @@ export class MapPage implements OnInit, OnDestroy {
     this.filterDestinations();
   }
 
-  private initMap() {
-    if (this.map) this.map.remove();
-
-    const currentCity = this.city();
-    if (!currentCity) return;
+  private initMap(center: L.LatLngTuple = [4.5709, -74.2973], zoom = 6) {
+    if (this.map) {
+      this.map.invalidateSize();
+      this.updateMarkers();
+      return;
+    }
 
     this.map = L.map('map-canvas', {
-      center: [4.5709, -74.2973],
-      zoom: 12,
+      center,
+      zoom,
       zoomControl: false,
     });
 

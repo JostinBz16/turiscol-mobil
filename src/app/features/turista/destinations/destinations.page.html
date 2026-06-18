@@ -9,7 +9,7 @@
   </ion-toolbar>
 </ion-header>
 
-<app-city-bar/>
+<app-city-bar />
 
 <ion-content>
   <div class="destinations-container">
@@ -34,71 +34,63 @@
     <!-- FILTROS POR TIPO -->
     <div class="filter-bar">
       @for (filter of typeFilters; track filter.value) {
-        <ion-chip
-          [color]="selectedType() === filter.value ? 'tertiary' : 'medium'"
-          (click)="onTypeFilterChange(filter.value)"
-        >
-          <ion-icon [name]="filter.icon"></ion-icon>
-          <ion-label>{{ filter.label }}</ion-label>
-        </ion-chip>
+      <ion-chip
+        [color]="selectedType() === filter.value ? 'tertiary' : 'medium'"
+        (click)="onTypeFilterChange(filter.value)"
+      >
+        <ion-icon [name]="filter.icon"></ion-icon>
+        <ion-label>{{ filter.label }}</ion-label>
+      </ion-chip>
       }
     </div>
 
     <!-- CONTENIDO -->
     @if (loading()) {
-      <div class="loading-state">
-        <ion-spinner></ion-spinner>
-        <p>Cargando destinos...</p>
-      </div>
+    <div class="loading-state">
+      <ion-spinner></ion-spinner>
+      <p>Cargando destinos...</p>
+    </div>
     } @else if (error()) {
-      <div class="empty-state">
-        <ion-icon name="alert-circle-outline"></ion-icon>
-        <h4>{{ errorMessage }}</h4>
-        <ion-button fill="clear" (click)="loadDestinations()">
-          Reintentar
-        </ion-button>
-      </div>
-    } @else if (viewMode() === 'list') {
-      @if (destinations().length === 0) {
-        <div class="empty-state">
-          <ion-icon name="location-outline"></ion-icon>
-          <h4>Sin destinos disponibles</h4>
-          <p>Prueba con otra categoría o ciudad</p>
-        </div>
-      } @else {
-        <div class="destination-list">
-          @for (d of destinations(); track d.id) {
-            <div class="destination-card">
-              @if (d.image) {
-                <div class="card-img-wrapper">
-                  <ion-img [src]="d.image" class="card-img" />
-                </div>
-              }
-              <div class="card-body">
-                <div class="card-header">
-                  <h2>{{ d.name }}</h2>
-                  <span
-                    class="type-badge"
-                    [style.background]="getTypeColor(d.type)"
-                  >
-                    {{ getTypeLabel(d.type) }}
-                  </span>
-                </div>
-                @if (d.description) {
-                  <p class="description">{{ d.description }}</p>
-                }
-                <button class="map-btn" (click)="showOnMap(d)">
-                  <ion-icon name="map-outline"></ion-icon>
-                  Ver en mapa
-                </button>
-              </div>
-            </div>
-          }
-        </div>
-      }
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <h4>{{ errorMessage }}</h4>
+      <ion-button fill="clear" (click)="loadDestinations()">
+        Reintentar
+      </ion-button>
+    </div>
+    } @else if (viewMode() === 'list') { @if (destinations().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="location-outline"></ion-icon>
+      <h4>Sin destinos disponibles</h4>
+      <p>Prueba con otra categoría o ciudad</p>
+    </div>
     } @else {
-      <!-- VISTA MAPA -->
-      <div id="map-canvas" class="map-container"></div>
+    <div class="destination-list">
+      @for (d of destinations(); track d.id) {
+      <div class="destination-card">
+        @if (d.image) {
+        <div class="card-img-wrapper">
+          <ion-img [src]="d.image" class="card-img" />
+        </div>
+        }
+        <div class="card-body">
+          <div class="card-header">
+            <h2>{{ d.name }}</h2>
+          </div>
+          @if (d.description) {
+          <p class="description">{{ d.description }}</p>
+          }
+          <button class="map-btn" (click)="showOnMap(d)">
+            <ion-icon name="map-outline"></ion-icon>
+            Ver en mapa
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+    } } @else {
+    <!-- VISTA MAPA -->
+    <div id="map-canvas" class="map-container"></div>
     }
   </div>
 </ion-content>
