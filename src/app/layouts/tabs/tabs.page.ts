@@ -30,6 +30,8 @@ import {
   calendar,
   globe,
   globeOutline,
+  location,
+  locationOutline,
 } from 'ionicons/icons';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 
@@ -86,6 +88,8 @@ export class TabsPage {
       calendar,
       globe,
       globeOutline,
+      location,
+      locationOutline,
     });
   }
 }

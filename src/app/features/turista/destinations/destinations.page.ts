@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, effect, untracked } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -9,6 +9,7 @@ import {
   IonChip,
   IonLabel,
   IonSpinner,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
@@ -19,29 +20,21 @@ import {
   umbrellaOutline,
   businessOutline,
   person,
+  listOutline,
+  mapOutline,
 } from 'ionicons/icons';
 import { Router } from '@angular/router';
-import { MunicipalityService } from 'src/app/core/services/municipality.service';
+import { DestinationService } from 'src/app/core/services/destination.service';
 import { SelectedCityService } from 'src/app/core/services/selected-city.service';
-import { NavigationService } from 'src/app/core/services/navigation.service';
+import { Destination } from 'src/app/core/models/Destination';
 import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
 import * as L from 'leaflet';
 
-interface Destination {
-  id: string;
-  name: string;
-  description: string;
-  type: string;
-  latitude: number;
-  longitude: number;
-  image?: string;
-}
-
 @Component({
-  selector: 'app-map',
+  selector: 'app-destinations',
   standalone: true,
-  templateUrl: './map.page.html',
-  styleUrls: ['./map.page.scss'],
+  templateUrl: './destinations.page.html',
+  styleUrls: ['./destinations.page.scss'],
   imports: [
     CommonModule,
     IonHeader,
@@ -53,15 +46,21 @@ interface Destination {
     IonChip,
     IonLabel,
     IonSpinner,
+    IonImg,
     CitySelectorBarComponent,
   ],
 })
-export class MapPage implements OnInit, OnDestroy {
-  private municipalityService = inject(MunicipalityService);
+export class DestinationsPage implements OnInit, OnDestroy {
+  private destinationService = inject(DestinationService);
   private selectedCityService = inject(SelectedCityService);
 
   city = this.selectedCityService.city;
   loading = signal(false);
+  error = signal(false);
+  errorMessage = '';
+
+  viewMode = signal<'list' | 'map'>('list');
+
   destinations = signal<Destination[]>([]);
   allDestinations: Destination[] = [];
   selectedType = signal<string>('todos');
@@ -71,7 +70,7 @@ export class MapPage implements OnInit, OnDestroy {
 
   readonly typeFilters = [
     { value: 'todos', label: 'Todos', icon: 'locate-outline' },
-    { value: 'MUSEUM', label: 'Museos', icon: 'museum-outline' },
+    { value: 'MUSEUM', label: 'Museos', icon: 'locate-outline' },
     { value: 'PARK', label: 'Parques', icon: 'leaf-outline' },
     { value: 'BEACH', label: 'Playas', icon: 'umbrella-outline' },
     { value: 'HISTORICAL_SITE', label: 'Históricos', icon: 'business-outline' },
@@ -80,9 +79,28 @@ export class MapPage implements OnInit, OnDestroy {
     { value: 'SPOT', label: 'Lugares', icon: 'locate-outline' },
   ];
 
+  readonly typeLabels: Record<string, string> = {
+    MUSEUM: 'Museo',
+    PARK: 'Parque',
+    BEACH: 'Playa',
+    HISTORICAL_SITE: 'Histórico',
+    NATURAL_RESERVE: 'Reserva Natural',
+    VIEWPOINT: 'Mirador',
+    SPOT: 'Lugar',
+  };
+
+  readonly typeColors: Record<string, string> = {
+    MUSEUM: '#e74c3c',
+    PARK: '#27ae60',
+    BEACH: '#3498db',
+    HISTORICAL_SITE: '#f39c12',
+    NATURAL_RESERVE: '#2ecc71',
+    VIEWPOINT: '#9b59b6',
+    SPOT: '#e67e22',
+  };
+
   constructor(
     private router: Router,
-    private navService: NavigationService,
   ) {
     addIcons({
       locateOutline,
@@ -91,12 +109,17 @@ export class MapPage implements OnInit, OnDestroy {
       umbrellaOutline,
       businessOutline,
       person,
+      listOutline,
+      mapOutline,
+    });
+
+    effect(() => {
+      this.city();
+      untracked(() => this.loadDestinations());
     });
   }
 
-  ngOnInit() {
-    this.loadDestinations();
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.map?.remove();
@@ -107,38 +130,73 @@ export class MapPage implements OnInit, OnDestroy {
     if (!currentCity) return;
 
     this.loading.set(true);
-    this.municipalityService.getDestinationsByCity(currentCity.id).subscribe({
+    this.error.set(false);
+
+    this.destinationService.getByCity(currentCity.id).subscribe({
       next: (res: any) => {
         const list: Destination[] = res.content || res || [];
         this.allDestinations = list;
         this.filterDestinations();
         this.loading.set(false);
-        this.initMap();
+        if (this.viewMode() === 'map') {
+          setTimeout(() => this.initMap(), 100);
+        }
       },
       error: () => {
         this.loading.set(false);
+        this.error.set(true);
+        this.errorMessage = 'Error al cargar destinos';
       },
     });
   }
 
   filterDestinations() {
     const type = this.selectedType();
-    const filtered =
-      type === 'todos'
-        ? this.allDestinations
-        : this.allDestinations.filter((d) => d.type === type);
+    const filtered = type === 'todos'
+      ? this.allDestinations
+      : this.allDestinations.filter((d) => d.type === type);
     this.destinations.set(filtered);
     this.updateMarkers();
   }
 
-  onTypeFilterChange(event: any) {
-    const value = typeof event === 'string' ? event : event?.detail?.value;
+  onTypeFilterChange(value: string) {
     this.selectedType.set(value);
     this.filterDestinations();
   }
 
+  switchView(mode: 'list' | 'map') {
+    this.viewMode.set(mode);
+    if (mode === 'map') {
+      setTimeout(() => this.initMap(), 100);
+    }
+  }
+
+  showOnMap(destination: Destination) {
+    this.selectedType.set('todos');
+    this.filterDestinations();
+    this.viewMode.set('map');
+    setTimeout(() => {
+      this.initMap();
+      if (this.map && destination.latitude && destination.longitude) {
+        this.map.setView([destination.latitude, destination.longitude], 15);
+      }
+    }, 100);
+  }
+
+  getTypeLabel(type: string): string {
+    return this.typeLabels[type] || type;
+  }
+
+  getTypeColor(type: string): string {
+    return this.typeColors[type] || '#666';
+  }
+
   private initMap() {
-    if (this.map) this.map.remove();
+    if (this.map) {
+      this.map.invalidateSize();
+      this.updateMarkers();
+      return;
+    }
 
     const currentCity = this.city();
     if (!currentCity) return;
@@ -150,8 +208,7 @@ export class MapPage implements OnInit, OnDestroy {
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(this.map);
 
     this.map.addControl(L.control.zoom({ position: 'bottomright' }));
@@ -179,7 +236,7 @@ export class MapPage implements OnInit, OnDestroy {
       marker.bindPopup(`
         <b>${d.name}</b><br/>
         ${d.description || ''}<br/>
-        <small>${d.type}</small>
+        <small>${this.getTypeLabel(d.type)}</small>
       `);
 
       this.markers.push(marker);
@@ -192,17 +249,7 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   private getMarkerIcon(type: string): L.DivIcon {
-    const colorMap: Record<string, string> = {
-      MUSEUM: '#e74c3c',
-      PARK: '#27ae60',
-      BEACH: '#3498db',
-      HISTORICAL_SITE: '#f39c12',
-      NATURAL_RESERVE: '#2ecc71',
-      VIEWPOINT: '#9b59b6',
-      SPOT: '#e67e22',
-    };
-
-    const color = colorMap[type] || '#666';
+    const color = this.getTypeColor(type);
 
     return L.divIcon({
       className: 'custom-marker',
@@ -223,13 +270,5 @@ export class MapPage implements OnInit, OnDestroy {
   goToProfile() {
     localStorage.setItem('account_return_url', '/tabs/destinations');
     this.router.navigate(['/tabs/account']);
-  }
-
-  centerOnCity() {
-    const currentCity = this.city();
-    if (!currentCity || !this.map) return;
-    if (this.destinations().length > 0) {
-      this.updateMarkers();
-    }
   }
 }

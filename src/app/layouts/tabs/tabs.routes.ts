@@ -62,19 +62,20 @@ export const routes: Routes = [
         ],
       },
 
-      /* ===================== MAP ==================== */
+      /* ===================== DESTINOS ==================== */
       {
-        path: 'map',
+        path: 'destinations',
         children: [
           {
             path: '',
             loadComponent: () =>
-              import('../../features/turista/map/map.page').then(
-                (m) => m.MapPage,
+              import('../../features/turista/destinations/destinations.page').then(
+                (m) => m.DestinationsPage,
               ),
           },
         ],
       },
+      { path: 'map', redirectTo: 'destinations', pathMatch: 'full' },
 
       /* ===================== PRICES ==================== */
       {

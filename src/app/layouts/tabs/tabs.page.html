@@ -65,10 +65,12 @@
       <ion-label>Calendario</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="map" (click)="handleTabClick('map')">
-      <ion-icon [name]="currenTab() === 'map' ? 'globe' : 'globe-outline'">
+    <ion-tab-button tab="destinations" (click)="handleTabClick('destinations')">
+      <ion-icon
+        [name]="currenTab() === 'destinations' ? 'location' : 'location-outline'"
+      >
       </ion-icon>
-      <ion-label>Mapa</ion-label>
+      <ion-label>Destinos</ion-label>
     </ion-tab-button>
     }
   </ion-tab-bar>
