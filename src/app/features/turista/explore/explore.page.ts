@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -92,7 +92,17 @@ export class ExplorePage implements OnInit {
     private offerService: OfferService,
     private navService: NavigationService,
   ) {
-    addIcons({ searchOutline, optionsOutline, alertCircleOutline, person, locationOutline });
+    addIcons({
+      searchOutline,
+      optionsOutline,
+      alertCircleOutline,
+      person,
+      locationOutline,
+    });
+
+    effect(() => {
+      this.fetchOffers();
+    });
   }
 
   goToProfile() {
@@ -103,7 +113,6 @@ export class ExplorePage implements OnInit {
   async ngOnInit() {
     this.categories = await firstValueFrom(this.categoryService.getAll());
     this.preselectCategory();
-    await this.fetchOffers();
   }
 
   get categoriesByType(): Category[] {
@@ -186,6 +195,11 @@ export class ExplorePage implements OnInit {
     }
     if (this.advancedFilters.endDate) {
       filters.endDate = this.advancedFilters.endDate;
+    }
+
+    const selectedCity = this.city();
+    if (selectedCity) {
+      filters.cityId = selectedCity.id;
     }
 
     try {
