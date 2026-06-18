@@ -4,7 +4,6 @@
   gap: 6px;
   padding: 8px 16px;
   cursor: pointer;
-  user-select: none;
 
   ion-icon:first-child {
     font-size: 18px;
@@ -33,8 +32,39 @@
 
 ion-modal {
   --width: 90%;
-  --height: 80%;
+  --height: 60%;
   --border-radius: 16px;
+
+  ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: white;
+
+    ion-title {
+      color: white;
+      text-align: left;
+      padding-left: 16px;
+    }
+
+    ion-buttons {
+      --color: white;
+      --display: flex;
+      --align-items: center;
+    }
+
+    ion-button {
+      color: white;
+      --color: white;
+      --color-hover: white;
+      --color-activated: white;
+      --background: transparent;
+      --background-hover: rgba(255, 255, 255, 0.1);
+      --background-activated: rgba(255, 255, 255, 0.2);
+
+      ion-icon {
+        color: white;
+      }
+    }
+  }
 }
 
 .empty-state {
