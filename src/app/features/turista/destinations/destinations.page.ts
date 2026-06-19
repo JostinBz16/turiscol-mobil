@@ -9,6 +9,8 @@ import {
   IonChip,
   IonLabel,
   IonSpinner,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
@@ -48,6 +50,8 @@ import { MapDisplayComponent } from 'src/app/components/map-display/map-display.
     IonChip,
     IonLabel,
     IonSpinner,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     CitySelectorBarComponent,
     DestinationCardComponent,
     MapDisplayComponent,
@@ -59,15 +63,19 @@ export class DestinationsPage {
   private destinationService = inject(DestinationService);
   private selectedCityService = inject(SelectedCityService);
 
+  private readonly pageSize = 10;
+  private page = 0;
+
   city = this.selectedCityService.city;
   loading = signal(false);
+  loadingMore = signal(false);
+  hasMore = signal(false);
   error = signal(false);
   errorMessage = '';
 
   viewMode = signal<'list' | 'map'>('list');
 
   destinations = signal<Destination[]>([]);
-  allDestinations: Destination[] = [];
   selectedType = signal<string>('todos');
   centerOnDestination: Destination | null = null;
 
@@ -102,40 +110,57 @@ export class DestinationsPage {
     });
   }
 
-  loadDestinations() {
-    const currentCity = this.city();
-    if (!currentCity) return;
+  loadDestinations(reset = true) {
+    if (reset) {
+      this.page = 0;
+      this.destinations.set([]);
+      this.loading.set(true);
+      this.loadingMore.set(false);
+    } else {
+      this.page++;
+      this.loadingMore.set(true);
+    }
 
-    this.loading.set(true);
     this.error.set(false);
 
-    this.destinationService.getByCity(currentCity.id).subscribe({
+    const currentCity = this.city();
+    const type = this.selectedType();
+
+    const obs$ = !currentCity
+      ? this.destinationService.getFeatured({ page: this.page, size: this.pageSize })
+      : type === 'todos'
+        ? this.destinationService.getByCity(currentCity.id, { page: this.page, size: this.pageSize })
+        : this.destinationService.getByCityAndType(currentCity.id, type, { page: this.page, size: this.pageSize });
+
+    obs$.subscribe({
       next: (res: any) => {
-        const list: Destination[] = res.content || res || [];
-        this.allDestinations = list;
-        this.filterDestinations();
+        const content: Destination[] = res.content || res || [];
+        if (reset) {
+          this.destinations.set(content);
+        } else {
+          this.destinations.update(curr => [...curr, ...content]);
+        }
+        this.hasMore.set(!res.last && content.length === this.pageSize);
         this.loading.set(false);
+        this.loadingMore.set(false);
       },
       error: () => {
         this.loading.set(false);
+        this.loadingMore.set(false);
         this.error.set(true);
         this.errorMessage = 'Error al cargar destinos';
       },
     });
   }
 
-  filterDestinations() {
-    const type = this.selectedType();
-    const filtered =
-      type === 'todos'
-        ? this.allDestinations
-        : this.allDestinations.filter((d) => d.type === type);
-    this.destinations.set(filtered);
+  loadMore(event: any) {
+    this.loadDestinations(false);
+    event.target.complete();
   }
 
   onTypeFilterChange(value: string) {
     this.selectedType.set(value);
-    this.filterDestinations();
+    this.loadDestinations();
   }
 
   switchView(mode: 'list' | 'map') {
@@ -144,7 +169,7 @@ export class DestinationsPage {
 
   showOnMap(destination: Destination) {
     this.selectedType.set('todos');
-    this.filterDestinations();
+    this.loadDestinations();
     this.centerOnDestination = destination;
     this.viewMode.set('map');
   }

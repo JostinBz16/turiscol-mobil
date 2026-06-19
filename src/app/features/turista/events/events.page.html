@@ -66,8 +66,22 @@
     </div>
     } @else if (viewMode() === 'events' && filteredEvents.length > 0) {
     <app-event-list [events]="filteredEvents"></app-event-list>
+    <ion-infinite-scroll
+      threshold="100px"
+      [disabled]="!eventsHasMore()"
+      (ionInfinite)="loadMoreEvents($event)"
+    >
+      <ion-infinite-scroll-content loadingText="Cargando más eventos..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
     } @else if (viewMode() === 'festivities' && allFestivities.length > 0) {
     <app-festivity-list [festivities]="allFestivities"></app-festivity-list>
+    <ion-infinite-scroll
+      threshold="100px"
+      [disabled]="!festivitiesHasMore()"
+      (ionInfinite)="loadMoreFestivities($event)"
+    >
+      <ion-infinite-scroll-content loadingText="Cargando más festividades..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
     } @else {
     <div class="empty-state">
       <ion-icon name="calendar-outline"></ion-icon>

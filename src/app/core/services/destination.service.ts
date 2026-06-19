@@ -23,8 +23,11 @@ export class DestinationService {
     );
   }
 
-  getByCity(cityId: string | number): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/locations/cities/${cityId}/destinations`).pipe(
+  getByCity(cityId: string | number, params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page !== undefined) httpParams = httpParams.set('page', params.page);
+    if (params?.size !== undefined) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${environment.apiUrl}/locations/cities/${cityId}/destinations`, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching destinations by city', err);
         return throwError(() => err);
@@ -32,8 +35,11 @@ export class DestinationService {
     );
   }
 
-  getByCityAndType(cityId: string | number, type: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/locations/cities/${cityId}/destinations/type/${type}`).pipe(
+  getByCityAndType(cityId: string | number, type: string, params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page !== undefined) httpParams = httpParams.set('page', params.page);
+    if (params?.size !== undefined) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(`${environment.apiUrl}/locations/cities/${cityId}/destinations/type/${type}`, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching destinations by city and type', err);
         return throwError(() => err);

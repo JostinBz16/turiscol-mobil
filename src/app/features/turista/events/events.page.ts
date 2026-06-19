@@ -9,6 +9,8 @@ import {
   IonChip,
   IonLabel,
   IonButtons,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { EventListComponent } from './components/event-list/event-list.component';
@@ -55,6 +57,8 @@ const EVENT_CATEGORY_LABELS: Record<string, string> = {
     IonChip,
     IonLabel,
     IonButtons,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     CitySelectorBarComponent,
     EventListComponent,
     FestivityListComponent,
@@ -69,6 +73,8 @@ export class EventsPage implements OnInit {
   private festivityService = inject(FestivityService);
   private selectedCityService = inject(SelectedCityService);
 
+  private readonly pageSize = 10;
+
   city = this.selectedCityService.city;
   loading = signal(false);
   error = signal(false);
@@ -76,14 +82,20 @@ export class EventsPage implements OnInit {
 
   viewMode = signal<'events' | 'festivities'>('events');
 
-  allEvents: any[] = [];
   filteredEvents: any[] = [];
-
   allFestivities: Festivity[] = [];
 
   selectedCategory = signal<string | null>(null);
 
   eventCategories: string[] = [];
+
+  eventsPage = 0;
+  eventsHasMore = signal(true);
+  eventsLoadingMore = signal(false);
+
+  festivitiesPage = 0;
+  festivitiesHasMore = signal(true);
+  festivitiesLoadingMore = signal(false);
 
   readonly EVENT_CATEGORY_LABELS = EVENT_CATEGORY_LABELS;
 
@@ -119,51 +131,98 @@ export class EventsPage implements OnInit {
     }
   }
 
-  loadEvents() {
-    this.loading.set(true);
+  loadEvents(reset = true) {
+    if (reset) {
+      this.eventsPage = 0;
+      this.filteredEvents = [];
+      this.loading.set(true);
+      this.eventsLoadingMore.set(false);
+    } else {
+      this.eventsPage++;
+      this.eventsLoadingMore.set(true);
+    }
+
     this.error.set(false);
 
     const currentCity = this.city();
+    const category = this.selectedCategory();
+    const pageParams = { page: this.eventsPage, size: this.pageSize };
+    const catParams = category ? { ...pageParams, category } : pageParams;
+
     const obs = currentCity
-      ? this.eventService.getByCity(currentCity.id)
-      : this.eventService.getAll();
+      ? this.eventService.getByCity(currentCity.id, catParams)
+      : this.eventService.getAll(catParams);
 
     obs.subscribe({
       next: (res: any) => {
-        const raw = res.content || res || [];
-        this.allEvents = raw.filter((item: any) => item.cityId || item);
-        this.filterEvents();
+        const content = res.content || res || [];
+        const items = content.filter((item: any) => item.cityId || item);
+        if (reset) {
+          this.filteredEvents = items;
+        } else {
+          this.filteredEvents = [...this.filteredEvents, ...items];
+        }
+        this.eventsHasMore.set(!res.last && content.length === this.pageSize);
         this.loading.set(false);
+        this.eventsLoadingMore.set(false);
       },
       error: () => {
         this.loading.set(false);
+        this.eventsLoadingMore.set(false);
         this.error.set(true);
         this.errorMessage = 'Error al cargar eventos';
       },
     });
   }
 
-  loadFestivities() {
-    this.loading.set(true);
+  loadMoreEvents(event: any) {
+    this.loadEvents(false);
+    event.target.complete();
+  }
+
+  loadFestivities(reset = true) {
+    if (reset) {
+      this.festivitiesPage = 0;
+      this.allFestivities = [];
+      this.loading.set(true);
+      this.festivitiesLoadingMore.set(false);
+    } else {
+      this.festivitiesPage++;
+      this.festivitiesLoadingMore.set(true);
+    }
+
     this.error.set(false);
 
     const currentCity = this.city();
 
     const obs = currentCity
-      ? this.festivityService.getByCity(currentCity.id)
-      : this.festivityService.getAll();
+      ? this.festivityService.getByCity(currentCity.id, { page: this.festivitiesPage, size: this.pageSize })
+      : this.festivityService.getAll({ page: this.festivitiesPage, size: this.pageSize });
 
     obs.subscribe({
       next: (res: any) => {
-        this.allFestivities = res.content || res || [];
+        const content = res.content || res || [];
+        if (reset) {
+          this.allFestivities = content;
+        } else {
+          this.allFestivities = [...this.allFestivities, ...content];
+        }
+        this.festivitiesHasMore.set(!res.last && content.length === this.pageSize);
         this.loading.set(false);
+        this.festivitiesLoadingMore.set(false);
       },
       error: () => {
         this.loading.set(false);
+        this.festivitiesLoadingMore.set(false);
         this.error.set(true);
         this.errorMessage = 'Error al cargar festividades';
       },
     });
+  }
+
+  loadMoreFestivities(event: any) {
+    this.loadFestivities(false);
+    event.target.complete();
   }
 
   switchView(mode: 'events' | 'festivities') {
@@ -171,24 +230,16 @@ export class EventsPage implements OnInit {
     this.selectedCategory.set(null);
 
     if (mode === 'events') {
-      this.filterEvents();
-    } else if (this.allFestivities.length === 0) {
+      this.loadEvents();
+    } else {
       this.loadFestivities();
     }
   }
 
-  filterEvents() {
-    const category = this.selectedCategory();
-    this.filteredEvents = category
-      ? this.allEvents.filter((ev) => ev.eventType === category)
-      : [...this.allEvents];
-  }
-
   setCategory(cat: string | null) {
     this.selectedCategory.set(cat);
-
     if (this.viewMode() === 'events') {
-      this.filterEvents();
+      this.loadEvents();
     }
   }
 

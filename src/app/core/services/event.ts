@@ -11,11 +11,19 @@ export class EventService {
 
   private readonly api = `${environment.apiUrl}/offers`;
 
-  getAll(params?: { page?: number; size?: number }): Observable<any> {
+  getAll(params?: { page?: number; size?: number; category?: string }): Observable<any> {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);
-    return this.http.get<any>(`${this.api}/type/event`, { params: httpParams }).pipe(
+
+    let url = `${this.api}/type/event`;
+    if (params?.category) {
+      url = `${this.api}/search`;
+      httpParams = httpParams.set('type', 'event');
+      httpParams = httpParams.set('category', params.category);
+    }
+
+    return this.http.get<any>(url, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching events', err);
         return throwError(() => err);
@@ -44,12 +52,13 @@ export class EventService {
     );
   }
 
-  getByCity(cityId: string | number, params?: { page?: number; size?: number }): Observable<any> {
+  getByCity(cityId: string | number, params?: { page?: number; size?: number; category?: string }): Observable<any> {
     let httpParams = new HttpParams()
       .set('type', 'event')
       .set('cityId', cityId);
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);
+    if (params?.category) httpParams = httpParams.set('category', params.category);
     return this.http.get<any>(`${this.api}/search`, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching events by city', err);

@@ -12,6 +12,8 @@ import {
   IonInput,
   IonSpinner,
   IonButtons,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
   NavController,
 } from '@ionic/angular/standalone';
 import { Category } from 'src/app/core/models/CategoryModel';
@@ -48,6 +50,8 @@ import { firstValueFrom } from 'rxjs';
     IonHeader,
     IonToolbar,
     IonButtons,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     CitySelectorBarComponent,
     CommonModule,
     FormsModule,
@@ -56,7 +60,11 @@ import { firstValueFrom } from 'rxjs';
 export class ExplorePage implements OnInit {
   categories: Category[] = [];
   offers: Offer[] = [];
+  page = 0;
   loading = false;
+  loadingMore = false;
+  hasMore = true;
+  readonly pageSize = 10;
   error = false;
   errorMessage = '';
 
@@ -130,23 +138,37 @@ export class ExplorePage implements OnInit {
     await this.fetchOffers();
   }
 
-  async fetchOffers() {
+  async fetchOffers(reset = true) {
     const hasSearch = !!this.searchTerm?.trim();
-    const filters: any = { page: 0, size: 20 };
+    const filters: any = {};
 
     if (
+      reset &&
       !hasSearch &&
       this.selectedOfferType === 'ALL' &&
       !this.advancedFilters.minPrice &&
       !this.advancedFilters.maxPrice
     ) {
       this.offers = [];
+      this.hasMore = true;
       return;
     }
 
-    this.loading = true;
+    if (reset) {
+      this.page = 0;
+      this.offers = [];
+      this.loading = true;
+      this.loadingMore = false;
+    } else {
+      this.page++;
+      this.loadingMore = true;
+    }
+
     this.error = false;
     this.errorMessage = '';
+
+    filters.page = this.page;
+    filters.size = this.pageSize;
 
     if (hasSearch) {
       filters.name = this.searchTerm.trim();
@@ -202,18 +224,31 @@ export class ExplorePage implements OnInit {
 
     try {
       const res = await firstValueFrom(this.offerService.search(filters));
-      this.offers = (res.content ?? []).map((item: any) => ({
+      const content = res.content ?? [];
+      const mapped = content.map((item: any) => ({
         ...item,
         type: this.selectedOfferType as OfferType,
         images: item.images?.map((img: any) => img.imageUrl) ?? [],
         basePrice: item.baseprice ?? item.basePrice,
       }));
+      if (reset) {
+        this.offers = mapped;
+      } else {
+        this.offers = [...this.offers, ...mapped];
+      }
+      this.hasMore = !res.last && content.length === this.pageSize;
     } catch (e) {
       this.error = true;
       this.errorMessage = 'Error al cargar ofertas';
     } finally {
       this.loading = false;
+      this.loadingMore = false;
     }
+  }
+
+  async loadMore(event: any) {
+    await this.fetchOffers(false);
+    event.target.complete();
   }
 
   async selectOfferType(type: any) {
