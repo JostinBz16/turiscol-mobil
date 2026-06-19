@@ -47,7 +47,6 @@ import { firstValueFrom } from 'rxjs';
     IonInput,
     IonHeader,
     IonToolbar,
-
     IonButtons,
     CitySelectorBarComponent,
     CommonModule,
@@ -66,7 +65,12 @@ export class ExplorePage implements OnInit {
   selectedOfferType: OfferType | 'ALL' = OfferType.ACCOMMODATION;
 
   private selectedCityService = inject(SelectedCityService);
+  private categoryService = inject(CategoryService);
   private navCtrl = inject(NavController);
+  private offerService = inject(OfferService);
+  private navService = inject(NavigationService);
+  private router = inject(Router);
+  private modalCtrl = inject(ModalController);
   city = this.selectedCityService.city;
 
   advancedFilters: BookingFilters = {
@@ -85,13 +89,7 @@ export class ExplorePage implements OnInit {
     { label: 'Productos', value: OfferType.PRODUCT },
   ];
 
-  constructor(
-    private router: Router,
-    private modalCtrl: ModalController,
-    private categoryService: CategoryService,
-    private offerService: OfferService,
-    private navService: NavigationService,
-  ) {
+  constructor() {
     addIcons({
       searchOutline,
       optionsOutline,

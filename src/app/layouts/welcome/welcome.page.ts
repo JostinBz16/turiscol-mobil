@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonButton, IonImg } from '@ionic/angular/standalone';
@@ -12,7 +12,8 @@ import { Router } from '@angular/router';
   imports: [IonImg, IonButton, IonContent, CommonModule, FormsModule],
 })
 export class WelcomePage {
-  constructor(private router: Router) {}
+  private router = inject(Router);
+
 
   startApp() {
     // Guardamos que ya se mostró la bienvenida

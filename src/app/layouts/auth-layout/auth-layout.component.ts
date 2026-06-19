@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonRouterOutlet, IonApp } from '@ionic/angular/standalone';
 
 @Component({
@@ -8,8 +8,6 @@ import { IonRouterOutlet, IonApp } from '@ionic/angular/standalone';
   standalone: true,
   imports: [IonApp, IonRouterOutlet],
 })
-export class AuthLayoutComponent implements OnInit {
+export class AuthLayoutComponent {
   constructor() {}
-
-  ngOnInit() {}
 }

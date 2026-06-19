@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -43,6 +43,8 @@ import {
   ],
 })
 export class FiltermodalExploreComponent implements OnInit {
+  private modalCtrl = inject(ModalController);
+
   @Input() initialFilters!: BookingFilters;
   filters: BookingFilters = {
     minPrice: 0,
@@ -58,7 +60,7 @@ export class FiltermodalExploreComponent implements OnInit {
   serviceCategoryEnum = ServiceCategory;
   serviceCategories = Object.values(ServiceCategory);
 
-  constructor(private modalCtrl: ModalController) {
+  constructor() {
     addIcons({ closeOutline, star });
   }
 

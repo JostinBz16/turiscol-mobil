@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import {
@@ -44,6 +44,11 @@ import { UserService } from 'src/app/core/services/User';
   ],
 })
 export class EditPage implements OnInit {
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  navService = inject(NavigationService);
+  private userService = inject(UserService);
+
   selectedRole: 'turista' | 'proveedor' | 'admin' = 'turista';
 
   form = this.fb.group({
@@ -57,13 +62,6 @@ export class EditPage implements OnInit {
     description: [''],
     website: [''],
   });
-
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    public navService: NavigationService,
-    private userService: UserService,
-  ) {}
 
   ngOnInit() {
     this.userService.getProfile().subscribe({

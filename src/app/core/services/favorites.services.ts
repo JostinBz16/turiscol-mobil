@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 import { environment } from 'src/environments/environment';
@@ -19,6 +19,9 @@ export interface FavoriteOfferDto {
 
 @Injectable({ providedIn: 'root' })
 export class FavoritesService {
+  private http = inject(HttpClient);
+  private auth = inject(AuthService);
+
   private readonly api = `${environment.apiUrl}/offers/favorites`;
 
   private favorites = signal<FavoriteOfferDto[]>([]);
@@ -35,11 +38,6 @@ export class FavoritesService {
       basePrice: item.baseprice ?? item.baseprice,
     }));
   });
-
-  constructor(
-    private http: HttpClient,
-    private auth: AuthService,
-  ) {}
 
   private async ensureLoaded(): Promise<void> {
     if (this.loaded) return;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -47,15 +47,15 @@ import { firstValueFrom } from 'rxjs';
   ],
 })
 export class OfferDetailsPage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private favoritesService = inject(FavoritesService);
+  private offerService = inject(OfferService);
+  navService = inject(NavigationService);
+
   OfferType = OfferType;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private favoritesService: FavoritesService,
-    private offerService: OfferService,
-    public navService: NavigationService,
-  ) {
+  constructor() {
     addIcons({
       chevronBackOutline,
       personOutline,

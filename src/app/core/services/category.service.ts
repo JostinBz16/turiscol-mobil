@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Category } from '../models/CategoryModel';
 import { environment } from 'src/environments/environment';
@@ -9,9 +9,9 @@ import { OfferType } from '../models/Offers';
   providedIn: 'root',
 })
 export class CategoryService {
-  private readonly categoriesApi = `${environment.apiUrl}/offers/categories`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly categoriesApi = `${environment.apiUrl}/offers/categories`;
 
   getAll(): Observable<Category[]> {
     return this.http.get<Record<string, string[]>>(this.categoriesApi).pipe(
@@ -26,6 +26,8 @@ export class CategoryService {
   }
 
   getByType(type: OfferType | string): Observable<string[]> {
-    return this.http.get<string[]>(`${environment.apiUrl}/offers/types/${type}/categories`);
+    return this.http.get<string[]>(
+      `${environment.apiUrl}/offers/types/${type}/categories`,
+    );
   }
 }

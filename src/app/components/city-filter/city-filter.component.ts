@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonCard,
@@ -11,16 +11,17 @@ import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-city-filter',
+  standalone: true,
   templateUrl: './city-filter.component.html',
   styleUrls: ['./city-filter.component.scss'],
   imports: [IonInput, CommonModule, IonCard, IonCardContent, IonIcon],
 })
 export class CityFilterComponent implements OnInit {
-  @Output() select = new EventEmitter<any>();
+  private municipalityService = inject(MunicipalityService);
+
+  @Output() citySelect = new EventEmitter<any>();
 
   cities: any[] = [];
-
-  constructor(private municipalityService: MunicipalityService) {}
 
   async ngOnInit() {
     await this.loadFeatured();
@@ -51,6 +52,6 @@ export class CityFilterComponent implements OnInit {
   }
 
   onSelect(city: any) {
-    this.select.emit(city);
+    this.citySelect.emit(city);
   }
 }

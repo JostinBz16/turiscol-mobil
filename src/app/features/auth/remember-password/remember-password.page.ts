@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -29,9 +29,12 @@ import { Router } from '@angular/router';
   ],
 })
 export class RememberPasswordPage {
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor() {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });

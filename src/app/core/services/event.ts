@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
@@ -7,9 +7,9 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class EventService {
-  private readonly api = `${environment.apiUrl}/offers`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly api = `${environment.apiUrl}/offers`;
 
   getAll(params?: { page?: number; size?: number }): Observable<any> {
     let httpParams = new HttpParams();

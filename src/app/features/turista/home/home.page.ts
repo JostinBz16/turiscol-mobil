@@ -66,6 +66,14 @@ import { firstValueFrom } from 'rxjs';
   ],
 })
 export class HomePage implements OnInit {
+  private router = inject(Router);
+  private categoryService = inject(CategoryService);
+  authService = inject(AuthService);
+  private municipalityService = inject(MunicipalityService);
+  private departmentService = inject(DepartmentService);
+  private favoriteService = inject(FavoritesService);
+  private offerService = inject(OfferService);
+
   categories: Category[] = [];
   destinations: Municipality[] = [];
   departmentMap = new Map<string, string>();
@@ -106,15 +114,7 @@ export class HomePage implements OnInit {
 
   offers: Offer[] = [];
 
-  constructor(
-    private router: Router,
-    private categoryService: CategoryService,
-    public authService: AuthService,
-    private municipalityService: MunicipalityService,
-    private departmentService: DepartmentService,
-    private favoriteService: FavoritesService,
-    private offerService: OfferService,
-  ) {
+  constructor() {
     addIcons({
       alertCircleOutline,
       searchOutline,

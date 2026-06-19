@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -30,14 +30,12 @@ import { Festivity } from 'src/app/core/models/Festivity';
   ],
 })
 export class FestivityDetailsPage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private festivityService = inject(FestivityService);
+
   festivity: Festivity | null = null;
   loading = true;
   error = false;
-
-  constructor(
-    private route: ActivatedRoute,
-    private festivityService: FestivityService,
-  ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');

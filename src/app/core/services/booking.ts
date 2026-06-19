@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { Booking, BookingDetail } from '../models/Reservations';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
@@ -8,9 +8,9 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class BookingService {
-  private readonly api = `${environment.apiUrl}/booking`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly api = `${environment.apiUrl}/booking`;
 
   getBookings(params?: { page?: number; size?: number }): Observable<any> {
     let httpParams = new HttpParams();

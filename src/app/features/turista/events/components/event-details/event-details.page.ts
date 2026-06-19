@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -35,6 +35,9 @@ import { EventOffer } from 'src/app/core/models/Offers';
   ],
 })
 export class EventDetailsPage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private eventService = inject(EventService);
+
   event: EventOffer | null = null;
   loading = true;
   error = false;
@@ -48,11 +51,6 @@ export class EventDetailsPage implements OnInit {
     CULTURAL: 'Cultural',
     FOOD: 'Gastronomía',
   };
-
-  constructor(
-    private route: ActivatedRoute,
-    private eventService: EventService,
-  ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');

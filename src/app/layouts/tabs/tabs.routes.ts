@@ -75,7 +75,11 @@ export const routes: Routes = [
           },
         ],
       },
-      { path: 'map', redirectTo: 'destinations', pathMatch: 'full' },
+      {
+        path: 'map',
+        loadComponent: () =>
+          import('../../features/turista/map/map.page').then((m) => m.MapPage),
+      },
 
       /* ===================== PRICES ==================== */
       {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -37,15 +37,13 @@ import { AuthService } from './services/auth';
   ],
 })
 export class LoginPage implements OnInit {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   loginForm!: FormGroup;
   IsShowingToast: boolean = false;
   toastMessage = '';
-
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-  ) {}
 
   ngOnInit() {
     this.loginForm = this.fb.group({

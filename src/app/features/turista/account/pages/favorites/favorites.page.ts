@@ -1,4 +1,4 @@
-import { Component, OnInit, computed } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -42,13 +42,11 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   ],
 })
 export class FavoritesPage implements OnInit {
-  favoriteOffers = computed(() => this.favoritesService.favoriteOffers());
+  private favoritesService = inject(FavoritesService);
+  private router = inject(Router);
+  private navService = inject(NavigationService);
 
-  constructor(
-    private favoritesService: FavoritesService,
-    private router: Router,
-    private navService: NavigationService,
-  ) {}
+  favoriteOffers = computed(() => this.favoritesService.favoriteOffers());
 
   async ngOnInit() {
     await this.favoritesService.load();

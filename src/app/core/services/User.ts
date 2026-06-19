@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { User } from '../models/User';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -8,11 +8,11 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class UserService {
+  private http = inject(HttpClient);
+
   private API = `${environment.apiUrl}/users`;
   user: User | null = JSON.parse(localStorage.getItem('user') || 'null');
   private currentUser$ = new BehaviorSubject<User | null>(null);
-
-  constructor(private http: HttpClient) {}
 
   getProfile(): Observable<User> {
     if (!this.user?.id) {

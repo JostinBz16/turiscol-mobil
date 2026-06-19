@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AccommodationDetailStrategy } from './AccommodationDetailStrategy';
 import { EventDetailStrategy } from './EventDetailStrategy';
 import { ProductDetailStrategy } from './ProductDetailStrategy';
@@ -8,12 +8,11 @@ import { OfferDetailStrategy } from './OfferDetailStrategy';
 
 @Injectable({ providedIn: 'root' })
 export class OfferDetailStrategyFactory {
-  constructor(
-    private accommodation: AccommodationDetailStrategy,
-    private event: EventDetailStrategy,
-    private product: ProductDetailStrategy,
-    private service: ServiceDetailStrategy,
-  ) {}
+  private accommodation = inject(AccommodationDetailStrategy);
+  private event = inject(EventDetailStrategy);
+  private product = inject(ProductDetailStrategy);
+  private service = inject(ServiceDetailStrategy);
+
 
   getStrategy(type: OfferType): OfferDetailStrategy<any> {
     switch (type) {

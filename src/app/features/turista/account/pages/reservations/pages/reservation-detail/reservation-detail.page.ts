@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Booking, BookingStatus } from 'src/app/core/models/Reservations';
 import { BookingService } from 'src/app/core/services/booking';
@@ -33,6 +33,11 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   ],
 })
 export class ReservationDetailPage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private bookingService = inject(BookingService);
+  private offerService = inject(OfferService);
+  navService = inject(NavigationService);
+
   booking = signal<Booking | null>(null);
   offer = signal<Offer | null>(null);
 
@@ -42,13 +47,6 @@ export class ReservationDetailPage implements OnInit {
     [OfferType.PRODUCT]: 'Producto',
     [OfferType.SERVICE]: 'Servicio',
   };
-
-  constructor(
-    private route: ActivatedRoute,
-    private bookingService: BookingService,
-    private offerService: OfferService,
-    public navService: NavigationService,
-  ) {}
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { OfferDetailStrategy } from './OfferDetailStrategy';
 import { ProductOffer } from 'src/app/core/models/Offers';
 import { HttpClient } from '@angular/common/http';
@@ -9,9 +9,9 @@ import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ProductDetailStrategy implements OfferDetailStrategy<ProductOffer> {
-  private adapter = new ProductOfferAdapter();
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private adapter = new ProductOfferAdapter();
 
   getDetail(id: string): Observable<ProductOffer> {
     return this.http

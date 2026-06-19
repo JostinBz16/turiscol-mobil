@@ -61,6 +61,9 @@ const EVENT_CATEGORY_LABELS: Record<string, string> = {
   ],
 })
 export class EventsPage implements OnInit {
+  private router = inject(Router);
+  private navService = inject(NavigationService);
+
   private eventService = inject(EventService);
   private categoryService = inject(CategoryService);
   private festivityService = inject(FestivityService);
@@ -84,10 +87,7 @@ export class EventsPage implements OnInit {
 
   readonly EVENT_CATEGORY_LABELS = EVENT_CATEGORY_LABELS;
 
-  constructor(
-    private router: Router,
-    private navService: NavigationService,
-  ) {
+  constructor() {
     addIcons({
       filterOutline,
       refreshCircleOutline,

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -38,6 +38,10 @@ import { personOutline, businessOutline } from 'ionicons/icons';
   styleUrls: ['./register.page.scss'],
 })
 export class RegisterPage {
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
   step: 'type' | 'form' = 'type';
   selectedRole: 'customer' | 'provider' = 'customer';
 
@@ -54,11 +58,7 @@ export class RegisterPage {
     website: [''],
   });
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private authService: AuthService,
-  ) {
+  constructor() {
     addIcons({ personOutline, businessOutline });
   }
 

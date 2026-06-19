@@ -1,0 +1,25 @@
+<div class="destination-card">
+  @if (destination.image) {
+  <div class="card-img-wrapper">
+    <ion-img [src]="destination.image" class="card-img" />
+  </div>
+  }
+  <div class="card-body">
+    <div class="card-header">
+      <h2>{{ destination.name }}</h2>
+      <span
+        class="type-badge"
+        [style.background]="getTypeColor(destination.type)"
+      >
+        {{ getTypeLabel(destination.type) }}
+      </span>
+    </div>
+    @if (destination.description) {
+    <p class="description">{{ destination.description }}</p>
+    }
+    <button class="map-btn" (click)="onShowOnMap()">
+      <ion-icon name="map-outline"></ion-icon>
+      Ver en mapa
+    </button>
+  </div>
+</div>

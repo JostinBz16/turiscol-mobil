@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -17,6 +17,7 @@ import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-price-list',
+  standalone: true,
   templateUrl: './price-list.page.html',
   styleUrls: ['./price-list.page.scss'],
   imports: [
@@ -32,14 +33,12 @@ import { firstValueFrom } from 'rxjs';
   ],
 })
 export class PriceListPage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private priceService = inject(PriceService);
+
   cityId!: string;
   cityName = '';
   prices: Price[] = [];
-
-  constructor(
-    private route: ActivatedRoute,
-    private priceService: PriceService,
-  ) {}
 
   ngOnInit() {
     this.cityId = this.route.snapshot.paramMap.get('cityId') || '';

@@ -24,6 +24,11 @@
 
         </activity>
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCkX73molJA_XEREnfAYYrg8TL02Rekv2U" />  <!-- PONER TU API KEY DE
+        GOOGLE MAPS AQUÍ -->
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

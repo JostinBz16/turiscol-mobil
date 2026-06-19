@@ -1,0 +1,14 @@
+<div class="map-wrapper">
+  @if (loading) {
+    <div class="loading-state">
+      <ion-spinner></ion-spinner>
+      <p>Cargando mapa...</p>
+    </div>
+  }
+
+  <capacitor-google-map
+    #mapElement
+    [id]="mapId"
+    class="map-container"
+  ></capacitor-google-map>
+</div>

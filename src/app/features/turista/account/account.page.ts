@@ -51,13 +51,13 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   ],
 })
 export class AccountPage implements OnInit {
+  private router = inject(Router);
+  authService = inject(AuthService);
+  private navService = inject(NavigationService);
+
   private authStore = inject(AuthService);
   role = this.authStore.role;
-  constructor(
-    private router: Router,
-    public authService: AuthService,
-    private navService: NavigationService,
-  ) {
+  constructor() {
     addIcons({
       arrowBack,
       personOutline,

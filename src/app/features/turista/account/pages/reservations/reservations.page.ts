@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal, Signal } from '@angular/core';
+import { Component, computed, OnInit, signal, Signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonContent,
@@ -34,6 +34,11 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
   ],
 })
 export class ReservationsPage implements OnInit {
+  private bookingService = inject(BookingService);
+  private offerService = inject(OfferService);
+  private router = inject(Router);
+  private navService = inject(NavigationService);
+
   bookings = signal<Booking[]>([]);
   offersByBooking = signal<Offer[]>([]);
 
@@ -47,13 +52,6 @@ export class ReservationsPage implements OnInit {
       })
       .filter(Boolean) as BookingWithOffer[];
   });
-
-  constructor(
-    private bookingService: BookingService,
-    private offerService: OfferService,
-    private router: Router,
-    private navService: NavigationService,
-  ) {}
 
   ngOnInit() {
     this.bookingService.getBookings().subscribe((res) => {

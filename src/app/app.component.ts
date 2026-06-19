@@ -1,17 +1,20 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { AuthService } from './features/auth/login/services/auth';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent {
+  private authStore = inject(AuthService);
+
   isDarkMode = false;
 
-  constructor(private authStore: AuthService) {
+  constructor() {
     this.authStore.loadFromStorage();
   }
 

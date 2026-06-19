@@ -31,7 +31,7 @@
       </ion-chip>
     </div>
 
-    <!-- FILTROS POR TIPO -->
+    <!-- FILTROS POR TIPO (siempre visibles) -->
     <div class="filter-bar">
       @for (filter of typeFilters; track filter.value) {
       <ion-chip
@@ -67,30 +67,16 @@
     } @else {
     <div class="destination-list">
       @for (d of destinations(); track d.id) {
-      <div class="destination-card">
-        @if (d.image) {
-        <div class="card-img-wrapper">
-          <ion-img [src]="d.image" class="card-img" />
-        </div>
-        }
-        <div class="card-body">
-          <div class="card-header">
-            <h2>{{ d.name }}</h2>
-          </div>
-          @if (d.description) {
-          <p class="description">{{ d.description }}</p>
-          }
-          <button class="map-btn" (click)="showOnMap(d)">
-            <ion-icon name="map-outline"></ion-icon>
-            Ver en mapa
-          </button>
-        </div>
-      </div>
+      <app-destination-card [destination]="d" (showOnMap)="showOnMap($event)" />
       }
     </div>
     } } @else {
     <!-- VISTA MAPA -->
-    <div id="map-canvas" class="map-container"></div>
+    <app-map-display
+      [destinations]="destinations()"
+      [loading]="loading()"
+      [centerOn]="centerOnDestination"
+    />
     }
   </div>
 </ion-content>

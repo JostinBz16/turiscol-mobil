@@ -9,41 +9,6 @@ ion-toolbar {
   color: white;
 }
 
-.map-container {
-  width: 100%;
-  height: calc(100vh - 200px);
-  min-height: 400px;
-}
-
-.filter-bar {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  white-space: nowrap;
-  padding: 4px;
-  z-index: 1000;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.custom-marker {
-  background: transparent !important;
-  border: none !important;
-}
-
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 60vh;
-  gap: 12px;
+ion-content {
+  --overflow: hidden;
 }

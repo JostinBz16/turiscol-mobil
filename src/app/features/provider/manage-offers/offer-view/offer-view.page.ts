@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonContent,
@@ -58,6 +58,11 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./offer-view.page.scss'],
 })
 export class OfferViewPage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private offerService = inject(OfferService);
+  private municipalityService = inject(MunicipalityService);
+
   loading = true;
   error = false;
   errorMessage = '';
@@ -65,12 +70,7 @@ export class OfferViewPage implements OnInit {
   offerId: string | null = null;
   cityName = '';
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private offerService: OfferService,
-    private municipalityService: MunicipalityService,
-  ) {
+  constructor() {
     addIcons({
       createOutline,
       cashOutline,

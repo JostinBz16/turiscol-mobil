@@ -12,43 +12,8 @@
 <app-city-bar />
 
 <ion-content>
-  @if (loading()) {
-  <div class="loading-state">
-    <ion-spinner></ion-spinner>
-    <p>Cargando mapa...</p>
-  </div>
-  }
-
-  <div class="filter-bar">
-    <ion-chip
-      [color]="selectedType() === 'todos' ? 'primary' : 'medium'"
-      (click)="onTypeFilterChange('todos')"
-    >
-      <ion-icon name="locate-outline"></ion-icon>
-      <ion-label>Todos</ion-label>
-    </ion-chip>
-    <ion-chip
-      [color]="selectedType() === 'MUSEUM' ? 'danger' : 'medium'"
-      (click)="onTypeFilterChange('MUSEUM')"
-    >
-      <ion-icon name="museum-outline"></ion-icon>
-      <ion-label>Museos</ion-label>
-    </ion-chip>
-    <ion-chip
-      [color]="selectedType() === 'PARK' ? 'success' : 'medium'"
-      (click)="onTypeFilterChange('PARK')"
-    >
-      <ion-icon name="leaf-outline"></ion-icon>
-      <ion-label>Parques</ion-label>
-    </ion-chip>
-    <ion-chip
-      [color]="selectedType() === 'HISTORICAL_SITE' ? 'warning' : 'medium'"
-      (click)="onTypeFilterChange('HISTORICAL_SITE')"
-    >
-      <ion-icon name="business-outline"></ion-icon>
-      <ion-label>Históricos</ion-label>
-    </ion-chip>
-  </div>
-
-  <div id="map-canvas" class="map-container"></div>
+  <app-map-display
+    [destinations]="destinations()"
+    [loading]="loading()"
+  />
 </ion-content>

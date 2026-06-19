@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
@@ -8,9 +8,9 @@ import { Festivity } from '../models/Festivity';
   providedIn: 'root',
 })
 export class FestivityService {
-  private readonly api = `${environment.apiUrl}/festivities`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly api = `${environment.apiUrl}/festivities`;
 
   getAll(params?: { page?: number; size?: number }): Observable<any> {
     let httpParams = new HttpParams();

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -54,6 +54,12 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./offer-editor.page.scss'],
 })
 export class OfferEditorPage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private offerService = inject(OfferService);
+  private authStore = inject(AuthService);
+  private municipalityService = inject(MunicipalityService);
+
   isNew = true;
   loading = false;
   saving = false;
@@ -95,13 +101,7 @@ export class OfferEditorPage implements OnInit {
     productCategory: null,
   };
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private offerService: OfferService,
-    private authStore: AuthService,
-    private municipalityService: MunicipalityService,
-  ) {
+  constructor() {
     addIcons({ saveOutline, closeOutline });
   }
 

@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap, catchError, throwError } from 'rxjs';
 import { LoginRequestDTO } from '../models/login-request';
@@ -8,9 +8,9 @@ import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private API = `${environment.apiUrl}/auth`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private API = `${environment.apiUrl}/auth`;
 
   // 🔐 Estado central de sesión
   user = signal<UserSession | null>(null);

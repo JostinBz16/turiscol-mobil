@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, map, catchError, throwError } from 'rxjs';
 import {
   AccommodationOffer,
@@ -15,12 +15,10 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class OfferService {
-  private readonly api = `${environment.apiUrl}/offers`;
+  private http = inject(HttpClient);
+  private factory = inject(OfferDetailStrategyFactory);
 
-  constructor(
-    private http: HttpClient,
-    private factory: OfferDetailStrategyFactory,
-  ) {}
+  private readonly api = `${environment.apiUrl}/offers`;
 
   findAll(params?: { page?: number; size?: number; providerId?: string; cityId?: string; active?: boolean }): Observable<any> {
     let httpParams = new HttpParams();

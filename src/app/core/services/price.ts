@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { Price } from '../models/Price';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -8,9 +8,9 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class PriceService {
-  private readonly api = `${environment.apiUrl}/prices`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly api = `${environment.apiUrl}/prices`;
 
   getAll(params?: { page?: number; size?: number }): Observable<any> {
     let httpParams = new HttpParams();

@@ -17,6 +17,7 @@ import { addIcons } from 'ionicons';
 import { trashBinOutline } from 'ionicons/icons';
 @Component({
   selector: 'app-event-advance-filter',
+  standalone: true,
   templateUrl: './event-advance-filter.component.html',
   styleUrls: ['./event-advance-filter.component.scss'],
   imports: [

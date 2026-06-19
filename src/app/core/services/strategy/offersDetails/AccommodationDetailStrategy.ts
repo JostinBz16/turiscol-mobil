@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AccommodationOffer } from '../../../models/Offers';
 import { OfferDetailStrategy } from './OfferDetailStrategy';
 import { map, Observable, catchError, throwError } from 'rxjs';
@@ -9,9 +9,9 @@ import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AccommodationDetailStrategy implements OfferDetailStrategy<AccommodationOffer> {
-  private adapter = new AccommodationOfferAdapter();
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private adapter = new AccommodationOfferAdapter();
 
   getDetail(id: string): Observable<AccommodationOffer> {
     return this.http
