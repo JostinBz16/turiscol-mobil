@@ -7,5 +7,5 @@ interface Environment {
 export const environment: Environment = {
   production: true,
   apiUrl: 'https://api.turiscol.com/api/v1',
-  googleMapsApiKey: '',
+  googleMapsApiKey: 'AIzaSyCkX73molJA_XEREnfAYYrg8TL02Rekv2U',
 };

@@ -10,7 +10,14 @@ ion-toolbar {
 }
 
 .destinations-container {
-  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+app-map-display {
+  flex: 1;
+  min-height: 0;
 }
 
 .view-toggle {
