@@ -10,6 +10,6 @@ export interface Environment {
 
 export const environment: Environment = {
   production: false,
-  apiUrl: 'http://192.168.1.13:8080/api/v1',
+  apiUrl: 'http://172.28.96.1:8080/api/v1',
   googleMapsApiKey: 'AIzaSyCkX73molJA_XEREnfAYYrg8TL02Rekv2U',
 };
