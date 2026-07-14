@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button [defaultHref]="navService.returnUrl()"></ion-back-button>
     </ion-buttons>
-    <ion-title>Detalle de Reserva</ion-title>
+    <ion-title>{{ isProduct() ? 'Detalle de Compra' : 'Detalle de Reserva' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -27,47 +27,70 @@
   <!-- PAYMENT CARD -->
   <div class="card">
     <div class="info">
-      <h3>Detalles de la reserva</h3>
+      <h3>{{ isProduct() ? 'Detalles de la compra' : 'Detalles de la reserva' }}</h3>
       <div class="info-grid">
-        <div class="info-peoplecount">
+        <div class="info-item">
           <span>{{ offerInfoLabel() }}:</span>
           <strong>{{ peopleCount() }}</strong>
         </div>
-        <div class="info-offertype">
-          <span>Tipo de reserva:</span>
+        <div class="info-item">
+          <span>Tipo:</span>
           <strong>{{ offerTypeLabel(offer()!.type) }}</strong>
         </div>
       </div>
 
       <div class="status-date">
         <span class="date">
-          {{ booking()!.serviceStartDate }} @if (booking()!.serviceEndDate) { – {{
-          booking()!.serviceEndDate }} }
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ dateLabel() }}:
+          {{ formatDate(booking()!.serviceStartDate) }}
         </span>
 
-        <span class="status-chip" [ngClass]="booking()!.status.toLowerCase()">
+        <span class="status-chip" [ngClass]="statusClass(booking()!.status)">
           {{ statusLabel(booking()!.status) }}
         </span>
       </div>
     </div>
-    <div>
+    <div class="payment-summary">
       <h3>Resumen de pago</h3>
 
       <div class="price-row">
-        <span>Subtotal</span>
-        <span>${{ subtotal() }}</span>
+        <span>{{ unitPrice() | currency:'COP':'symbol':'1.0-0' }} x {{ booking()!.quantity }}</span>
+        <span>{{ subtotal() | currency:'COP':'symbol':'1.0-0' }}</span>
       </div>
 
       <div class="price-row">
-        <span>Impuestos</span>
-        <span>${{ taxes() }}</span>
+        <span>IVA (19%)</span>
+        <span>{{ taxes() | currency:'COP':'symbol':'1.0-0' }}</span>
       </div>
 
       <div class="price-row total">
         <strong>Total</strong>
-        <strong>${{ total() }}</strong>
+        <strong>{{ total() | currency:'COP':'symbol':'1.0-0' }}</strong>
       </div>
     </div>
   </div>
+
+  <!-- PAY BUTTON -->
+  @if (canPay()) {
+  <div class="pay-button-container">
+    <ion-button expand="block" (click)="openPayment()" class="pay-button">
+      <ion-icon name="card-outline" slot="start"></ion-icon>
+      Pagar Ahora
+    </ion-button>
+  </div>
+  }
+  }
+
+  <!-- PAYMENT MODAL -->
+  @if (booking()) {
+  <app-payment-modal
+    [bookingId]="booking()!.id"
+    [amount]="total()"
+    [currency]="booking()!.currency || 'COP'"
+    [(isOpen)]="showPaymentModal"
+    (paymentSuccess)="onPaymentSuccess($event)"
+    (paymentError)="onPaymentError($event)"
+  ></app-payment-modal>
   }
 </ion-content>

@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal, Signal, inject } from '@angular/core';
+import { Component, computed, OnInit, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonContent,
@@ -8,6 +8,9 @@ import {
   IonToolbar,
   IonTitle,
   IonButtons,
+  IonChip,
+  IonIcon,
+  IonButton,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { Booking, BookingStatus } from 'src/app/core/models/Reservations';
@@ -15,6 +18,7 @@ import { BookingService } from 'src/app/core/services/booking';
 import { OfferService } from 'src/app/core/services/offers';
 import { Offer } from 'src/app/core/models/Offers';
 import { forkJoin } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 
 @Component({
@@ -31,6 +35,9 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
     IonToolbar,
     IonTitle,
     IonButtons,
+    IonChip,
+    IonIcon,
+    IonButton,
   ],
 })
 export class ReservationsPage implements OnInit {
@@ -41,11 +48,23 @@ export class ReservationsPage implements OnInit {
 
   bookings = signal<Booking[]>([]);
   offersByBooking = signal<Offer[]>([]);
+  loading = signal(true);
+  filtroActivo = signal<BookingStatus | 'ALL'>('ALL');
+
+  readonly filtroOptions: { label: string; value: BookingStatus | 'ALL' }[] = [
+    { label: 'Todas', value: 'ALL' },
+    { label: 'Pendiente', value: BookingStatus.PENDING_PAYMENT },
+    { label: 'Confirmada', value: BookingStatus.CONFIRMED },
+    { label: 'Completada', value: BookingStatus.COMPLETED },
+    { label: 'Cancelada', value: BookingStatus.CANCELLED },
+  ];
 
   bookingsWithOffers = computed<BookingWithOffer[]>(() => {
     const offersMap = new Map(this.offersByBooking().map((o) => [o.id, o]));
+    const filtro = this.filtroActivo();
 
     return this.bookings()
+      .filter((b) => filtro === 'ALL' || b.status === filtro)
       .map((booking) => {
         const offer = offersMap.get(booking.offerId);
         return offer ? { booking, offer } : null;
@@ -54,9 +73,14 @@ export class ReservationsPage implements OnInit {
   });
 
   ngOnInit() {
-    this.bookingService.getBookings().subscribe((res) => {
+    this.loading.set(true);
+    this.bookingService.getBookings().pipe(
+      finalize(() => this.loading.set(false)),
+    ).subscribe((res) => {
       const bookings: Booking[] = res.content ?? res;
       this.bookings.set(bookings);
+
+      if (bookings.length === 0) return;
 
       const requests = bookings.map((b: Booking) =>
         this.offerService.getById(b.offerId),
@@ -68,9 +92,17 @@ export class ReservationsPage implements OnInit {
     });
   }
 
+  setFiltro(status: BookingStatus | 'ALL') {
+    this.filtroActivo.set(status);
+  }
+
   goToDetail(id: number) {
     this.navService.setReturnUrl('/tabs/account/reservations');
     this.router.navigate(['/tabs/account/reservations/detail', id]);
+  }
+
+  goToExplore() {
+    this.router.navigate(['/tabs/offers']);
   }
 
   statusLabel(status: BookingStatus): string {
@@ -82,6 +114,31 @@ export class ReservationsPage implements OnInit {
       EXPIRED: 'Expirada',
       FAILED: 'Fallida',
     }[status] ?? status;
+  }
+
+  statusClass(status: BookingStatus): string {
+    return {
+      PENDING_PAYMENT: 'pending',
+      CONFIRMED: 'confirmed',
+      CANCELLED: 'cancelled',
+      COMPLETED: 'completed',
+      EXPIRED: 'expired',
+      FAILED: 'failed',
+    }[status] ?? '';
+  }
+
+  offerTypeLabel(type: string): string {
+    const map: Record<string, string> = {
+      accommodation: 'Alojamiento',
+      event: 'Evento',
+      service: 'Servicio',
+      product: 'Producto',
+    };
+    return map[type] ?? type;
+  }
+
+  offerPrice(offer: any): number {
+    return offer.basePrice ?? offer.ticketPrice ?? offer.pricePerPerson ?? offer.pricePerNight ?? 0;
   }
 }
 

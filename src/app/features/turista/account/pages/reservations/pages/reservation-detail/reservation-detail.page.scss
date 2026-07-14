@@ -87,21 +87,22 @@ ion-back-button {
   justify-content: space-between;
   gap: 16px;
 
-  .info-peoplecount,
-  .info-offertype {
+  .info-item {
     background: #f8fafc;
     border-radius: 14px;
-    padding: 0 10px;
+    padding: 10px 14px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 4px;
+    flex: 1;
 
     span {
-      font-size: 13px;
+      font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: #64748b;
+      font-weight: 600;
     }
 
     strong {
@@ -117,14 +118,24 @@ ion-back-button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
-  margin-top: 16px;
+  padding: 10px 14px;
+  margin-top: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
 }
 
 /* DATE */
 .date {
   font-size: 13px;
   color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  ion-icon {
+    font-size: 16px;
+    color: #94a3b8;
+  }
 }
 
 /* ================= STATUS CHIP ================= */
@@ -140,18 +151,37 @@ ion-back-button {
     color: #166534;
   }
 
-  &.pending {
+  &.pending-payment {
     background: linear-gradient(135deg, #fef3c7, #fde68a);
     color: #92400e;
   }
 
-  &.canceled {
+  &.cancelled {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #991b1b;
+  }
+
+  &.completed {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+  }
+
+  &.expired {
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    color: #6b7280;
+  }
+
+  &.failed {
     background: linear-gradient(135deg, #fee2e2, #fecaca);
     color: #991b1b;
   }
 }
 
 /* ================= PAYMENT ================= */
+.payment-summary {
+  margin-top: 4px;
+}
+
 .price-row {
   display: flex;
   justify-content: space-between;
@@ -167,4 +197,20 @@ ion-back-button {
     font-weight: 800;
     color: #020617;
   }
+}
+
+/* ================= PAY BUTTON ================= */
+.pay-button-container {
+  padding: 0 16px 32px;
+}
+
+.pay-button {
+  --background: linear-gradient(135deg, #16a34a, #15803d);
+  --border-radius: 14px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-weight: 700;
+  font-size: 17px;
+  text-transform: none;
+  box-shadow: 0 8px 24px rgba(22, 163, 74, 0.35);
 }

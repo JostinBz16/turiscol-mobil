@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Booking, BookingStatus } from 'src/app/core/models/Reservations';
 import { BookingService } from 'src/app/core/services/booking';
 import {
@@ -10,11 +10,14 @@ import {
   IonTitle,
   IonContent,
   IonImg,
+  IonButton,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { Offer, OfferType } from 'src/app/core/models/Offers';
 import { OfferService } from 'src/app/core/services/offers';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { PaymentModalComponent } from 'src/app/components/payment-modal/payment-modal.component';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -30,16 +33,21 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
     IonBackButton,
     IonTitle,
     IonContent,
+    IonButton,
+    IonIcon,
+    PaymentModalComponent,
   ],
 })
 export class ReservationDetailPage implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private bookingService = inject(BookingService);
   private offerService = inject(OfferService);
   navService = inject(NavigationService);
 
   booking = signal<Booking | null>(null);
   offer = signal<Offer | null>(null);
+  showPaymentModal = signal(false);
 
   OFFER_TYPE_LABEL: Record<OfferType, string> = {
     [OfferType.ACCOMMODATION]: 'Alojamiento',
@@ -64,6 +72,37 @@ export class ReservationDetailPage implements OnInit {
     });
   }
 
+  isProduct(): boolean {
+    return this.offer()?.type === OfferType.PRODUCT;
+  }
+
+  canPay(): boolean {
+    const b = this.booking();
+    return b !== null && b.status === BookingStatus.PENDING_PAYMENT;
+  }
+
+  openPayment() {
+    this.showPaymentModal.set(true);
+  }
+
+  onPaymentSuccess(data: any) {
+    this.router.navigate(['/tabs/account/reservations/payment-result'], {
+      queryParams: {
+        status: 'success',
+        bookingId: this.booking()?.id,
+      },
+    });
+  }
+
+  onPaymentError(error: any) {
+    this.router.navigate(['/tabs/account/reservations/payment-result'], {
+      queryParams: {
+        status: 'failure',
+        bookingId: this.booking()?.id,
+      },
+    });
+  }
+
   statusLabel(status: BookingStatus): string {
     return {
       PENDING_PAYMENT: 'Pendiente de pago',
@@ -75,6 +114,10 @@ export class ReservationDetailPage implements OnInit {
     }[status] ?? status;
   }
 
+  statusClass(status: BookingStatus): string {
+    return status.toLowerCase().replace('_', '-');
+  }
+
   offerTypeLabel(type: OfferType): string {
     return this.OFFER_TYPE_LABEL[type];
   }
@@ -83,22 +126,51 @@ export class ReservationDetailPage implements OnInit {
     if (!this.booking() || !this.offer()) return '';
 
     if (this.offer()!.type === OfferType.PRODUCT) {
-      return `Cantidad`;
+      return `Unidades`;
+    }
+
+    if (this.offer()!.type === OfferType.ACCOMMODATION) {
+      return `Huéspedes`;
+    }
+
+    if (this.offer()!.type === OfferType.EVENT) {
+      return `Entradas`;
     }
 
     return `Personas`;
+  }
+
+  dateLabel(): string {
+    if (this.isProduct()) {
+      return 'Fecha de compra';
+    }
+    return 'Fecha del servicio';
+  }
+
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   }
 
   peopleCount() {
     return this.booking()?.quantity ?? 0;
   }
 
+  unitPrice(): number {
+    const offer = this.offer() as any;
+    if (!offer) return 0;
+    return offer.basePrice ?? offer.ticketPrice ?? offer.pricePerPerson ?? offer.pricePerNight ?? 0;
+  }
+
   subtotal() {
     const booking = this.booking();
-    const offer = this.offer();
-    if (!booking || !offer) return 0;
-
-    return (booking.quantity || 1) * offer.basePrice;
+    if (!booking) return 0;
+    return (booking.quantity || 1) * this.unitPrice();
   }
 
   taxes() {

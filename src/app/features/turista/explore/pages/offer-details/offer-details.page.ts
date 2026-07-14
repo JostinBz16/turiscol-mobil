@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -29,6 +29,9 @@ import { OfferType } from 'src/app/core/models/Offers';
 import { OfferService } from 'src/app/core/services/offers';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { firstValueFrom } from 'rxjs';
+import { BookingModalComponent } from 'src/app/components/booking-modal/booking-modal.component';
+import { PaymentModalComponent } from 'src/app/components/payment-modal/payment-modal.component';
+import { Booking } from 'src/app/core/models/Reservations';
 
 @Component({
   selector: 'app-offer-details',
@@ -44,6 +47,8 @@ import { firstValueFrom } from 'rxjs';
     CommonModule,
     FormsModule,
     RouterModule,
+    BookingModalComponent,
+    PaymentModalComponent,
   ],
 })
 export class OfferDetailsPage implements OnInit {
@@ -77,6 +82,9 @@ export class OfferDetailsPage implements OnInit {
   loading = false;
   error = false;
   errorMessage = '';
+  showBookingModal = signal(false);
+  showPaymentModal = signal(false);
+  currentBooking = signal<Booking | null>(null);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -129,5 +137,58 @@ export class OfferDetailsPage implements OnInit {
     } else {
       this.router.navigate(['/tabs/offers']);
     }
+  }
+
+  isProduct(): boolean {
+    return this.offer?.type === OfferType.PRODUCT;
+  }
+
+  ctaLabel(): string {
+    return this.isProduct() ? 'Comprar ahora' : 'Reservar ahora';
+  }
+
+  openBooking() {
+    this.showBookingModal.set(true);
+  }
+
+  onBookingCreated(booking: Booking) {
+    if (!this.isProduct()) {
+      this.router.navigate(['/tabs/account/reservations/detail', booking.id]);
+    }
+  }
+
+  onBookingReady(booking: Booking) {
+    this.currentBooking.set(booking);
+    this.showPaymentModal.set(true);
+  }
+
+  getPaymentAmount(): number {
+    const booking = this.currentBooking();
+    const offer = this.offer;
+    if (!booking || !offer) return 0;
+    const subtotal = (booking.quantity || 1) * (offer.basePrice ?? offer.ticketPrice ?? offer.pricePerPerson ?? 0);
+    return subtotal + Math.round(subtotal * 0.19);
+  }
+
+  onPaymentSuccess(data: any) {
+    const booking = this.currentBooking();
+    this.showPaymentModal.set(false);
+    this.router.navigate(['/tabs/account/reservations/payment-result'], {
+      queryParams: {
+        status: 'success',
+        bookingId: booking?.id,
+      },
+    });
+  }
+
+  onPaymentError(error: any) {
+    const booking = this.currentBooking();
+    this.showPaymentModal.set(false);
+    this.router.navigate(['/tabs/account/reservations/payment-result'], {
+      queryParams: {
+        status: 'failure',
+        bookingId: booking?.id,
+      },
+    });
   }
 }

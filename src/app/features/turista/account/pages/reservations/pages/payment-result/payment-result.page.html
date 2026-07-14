@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Resultado del Pago</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="result-content">
+  <div class="result-container">
+    @if (status() === 'success') {
+    <div class="result-icon success">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+    </div>
+    <h2>Pago Exitoso</h2>
+    <p>Tu reserva ha sido confirmada correctamente.</p>
+    } @else if (status() === 'failure') {
+    <div class="result-icon failure">
+      <ion-icon name="close-circle-outline"></ion-icon>
+    </div>
+    <h2>Pago No Procesado</h2>
+    <p>Hubo un problema con tu pago. Por favor, intenta de nuevo.</p>
+    } @else {
+    <div class="result-icon pending">
+      <ion-icon name="time-outline"></ion-icon>
+    </div>
+    <h2>Pago Pendiente</h2>
+    <p>Tu pago está siendo procesado. Te notificaremos cuando se confirme.</p>
+    }
+
+    <div class="result-actions">
+      @if (bookingId()) {
+      <ion-button expand="block" (click)="goToReservation()" class="primary-btn">
+        Ver Reserva
+      </ion-button>
+      }
+      <ion-button expand="block" (click)="goToHome()" fill="clear" color="medium">
+        Volver al Inicio
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

@@ -158,7 +158,32 @@
   </div>
   } @if (offer) {
   <div class="cta">
-    <ion-button expand="block" shape="round"> Reservar ahora </ion-button>
+    <ion-button
+      expand="block"
+      shape="round"
+      (click)="openBooking()"
+      [class.product-cta]="isProduct()"
+    >
+      {{ ctaLabel() }}
+    </ion-button>
   </div>
+  }
+
+  <app-booking-modal
+    [offer]="offer"
+    [(isOpen)]="showBookingModal"
+    (bookingCreated)="onBookingCreated($event)"
+    (bookingReady)="onBookingReady($event)"
+  ></app-booking-modal>
+
+  @if (currentBooking()) {
+  <app-payment-modal
+    [bookingId]="currentBooking()!.id"
+    [amount]="getPaymentAmount()"
+    [currency]="currentBooking()!.currency || 'COP'"
+    [(isOpen)]="showPaymentModal"
+    (paymentSuccess)="onPaymentSuccess($event)"
+    (paymentError)="onPaymentError($event)"
+  ></app-payment-modal>
   }
 </ion-content>

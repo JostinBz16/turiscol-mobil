@@ -1,0 +1,164 @@
+:host {
+  display: block;
+}
+
+ion-modal.booking-modal {
+  --width: 95%;
+  --height: 85%;
+  --border-radius: 16px;
+}
+
+.booking-content {
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --padding-bottom: 24px;
+}
+
+.offer-summary {
+  text-align: center;
+  padding: 16px 0 20px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 20px;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 6px;
+  }
+
+  .price-tag {
+    font-size: 14px;
+    font-weight: 600;
+    color: #3b82f6;
+  }
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+  }
+
+  ion-input {
+    --background: #f8fafc;
+    border-radius: 12px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --min-height: 48px;
+  }
+}
+
+/* ================= DATE INPUT ================= */
+.date-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.2s ease;
+
+  &:active {
+    border-color: #3b82f6;
+    background: #f0f7ff;
+  }
+
+  ion-icon {
+    font-size: 20px;
+    color: #3b82f6;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 15px;
+    color: #0f172a;
+    font-weight: 500;
+
+    &.placeholder {
+      color: #94a3b8;
+    }
+  }
+}
+
+/* ================= DATE PICKER POPOVER ================= */
+ion-popover {
+  --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  --border-radius: 16px;
+  --width: 80%;
+
+  ion-datetime {
+    height: 430px;
+    --background: #ffffff;
+  }
+}
+
+.estimated-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 14px 16px;
+
+  span {
+    font-size: 14px;
+    color: #64748b;
+  }
+
+  strong {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  &.product-total {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #bbf7d0;
+
+    span {
+      color: #166534;
+      font-weight: 600;
+    }
+
+    strong {
+      color: #15803d;
+    }
+  }
+}
+
+.error-text {
+  font-size: 13px;
+  text-align: center;
+}
+
+.submit-btn {
+  --background: linear-gradient(135deg, #3b82f6, #2563eb);
+  --border-radius: 14px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: none;
+
+  &.pay-btn {
+    --background: linear-gradient(135deg, #16a34a, #15803d);
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.35);
+  }
+}

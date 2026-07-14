@@ -1,0 +1,50 @@
+<ion-modal
+  [isOpen]="isOpen"
+  (willDismiss)="onWillDismiss()"
+  (willPresent)="onWillPresent()"
+  [backdropDismiss]="!processing()"
+  [showBackdrop]="true"
+  cssClass="payment-modal"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Pagar Reserva</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="close()" [disabled]="processing()">
+            Cerrar
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="payment-content">
+      @if (loading()) {
+      <div class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando formulario de pago...</p>
+      </div>
+      }
+
+      @if (errorMessage()) {
+      <div class="error-container">
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+        <p>{{ errorMessage() }}</p>
+        <ion-button (click)="initBrick()" fill="clear" color="primary">
+          Reintentar
+        </ion-button>
+      </div>
+      }
+
+      @if (processing()) {
+      <div class="processing-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Procesando pago...</p>
+        <span class="processing-hint">No cierres esta ventana</span>
+      </div>
+      }
+
+      <div id="mp-payment-brick"></div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

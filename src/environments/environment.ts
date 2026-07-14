@@ -6,10 +6,12 @@ export interface Environment {
   production: boolean;
   apiUrl: string;
   googleMapsApiKey: string;
+  mercadoPagoPublicKey: string;
 }
 
 export const environment: Environment = {
   production: false,
   apiUrl: 'http://172.28.96.1:8080/api/v1',
   googleMapsApiKey: 'AIzaSyCkX73molJA_XEREnfAYYrg8TL02Rekv2U',
+  mercadoPagoPublicKey: 'TEST-0000000000000000-000000-00000000000000000000000000000000-000000000',
 };

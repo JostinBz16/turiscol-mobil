@@ -3,30 +3,96 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/tabs/account"></ion-back-button>
     </ion-buttons>
-    <ion-title>Reservas</ion-title>
+    <ion-title>Mis Reservas</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="reservations-content">
-  <div class="reservations-card">
-    @for (item of bookingsWithOffers(); track item.booking.id) {
-    <div class="reservation-item" (click)="goToDetail(item.booking.id)">
-      <ion-img [src]="item.offer.images[0]" />
+  <!-- SKELETON LOADING -->
+  @if (loading()) {
+  <div class="skeleton-container">
+    @for (i of [1,2,3]; track i) {
+    <div class="skeleton-item">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-info">
+        <div class="skeleton-line wide"></div>
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line tiny"></div>
+      </div>
+    </div>
+    }
+  </div>
 
-      <div class="info">
-        <h3>{{ item.offer.name }}</h3>
-        <div class="details">
-          <span class="status" [ngClass]="item.booking.status">
+  <!-- FILTROS -->
+  } @else {
+  <div class="filters-scroll">
+    @for (filtro of filtroOptions; track filtro.value) {
+    <ion-chip
+      [class.active]="filtroActivo() === filtro.value"
+      (click)="setFiltro(filtro.value)"
+    >
+      {{ filtro.label }}
+    </ion-chip>
+    }
+  </div>
+
+  <!-- EMPTY STATE -->
+  @if (bookingsWithOffers().length === 0) {
+  <div class="empty-state">
+    <div class="empty-icon">
+      <ion-icon name="calendar-outline"></ion-icon>
+    </div>
+    <h3>No tienes reservas</h3>
+    <p>Explora nuestras ofertas y reserva tu próxima experiencia.</p>
+    <ion-button expand="block" (click)="goToExplore()" class="explore-btn">
+      Explorar Ofertas
+    </ion-button>
+  </div>
+
+  <!-- LISTA DE RESERVAS -->
+  } @else {
+  <div class="reservations-list">
+    @for (item of bookingsWithOffers(); track item.booking.id) {
+    <div class="reservation-card" (click)="goToDetail(item.booking.id)">
+      <div class="card-image">
+        <ion-img [src]="item.offer.images[0]" />
+        <span class="type-badge">{{ offerTypeLabel(item.offer.type) }}</span>
+      </div>
+
+      <div class="card-body">
+        <div class="card-header">
+          <h3>{{ item.offer.name }}</h3>
+          <span class="status-chip" [class]="statusClass(item.booking.status)">
             {{ statusLabel(item.booking.status) }}
           </span>
+        </div>
 
-          <p>
-            {{ item.booking.serviceStartDate }} @if (item.booking.serviceEndDate)
-            { – {{ item.booking.serviceEndDate }} }
-          </p>
+        <div class="card-details">
+          <div class="detail-row">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>
+              {{ item.booking.serviceStartDate | date:'dd MMM, yyyy' }}
+              @if (item.booking.serviceEndDate) {
+                – {{ item.booking.serviceEndDate | date:'dd MMM, yyyy' }}
+              }
+            </span>
+          </div>
+          <div class="detail-row">
+            <ion-icon name="cube-outline"></ion-icon>
+            <span>Cantidad: {{ item.booking.quantity }}</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span class="price">
+            {{ (offerPrice(item.offer) * item.booking.quantity) | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
         </div>
       </div>
     </div>
     }
   </div>
+  }
+  }
 </ion-content>

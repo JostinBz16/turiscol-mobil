@@ -84,4 +84,38 @@ export class BookingService {
       }),
     );
   }
+
+  checkout(bookingId: number | string): Observable<CheckoutResponse> {
+    const userId = localStorage.getItem('user')
+      ? JSON.parse(localStorage.getItem('user')!).id
+      : '';
+    const headers = new HttpHeaders({ 'X-User-Id': userId });
+    return this.http
+      .post<CheckoutResponse>(`${this.api}/${bookingId}/checkout`, {}, { headers })
+      .pipe(
+        catchError((err) => {
+          console.error('Error during checkout', err);
+          return throwError(() => err);
+        }),
+      );
+  }
+
+  cancelBooking(id: number | string): Observable<Booking> {
+    const userId = localStorage.getItem('user')
+      ? JSON.parse(localStorage.getItem('user')!).id
+      : '';
+    const headers = new HttpHeaders({ 'X-User-Id': userId });
+    return this.http.post<Booking>(`${this.api}/${id}/cancel`, {}, { headers }).pipe(
+      catchError((err) => {
+        console.error('Error cancelling booking', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+}
+
+export interface CheckoutResponse {
+  paymentReference: string;
+  amount: number;
+  currency: string;
 }

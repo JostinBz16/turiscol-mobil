@@ -253,5 +253,10 @@
     font-size: 1.05rem;
     letter-spacing: 0.3px;
     box-shadow: 0 10px 15px -3px rgba(30, 41, 59, 0.2);
+
+    &.product-cta {
+      --background: linear-gradient(135deg, #16a34a, #15803d);
+      box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.35);
+    }
   }
 }

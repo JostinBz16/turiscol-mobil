@@ -202,6 +202,13 @@ export const routes: Routes = [
                     (m) => m.ReservationDetailPage,
                   ),
               },
+              {
+                path: 'payment-result',
+                loadComponent: () =>
+                  import('../../features/turista/account/pages/reservations/pages/payment-result/payment-result.page').then(
+                    (m) => m.PaymentResultPage,
+                  ),
+              },
             ],
           },
         ],
