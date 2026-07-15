@@ -47,11 +47,6 @@
         </div>
 
         <div class="form-field">
-          <label>Noches</label>
-          <ion-input [value]="nights" readonly type="number" class="readonly-input"></ion-input>
-        </div>
-
-        <div class="form-field">
           <label>Huéspedes</label>
           <ion-input formControlName="guests" type="number" [min]="1" [max]="maxGuests" placeholder="1"
             inputmode="numeric"></ion-input>

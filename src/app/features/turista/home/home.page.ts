@@ -179,8 +179,8 @@ export class HomePage implements OnInit {
     this.selectedCityService.select(city);
   }
 
-  getDepartmentName(departmentId?: string): string {
-    return departmentId ? (this.departmentMap.get(departmentId) ?? '') : '';
+  getDepartmentName(departmentId?: number): string {
+    return departmentId ? (this.departmentMap.get(String(departmentId)) ?? '') : '';
   }
 
   isFavorite(offer: Offer): boolean {

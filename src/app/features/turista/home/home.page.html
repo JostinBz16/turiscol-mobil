@@ -68,10 +68,10 @@
       <div class="carousel destinations-carousel">
         @for (d of destinations; track d.id) {
         <div class="carousel-item destination-card" (click)="selectCity(d)">
-          <ion-img [src]="d.image" />
+          <ion-img [src]="d.imageUrl" />
           <div class="overlay">
             <h4>{{ d.name }}</h4>
-            <span>{{ getDepartmentName(d.departmentId) }}</span>
+            <span>{{ getDepartmentName(d.department?.id) }}</span>
           </div>
         </div>
         }
