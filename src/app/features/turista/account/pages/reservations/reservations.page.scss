@@ -9,8 +9,8 @@ ion-back-button {
 /* ================= FILTERS ================= */
 .filters-scroll {
   display: flex;
-  gap: 8px;
-  padding: 12px 16px;
+  gap: 4px;
+  padding: 8px 10px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 
@@ -22,9 +22,9 @@ ion-back-button {
     --background: #ffffff;
     --color: #64748b;
     --border-radius: 20px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    padding: 0 18px;
+    padding: 0 15px;
     height: 38px;
     border: 1.5px solid #e2e8f0;
     white-space: nowrap;

@@ -17,10 +17,6 @@
         <h3>{{ offer.name }}</h3>
         <span class="price-tag">
           {{ estimatedTotal | currency:'COP':'symbol':'1.0-0' }}
-          @if (isProduct()) { }
-          @else if (offer.type === 'accommodation') { / noche }
-          @else if (offer.type === 'event') { / entrada }
-          @else if (offer.type === 'service') { / persona }
         </span>
       </div>
 
@@ -28,7 +24,7 @@
         <!-- START DATE -->
         @if (!isProduct()) {
         <div class="form-field">
-          <label>Fecha de inicio</label>
+          <label>{{ isAccommodation() ? 'Entrada' : 'Fecha de inicio' }}</label>
           <div class="date-input" (click)="openDatePicker('startDate', $event)">
             <ion-icon name="calendar-outline"></ion-icon>
             <span [class.placeholder]="!form.get('startDate')?.value">
@@ -41,7 +37,7 @@
         <!-- END DATE (solo alojamiento) -->
         @if (isAccommodation()) {
         <div class="form-field">
-          <label>Fecha de fin (opcional)</label>
+          <label>Salida</label>
           <div class="date-input" (click)="openDatePicker('endDate', $event)">
             <ion-icon name="calendar-outline"></ion-icon>
             <span [class.placeholder]="!form.get('endDate')?.value">
@@ -49,14 +45,41 @@
             </span>
           </div>
         </div>
+
+        <div class="form-field">
+          <label>Noches</label>
+          <ion-input [value]="nights" readonly type="number" class="readonly-input"></ion-input>
+        </div>
+
+        <div class="form-field">
+          <label>Huéspedes</label>
+          <ion-input formControlName="guests" type="number" [min]="1" [max]="maxGuests" placeholder="1"
+            inputmode="numeric"></ion-input>
+          @if (form.get('guests')?.hasError('max') && form.get('guests')?.touched) {
+          <ion-text color="danger" class="field-error">
+            Máximo {{ maxGuests }} huéspedes
+          </ion-text>
+          }
+        </div>
         }
 
-        <!-- QUANTITY -->
+        <!-- QUANTITY (no accommodation) -->
+        @if (!isAccommodation() && !isProduct()) {
         <div class="form-field">
           <label>{{ unitLabel }}</label>
           <ion-input formControlName="quantity" type="number" [min]="1" [max]="maxQuantity" placeholder="1"
             inputmode="numeric"></ion-input>
         </div>
+        }
+
+        <!-- PRODUCT quantity -->
+        @if (isProduct()) {
+        <div class="form-field">
+          <label>{{ unitLabel }}</label>
+          <ion-input formControlName="quantity" type="number" [min]="1" [max]="maxQuantity" placeholder="1"
+            inputmode="numeric"></ion-input>
+        </div>
+        }
 
         <!-- ESTIMATED TOTAL -->
         <div class="estimated-total" [class.product-total]="isProduct()">

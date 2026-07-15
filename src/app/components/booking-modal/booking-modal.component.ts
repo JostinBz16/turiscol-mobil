@@ -90,14 +90,30 @@ export class BookingModalComponent implements OnInit {
       startDate: [this.isProduct() ? now.toISOString() : '', Validators.required],
       endDate: [''],
       quantity: [1, [Validators.required, Validators.min(1)]],
+      guests: [1, [Validators.required, Validators.min(1), Validators.max(this.maxGuests)]],
     });
+  }
+
+  get maxGuests(): number {
+    return this.offer?.maxGuests ?? 20;
+  }
+
+  get nights(): number {
+    if (!this.isAccommodation()) return 0;
+    const start = this.form?.get('startDate')?.value;
+    const end = this.form?.get('endDate')?.value;
+    if (!start || !end) return 0;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diff = endDate.getTime() - startDate.getTime();
+    return Math.max(1, Math.round(diff / (1000 * 60 * 60 * 24)));
   }
 
   get maxQuantity(): number {
     if (!this.offer) return 99;
     switch (this.offer.type) {
       case OfferType.ACCOMMODATION:
-        return this.offer.maxGuests ?? 20;
+        return 99;
       case OfferType.EVENT:
         return this.offer.capacity ?? 99;
       case OfferType.SERVICE:
@@ -127,8 +143,13 @@ export class BookingModalComponent implements OnInit {
 
   get estimatedTotal(): number {
     if (!this.offer) return 0;
+    if (this.isAccommodation()) {
+      const n = this.nights;
+      const price = this.offer.pricePerNight ?? this.offer.basePrice ?? 0;
+      return n * price;
+    }
     const qty = this.form?.get('quantity')?.value ?? 1;
-    const price = this.offer.basePrice ?? this.offer.ticketPrice ?? this.offer.pricePerPerson ?? this.offer.pricePerNight ?? 0;
+    const price = this.offer.basePrice ?? this.offer.ticketPrice ?? this.offer.pricePerPerson ?? 0;
     return qty * price;
   }
 
@@ -180,7 +201,7 @@ export class BookingModalComponent implements OnInit {
   }
 
   onWillDismiss() {
-    this.form?.reset({ quantity: 1 });
+    this.form?.reset({ quantity: 1, guests: 1 });
     this.errorMessage.set(null);
     this.submitting.set(false);
     this.isOpenChange.emit(false);
@@ -197,16 +218,22 @@ export class BookingModalComponent implements OnInit {
     this.submitting.set(true);
     this.errorMessage.set(null);
 
-    const { startDate, endDate, quantity } = this.form.value;
+    const { startDate, endDate, quantity, guests } = this.form.value;
 
-    const booking = {
+    const booking: any = {
       offerId: this.offer.id,
       serviceStartDate: this.isProduct()
         ? new Date().toISOString()
         : startDate.split('T')[0],
       serviceEndDate: endDate ? endDate.split('T')[0] : undefined,
-      quantity,
     };
+
+    if (this.isAccommodation()) {
+      booking.quantity = this.nights;
+      booking.guestCount = guests;
+    } else {
+      booking.quantity = quantity;
+    }
 
     this.bookingService.createBooking(booking).subscribe({
       next: (res: Booking) => {

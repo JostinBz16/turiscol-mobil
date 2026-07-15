@@ -33,7 +33,7 @@ export class PriceService {
     );
   }
 
-  getPricesByMunicipality(municipalityId: string): Observable<any> {
+  getPricesByMunicipality(municipalityId: string | number): Observable<any> {
     return this.http.get<any>(`${this.api}/city/${municipalityId}`).pipe(
       catchError((err) => {
         console.error('Error fetching prices by municipality', err);

@@ -34,9 +34,8 @@ export class AuthService {
 
   register(dto: RegisterRequestDTO) {
     return this.http
-      .post<LoginResponse>(`${this.API}/register`, dto)
+      .post<any>(`${this.API}/register`, dto)
       .pipe(
-        tap((res) => this.storeSession(res)),
         catchError((err) => {
           console.error('Registration error', err);
           return throwError(() => err);
@@ -49,7 +48,7 @@ export class AuthService {
     if (!refreshToken) return throwError(() => new Error('No refresh token'));
 
     return this.http
-      .post<LoginResponse>(`${this.API}/refresh`, refreshToken)
+      .post<LoginResponse>(`${this.API}/refresh`, { refreshToken })
       .pipe(
         tap((res) => this.storeSession(res)),
         catchError((err) => {

@@ -115,7 +115,7 @@ export class BookingService {
 }
 
 export interface CheckoutResponse {
-  paymentReference: string;
+  checkoutUrl: string;
   amount: number;
   currency: string;
 }

@@ -182,8 +182,13 @@ export class OfferService {
     );
   }
 
+  private toApiPayload(offer: Offer): any {
+    const { basePrice, ...rest } = offer as any;
+    return { ...rest, baseprice: basePrice };
+  }
+
   create(offer: Offer): Observable<Offer> {
-    return this.http.post<Offer>(this.api, offer).pipe(
+    return this.http.post<Offer>(this.api, this.toApiPayload(offer)).pipe(
       catchError((err) => {
         console.error('Error creating offer', err);
         return throwError(() => err);
@@ -192,7 +197,7 @@ export class OfferService {
   }
 
   update(id: string, offer: Offer): Observable<Offer> {
-    return this.http.put<Offer>(`${this.api}/${id}`, offer).pipe(
+    return this.http.put<Offer>(`${this.api}/${id}`, this.toApiPayload(offer)).pipe(
       catchError((err) => {
         console.error('Error updating offer', err);
         return throwError(() => err);

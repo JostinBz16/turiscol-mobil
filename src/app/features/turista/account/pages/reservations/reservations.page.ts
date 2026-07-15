@@ -138,7 +138,16 @@ export class ReservationsPage implements OnInit {
   }
 
   offerPrice(offer: any): number {
-    return offer.basePrice ?? offer.ticketPrice ?? offer.pricePerPerson ?? offer.pricePerNight ?? 0;
+    if (offer.type === 'accommodation') {
+      return offer.pricePerNight ?? offer.basePrice ?? 0;
+    }
+    if (offer.type === 'service') {
+      return offer.pricePerPerson ?? offer.basePrice ?? 0;
+    }
+    if (offer.type === 'event') {
+      return offer.ticketPrice ?? offer.basePrice ?? 0;
+    }
+    return offer.basePrice ?? 0;
   }
 }
 

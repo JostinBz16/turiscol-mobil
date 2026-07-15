@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { User } from '../models/User';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -46,8 +46,11 @@ export class UserService {
       );
   }
 
-  getAll(): Observable<User[]> {
-    return this.http.get<User[]>(this.API).pipe(
+  getAll(params?: { page?: number; size?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http.get<any>(this.API, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching users', err);
         return throwError(() => err);

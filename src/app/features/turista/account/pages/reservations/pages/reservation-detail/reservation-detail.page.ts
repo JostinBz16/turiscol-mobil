@@ -130,7 +130,7 @@ export class ReservationDetailPage implements OnInit {
     }
 
     if (this.offer()!.type === OfferType.ACCOMMODATION) {
-      return `Huéspedes`;
+      return `Noches`;
     }
 
     if (this.offer()!.type === OfferType.EVENT) {
@@ -164,7 +164,16 @@ export class ReservationDetailPage implements OnInit {
   unitPrice(): number {
     const offer = this.offer() as any;
     if (!offer) return 0;
-    return offer.basePrice ?? offer.ticketPrice ?? offer.pricePerPerson ?? offer.pricePerNight ?? 0;
+    if (offer.type === OfferType.ACCOMMODATION) {
+      return offer.pricePerNight ?? offer.basePrice ?? 0;
+    }
+    if (offer.type === OfferType.SERVICE) {
+      return offer.pricePerPerson ?? offer.basePrice ?? 0;
+    }
+    if (offer.type === OfferType.EVENT) {
+      return offer.ticketPrice ?? offer.basePrice ?? 0;
+    }
+    return offer.basePrice ?? 0;
   }
 
   subtotal() {

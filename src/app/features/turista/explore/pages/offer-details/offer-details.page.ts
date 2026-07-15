@@ -166,7 +166,17 @@ export class OfferDetailsPage implements OnInit {
     const booking = this.currentBooking();
     const offer = this.offer;
     if (!booking || !offer) return 0;
-    const subtotal = (booking.quantity || 1) * (offer.basePrice ?? offer.ticketPrice ?? offer.pricePerPerson ?? 0);
+    let unitPrice: number;
+    if (offer.type === OfferType.ACCOMMODATION) {
+      unitPrice = offer.pricePerNight ?? offer.basePrice ?? 0;
+    } else if (offer.type === OfferType.SERVICE) {
+      unitPrice = offer.pricePerPerson ?? offer.basePrice ?? 0;
+    } else if (offer.type === OfferType.EVENT) {
+      unitPrice = offer.ticketPrice ?? offer.basePrice ?? 0;
+    } else {
+      unitPrice = offer.basePrice ?? 0;
+    }
+    const subtotal = (booking.quantity || 1) * unitPrice;
     return subtotal + Math.round(subtotal * 0.19);
   }
 

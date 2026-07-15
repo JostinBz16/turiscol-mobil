@@ -32,6 +32,8 @@ import {
   globeOutline,
   location,
   locationOutline,
+  storefrontOutline,
+  storefront
 } from 'ionicons/icons';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 
@@ -84,6 +86,8 @@ export class TabsPage {
       cashOutline,
       gridOutline,
       grid,
+      storefrontOutline,
+      storefront,
       calendarOutline,
       calendar,
       globe,

@@ -35,7 +35,7 @@ export class FavoritesService {
     return this.favorites().map((item) => ({
       ...item,
       images: item.images?.map((img: any) => img.imageUrl) ?? [],
-      basePrice: item.baseprice ?? item.baseprice,
+      basePrice: item.baseprice ?? item['basePrice'],
     }));
   });
 

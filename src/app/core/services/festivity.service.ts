@@ -33,7 +33,7 @@ export class FestivityService {
     );
   }
 
-  getByCity(cityId: string, params?: { page?: number; size?: number }): Observable<any> {
+  getByCity(cityId: string | number, params?: { page?: number; size?: number }): Observable<any> {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);

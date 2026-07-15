@@ -10,9 +10,9 @@
     <!-- SOLO TURISTA -->
     @if (role() === 'turista') {
     <ion-tab-button tab="offers" (click)="handleTabClick('offers')">
-      <ion-icon [name]="currenTab() === 'destination' ? 'map' : 'map-outline'">
+      <ion-icon [name]="currenTab() === 'offers' ? 'storefront' : 'storefront-outline'">
       </ion-icon>
-      <ion-label>Explorar</ion-label>
+      <ion-label>Ofertas</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="prices" (click)="handleTabClick('prices')">
@@ -24,24 +24,14 @@
 
     <!-- SOLO PROVEEDOR -->
     @if (role() === 'proveedor') {
-    <ion-tab-button
-      tab="manage-offers"
-      (click)="handleTabClick('manage-offers')"
-    >
-      <ion-icon
-        [name]="currenTab() === 'manage-offers' ? 'grid' : 'grid-outline'"
-      >
+    <ion-tab-button tab="manage-offers" (click)="handleTabClick('manage-offers')">
+      <ion-icon [name]="currenTab() === 'manage-offers' ? 'grid' : 'grid-outline'">
       </ion-icon>
       <ion-label>Mis Ofertas</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button
-      tab="provider-sales"
-      (click)="handleTabClick('provider-sales')"
-    >
-      <ion-icon
-        [name]="currenTab() === 'provider-sales' ? 'receipt' : 'receipt-outline'"
-      >
+    <ion-tab-button tab="provider-sales" (click)="handleTabClick('provider-sales')">
+      <ion-icon [name]="currenTab() === 'provider-sales' ? 'receipt' : 'receipt-outline'">
       </ion-icon>
       <ion-label>Ventas</ion-label>
     </ion-tab-button>
@@ -58,17 +48,13 @@
     <!-- TURISTA - CALENDARIO -->
     @if (role() === 'turista') {
     <ion-tab-button tab="events" (click)="handleTabClick('events')">
-      <ion-icon
-        [name]="currenTab() === 'events' ? 'calendar' : 'calendar-outline'"
-      >
+      <ion-icon [name]="currenTab() === 'events' ? 'calendar' : 'calendar-outline'">
       </ion-icon>
       <ion-label>Calendario</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="destinations" (click)="handleTabClick('destinations')">
-      <ion-icon
-        [name]="currenTab() === 'destinations' ? 'location' : 'location-outline'"
-      >
+      <ion-icon [name]="currenTab() === 'destinations' ? 'location' : 'location-outline'">
       </ion-icon>
       <ion-label>Destinos</ion-label>
     </ion-tab-button>

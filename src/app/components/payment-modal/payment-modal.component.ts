@@ -124,7 +124,7 @@ export class PaymentModalComponent implements OnInit, OnDestroy {
       next: (checkout) => {
         const paymentData = {
           ...form,
-          paymentReference: checkout.paymentReference,
+          checkoutUrl: checkout.checkoutUrl,
           bookingId: this.bookingId,
           amount: checkout.amount,
           currency: checkout.currency,

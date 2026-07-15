@@ -1,6 +1,7 @@
 export interface Municipality {
-  id: string;
+  id: number;
   name: string;
-  departmentId?: string;
-  image?: string;
+  imageUrl?: string;
+  featured?: boolean;
+  department?: { id: number; name: string };
 }
