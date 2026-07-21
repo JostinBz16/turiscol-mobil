@@ -19,7 +19,7 @@ interface SaleItem {
   customerName: string;
   status: string;
   totalAmount: number;
-  serviceStartDate: string;
+  startDate: string;
   offerImage?: string;
 }
 
@@ -63,7 +63,7 @@ export class ProviderSalesPage implements OnInit {
         customerName: b.customerName ?? b.user?.userName ?? 'Cliente',
         status: b.status,
         totalAmount: b.totalAmount ?? 0,
-        serviceStartDate: b.serviceStartDate ?? b.createdAt,
+        startDate: b.startDate ?? b.createdAt,
         offerImage: b.offer?.images?.[0]?.imageUrl ?? b.offerImage ?? '',
       }));
     } catch (err) {

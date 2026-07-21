@@ -45,7 +45,7 @@
             </div>
             <div class="sale-info">
               <span class="customer">{{ sale.customerName }}</span>
-              <span class="date">{{ sale.serviceStartDate | date:'shortDate' }}</span>
+              <span class="date">{{ sale.startDate | date:'shortDate' }}</span>
             </div>
             <div class="sale-footer">
               <span class="amount">{{ sale.totalAmount | currency:'COP':'symbol':'1.0-0' }}</span>

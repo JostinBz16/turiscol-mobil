@@ -43,7 +43,7 @@
         <span class="date">
           <ion-icon name="calendar-outline"></ion-icon>
           {{ dateLabel() }}:
-          {{ formatDate(booking()!.serviceStartDate) }}
+          {{ formatDate(booking()!.startDate) }}
         </span>
 
         <span class="status-chip" [ngClass]="statusClass(booking()!.status)">
@@ -74,23 +74,18 @@
   <!-- PAY BUTTON -->
   @if (canPay()) {
   <div class="pay-button-container">
-    <ion-button expand="block" (click)="openPayment()" class="pay-button">
+    @if (processingPayment()) {
+    <div class="processing-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <span>Redirigiendo al pago...</span>
+    </div>
+    } @else {
+    <ion-button expand="block" (click)="pay()" class="pay-button">
       <ion-icon name="card-outline" slot="start"></ion-icon>
       Pagar Ahora
     </ion-button>
+    }
   </div>
   }
-  }
-
-  <!-- PAYMENT MODAL -->
-  @if (booking()) {
-  <app-payment-modal
-    [bookingId]="booking()!.id"
-    [amount]="total()"
-    [currency]="booking()!.currency || 'COP'"
-    [(isOpen)]="showPaymentModal"
-    (paymentSuccess)="onPaymentSuccess($event)"
-    (paymentError)="onPaymentError($event)"
-  ></app-payment-modal>
   }
 </ion-content>

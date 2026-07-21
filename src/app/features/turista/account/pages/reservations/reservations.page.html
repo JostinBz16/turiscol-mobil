@@ -71,9 +71,9 @@
           <div class="detail-row">
             <ion-icon name="calendar-outline"></ion-icon>
             <span>
-              {{ item.booking.serviceStartDate | date:'dd MMM, yyyy' }}
-              @if (item.booking.serviceEndDate) {
-                – {{ item.booking.serviceEndDate | date:'dd MMM, yyyy' }}
+              {{ item.booking.startDate | date:'dd MMM, yyyy' }}
+              @if (item.booking.endDate) {
+                – {{ item.booking.endDate | date:'dd MMM, yyyy' }}
               }
             </span>
           </div>

@@ -27,10 +27,10 @@ import {
 import { addIcons } from 'ionicons';
 import { OfferType } from 'src/app/core/models/Offers';
 import { OfferService } from 'src/app/core/services/offers';
+import { BookingService } from 'src/app/core/services/booking';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { firstValueFrom } from 'rxjs';
 import { BookingModalComponent } from 'src/app/components/booking-modal/booking-modal.component';
-import { PaymentModalComponent } from 'src/app/components/payment-modal/payment-modal.component';
 import { Booking } from 'src/app/core/models/Reservations';
 
 @Component({
@@ -48,7 +48,6 @@ import { Booking } from 'src/app/core/models/Reservations';
     FormsModule,
     RouterModule,
     BookingModalComponent,
-    PaymentModalComponent,
   ],
 })
 export class OfferDetailsPage implements OnInit {
@@ -56,6 +55,7 @@ export class OfferDetailsPage implements OnInit {
   private router = inject(Router);
   private favoritesService = inject(FavoritesService);
   private offerService = inject(OfferService);
+  private bookingService = inject(BookingService);
   navService = inject(NavigationService);
 
   OfferType = OfferType;
@@ -83,8 +83,7 @@ export class OfferDetailsPage implements OnInit {
   error = false;
   errorMessage = '';
   showBookingModal = signal(false);
-  showPaymentModal = signal(false);
-  currentBooking = signal<Booking | null>(null);
+  processingPayment = signal(false);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -152,52 +151,18 @@ export class OfferDetailsPage implements OnInit {
   }
 
   onBookingCreated(booking: Booking) {
-    if (!this.isProduct()) {
-      this.router.navigate(['/tabs/account/reservations/detail', booking.id]);
-    }
-  }
+    this.processingPayment.set(true);
 
-  onBookingReady(booking: Booking) {
-    this.currentBooking.set(booking);
-    this.showPaymentModal.set(true);
-  }
-
-  getPaymentAmount(): number {
-    const booking = this.currentBooking();
-    const offer = this.offer;
-    if (!booking || !offer) return 0;
-    let unitPrice: number;
-    if (offer.type === OfferType.ACCOMMODATION) {
-      unitPrice = offer.pricePerNight ?? offer.basePrice ?? 0;
-    } else if (offer.type === OfferType.SERVICE) {
-      unitPrice = offer.pricePerPerson ?? offer.basePrice ?? 0;
-    } else if (offer.type === OfferType.EVENT) {
-      unitPrice = offer.ticketPrice ?? offer.basePrice ?? 0;
-    } else {
-      unitPrice = offer.basePrice ?? 0;
-    }
-    const subtotal = (booking.quantity || 1) * unitPrice;
-    return subtotal + Math.round(subtotal * 0.19);
-  }
-
-  onPaymentSuccess(data: any) {
-    const booking = this.currentBooking();
-    this.showPaymentModal.set(false);
-    this.router.navigate(['/tabs/account/reservations/payment-result'], {
-      queryParams: {
-        status: 'success',
-        bookingId: booking?.id,
+    this.bookingService.checkout(booking.id).subscribe({
+      next: (checkout) => {
+        this.processingPayment.set(false);
+        window.open(checkout.checkoutUrl, '_blank');
+        this.showBookingModal.set(false);
       },
-    });
-  }
-
-  onPaymentError(error: any) {
-    const booking = this.currentBooking();
-    this.showPaymentModal.set(false);
-    this.router.navigate(['/tabs/account/reservations/payment-result'], {
-      queryParams: {
-        status: 'failure',
-        bookingId: booking?.id,
+      error: (err) => {
+        this.processingPayment.set(false);
+        this.errorMessage = 'Error al iniciar el pago. Intenta de nuevo.';
+        console.error('Checkout error', err);
       },
     });
   }

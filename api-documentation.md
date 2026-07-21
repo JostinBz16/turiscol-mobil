@@ -110,12 +110,12 @@ Service Discovery. Todos los servicios se registran aquí.
 
 #### AuthController
 
-| #  | Método | Path                 | Descripción                    |
-|----|--------|----------------------|--------------------------------|
-| 1  | POST   | `/auth/login`        | Login con email y contraseña   |
-| 2  | POST   | `/auth/client-login` | Login M2M (client_credentials) |
-| 3  | POST   | `/auth/refresh`      | Refrescar token                |
-| 4  | POST   | `/auth/register`     | Registrar usuario              |
+| #   | Método | Path                 | Descripción                    |
+| --- | ------ | -------------------- | ------------------------------ |
+| 1   | POST   | `/auth/login`        | Login con email y contraseña   |
+| 2   | POST   | `/auth/client-login` | Login M2M (client_credentials) |
+| 3   | POST   | `/auth/refresh`      | Refrescar token                |
+| 4   | POST   | `/auth/register`     | Registrar usuario              |
 
 ---
 
@@ -124,17 +124,17 @@ Service Discovery. Todos los servicios se registran aquí.
 **Request Body:** `LoginRequestDTO`
 
 | Campo      | Tipo   | Descripción |
-|------------|--------|-------------|
+| ---------- | ------ | ----------- |
 | `email`    | String | Email       |
 | `password` | String | Contraseña  |
 
 **Response:** `200 OK` — `TokenResponseDTO`
 
-| Campo            | Tipo   | JSON Property     |
-|------------------|--------|-------------------|
-| `accessToken`   | String | `"access_token"`  |
-| `refreshToken`  | String | `"refresh_token"` |
-| `userName`      | String | `"userName"`      |
+| Campo          | Tipo   | JSON Property     |
+| -------------- | ------ | ----------------- |
+| `accessToken`  | String | `"access_token"`  |
+| `refreshToken` | String | `"refresh_token"` |
+| `userName`     | String | `"userName"`      |
 
 ---
 
@@ -151,7 +151,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Request Body:** `RefreshTokenRequestDTO`
 
 | Campo          | Tipo   | Validación  | Descripción      |
-|----------------|--------|-------------|------------------|
+| -------------- | ------ | ----------- | ---------------- |
 | `refreshToken` | String | `@NotBlank` | Token de refresh |
 
 **Response:** `200 OK` — `TokenResponseDTO`
@@ -164,33 +164,37 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Campos base (todos los subtipos):**
 
-| Campo         | Tipo    | Validación                         | Descripción |
-|---------------|---------|------------------------------------|-------------|
-| `email`       | String  | `@NotBlank`, `@Email`              | Email       |
-| `userName`    | String  | `@NotBlank`, `@Size(max = 40)`     | Username    |
-| `password`    | String  | `@NotBlank`, `@Size(min = 8)`      | Contraseña  |
-| `phoneNumber` | String  | `@Pattern(^\+?[0-9]{7,15}$)`      | Teléfono    |
-| `active`      | Boolean | —                                  | Activo      |
+| Campo         | Tipo    | Validación                     | Descripción |
+| ------------- | ------- | ------------------------------ | ----------- |
+| `email`       | String  | `@NotBlank`, `@Email`          | Email       |
+| `userName`    | String  | `@NotBlank`, `@Size(max = 40)` | Username    |
+| `password`    | String  | `@NotBlank`, `@Size(min = 8)`  | Contraseña  |
+| `phoneNumber` | String  | `@Pattern(^\+?[0-9]{7,15}$)`   | Teléfono    |
+| `active`      | Boolean | —                              | Activo      |
 
 **Subtipo `"TOURIST"`** — Sin campos adicionales.
 
 **Subtipo `"PROVIDER"` — `ProviderRequestDTO`:**
 
-| Campo         | Tipo         | Validación  | Descripción               |
-|---------------|--------------|-------------|---------------------------|
-| `type`        | ProviderType | `@NotNull`  | `COMPANY` / `NATURAL_PERSON` |
-| `razonSocial` | String       | `@NotBlank` | Razón social              |
-| `description` | String       | —           | Descripción               |
-| `certified`   | Boolean      | —           | Certificado               |
-| `nitRut`      | String       | `@NotBlank` | NIT/RUT                   |
-| `website`     | String       | —           | Sitio web                 |
+| Campo              | Tipo         | Validación  | Descripción                           |
+| ------------------ | ------------ | ----------- | ------------------------------------- |
+| `type`             | ProviderType | `@NotNull`  | `COMPANY` / `NATURAL_PERSON`          |
+| `razonSocial`      | String       | `@NotBlank` | Razón social                          |
+| `description`      | String       | —           | Descripción                           |
+| `certified`        | Boolean      | —           | Certificado                           |
+| `nitRut`           | String       | `@NotBlank` | NIT/RUT                               |
+| `documentType`     | DocumentType | —           | `CC` / `NIT` / `CE`                   |
+| `documentNumber`   | String       | —           | Número de documento                   |
+| `bankName`         | String       | —           | Nombre del banco                      |
+| `bankAccountType`  | String       | —           | `AHORROS` / `CORRIENTE`               |
+| `bankAccountNumber`| String       | —           | Número de cuenta bancaria             |
 
 **Response:** `201 CREATED` — `UserResponseDTO` o `ProviderResponseDTO`
 
 **UserResponseDTO:**
 
 | Campo         | Tipo    |
-|---------------|---------|
+| ------------- | ------- |
 | `id`          | String  |
 | `email`       | String  |
 | `userName`    | String  |
@@ -200,29 +204,34 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **ProviderResponseDTO** (extiende UserResponseDTO):
 
-| Campo         | Tipo         |
-|---------------|--------------|
-| `razonSocial` | String       |
-| `description` | String       |
-| `type`        | ProviderType |
-| `nitRut`      | String       |
-| `website`     | String       |
-| `certified`   | Boolean      |
+| Campo               | Tipo         |
+| ------------------- | ------------ |
+| `razonSocial`       | String       |
+| `description`       | String       |
+| `type`              | ProviderType |
+| `nitRut`            | String       |
+| `documentType`      | DocumentType |
+| `documentNumber`    | String       |
+| `bankName`          | String       |
+| `bankAccountType`   | String       |
+| `bankAccountNumber` | String       |
+| `onboardingCompleted` | Boolean    |
+| `certified`         | Boolean      |
 
 ---
 
 #### UserController
 
-| #  | Método | Path                     | Descripción               |
-|----|--------|--------------------------|---------------------------|
-| 5  | PUT    | `/users/{id}`            | Actualizar usuario        |
-| 6  | PUT    | `/users/{id}/deactivate` | Desactivar usuario        |
-| 7  | PUT    | `/users/{id}/activate`   | Activar usuario           |
-| 8  | GET    | `/users/{id}`            | Obtener usuario por ID    |
-| 9  | GET    | `/users/email/{email}`   | Obtener usuario por email |
-| 10 | GET    | `/users`                 | Listar usuarios           |
-| 11 | GET    | `/users/role/{role}`     | Listar por rol            |
-| 12 | GET    | `/users/profile/{id}`    | Obtener perfil            |
+| #   | Método | Path                     | Descripción               |
+| --- | ------ | ------------------------ | ------------------------- |
+| 5   | PUT    | `/users/{id}`            | Actualizar usuario        |
+| 6   | PUT    | `/users/{id}/deactivate` | Desactivar usuario        |
+| 7   | PUT    | `/users/{id}/activate`   | Activar usuario           |
+| 8   | GET    | `/users/{id}`            | Obtener usuario por ID    |
+| 9   | GET    | `/users/email/{email}`   | Obtener usuario por email |
+| 10  | GET    | `/users`                 | Listar usuarios           |
+| 11  | GET    | `/users/role/{role}`     | Listar por rol            |
+| 12  | GET    | `/users/profile/{id}`    | Obtener perfil            |
 
 ---
 
@@ -231,7 +240,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `id`   | String | ID usuario  |
 
 **Request Body:** `UserRequestDTO` (polimórfico, mismos campos que registro)
@@ -245,7 +254,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `id`   | String | ID usuario  |
 
 **Response:** `204 No Content`
@@ -257,7 +266,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `id`   | String | ID usuario  |
 
 **Response:** `204 No Content`
@@ -269,7 +278,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `id`   | String | ID usuario  |
 
 **Response:** `200 OK` — `UserResponseDTO`
@@ -281,7 +290,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Path Variables:**
 
 | Nombre  | Tipo   | Descripción |
-|---------|--------|-------------|
+| ------- | ------ | ----------- |
 | `email` | String | Email       |
 
 **Response:** `200 OK` — `UserResponseDTO`
@@ -293,7 +302,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -306,13 +315,13 @@ Service Discovery. Todos los servicios se registran aquí.
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `role` | String | Nombre rol  |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -325,7 +334,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `id`   | String | ID usuario  |
 
 **Response:** `200 OK` — `UserResponseDTO`
@@ -334,11 +343,11 @@ Service Discovery. Todos los servicios se registran aquí.
 
 #### ProviderController
 
-| #  | Método | Path                                     | Descripción                           |
-|----|--------|------------------------------------------|---------------------------------------|
-| 13 | POST   | `/user/providers`                        | Crear provider (interno, sin Gateway) |
-| 14 | PUT    | `/user/providers/{id}`                   | Actualizar provider (interno)         |
-| 15 | GET    | `/user/providers/by-username/{username}` | Obtener provider por username         |
+| #   | Método | Path                                     | Descripción                           |
+| --- | ------ | ---------------------------------------- | ------------------------------------- |
+| 13  | POST   | `/user/providers`                        | Crear provider (interno, sin Gateway) |
+| 14  | PUT    | `/user/providers/{id}`                   | Actualizar provider (interno)         |
+| 15  | GET    | `/user/providers/by-username/{username}` | Obtener provider por username         |
 
 ---
 
@@ -355,7 +364,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `id`   | String | ID provider |
 
 **Request Body:** `ProviderRequestDTO`
@@ -369,7 +378,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Path Variables:**
 
 | Nombre     | Tipo   | Descripción |
-|------------|--------|-------------|
+| ---------- | ------ | ----------- |
 | `username` | String | Username    |
 
 **Response:** `200 OK` — `ProviderResponseDTO`
@@ -378,9 +387,9 @@ Service Discovery. Todos los servicios se registran aquí.
 
 #### RoleController
 
-| #  | Método | Path           | Descripción                        |
-|----|--------|----------------|------------------------------------|
-| 16 | GET    | `/users/roles` | Listar roles de Keycloak (interno) |
+| #   | Método | Path           | Descripción                        |
+| --- | ------ | -------------- | ---------------------------------- |
+| 16  | GET    | `/users/roles` | Listar roles de Keycloak (interno) |
 
 ---
 
@@ -394,15 +403,13 @@ Service Discovery. Todos los servicios se registran aquí.
 
 #### BookingController
 
-| #  | Método | Path                          | Descripción               |
-|----|--------|-------------------------------|---------------------------|
-| 17 | POST   | `/api/v1/booking`             | Crear reserva             |
-| 18 | GET    | `/api/v1/booking`             | Listar reservas           |
-| 19 | GET    | `/api/v1/booking/{id}`        | Detalle de reserva        |
-| 20 | PUT    | `/api/v1/booking/{id}`        | Actualizar reserva        |
-| 21 | POST   | `/api/v1/booking/{id}/cancel` | Cancelar reserva          |
-| —  | GET    | `/api/v1/booking/user/{userId}` | Reservas por usuario (paginado) |
-| —  | GET    | `/api/v1/booking/provider` | Reservas del proveedor (paginado) |
+| #   | Método | Path                          | Descripción        |
+| --- | ------ | ----------------------------- | ------------------ |
+| 17  | POST   | `/api/v1/booking`             | Crear reserva      |
+| 18  | GET    | `/api/v1/booking`             | Listar reservas    |
+| 19  | GET    | `/api/v1/booking/{id}`        | Detalle de reserva |
+| 20  | PUT    | `/api/v1/booking/{id}`        | Actualizar reserva |
+| 21  | POST   | `/api/v1/booking/{id}/cancel` | Cancelar reserva   |
 
 ---
 
@@ -410,42 +417,46 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Headers:**
 
-| Nombre           | Tipo   | Requerido | Default        | Descripción          |
-|------------------|--------|-----------|----------------|----------------------|
-| `X-User-Id`     | String | No        | `"1"`          | ID del turista       |
-| `Idempotency-Key`| String | No        | UUID generado  | Clave de idempotencia|
+| Nombre            | Tipo   | Requerido | Default       | Descripción           |
+| ----------------- | ------ | --------- | ------------- | --------------------- |
+| `X-User-Id`       | String | No        | `"1"`         | ID del turista        |
+| `Idempotency-Key` | String | No        | UUID generado | Clave de idempotencia |
 
 **Request Body:** `@Valid` `CreateBookingRequestDTO`
 
-| Campo              | Tipo         | Validación         | Descripción                |
-|--------------------|--------------|--------------------|----------------------------|
-| `offerId`          | String       | `@NotNull`         | ID de la oferta            |
-| `serviceStartDate` | LocalDateTime| `@FutureOrPresent` | Fecha/hora de inicio       |
-| `serviceEndDate`   | LocalDateTime| `@FutureOrPresent` | Fecha/hora de fin          |
-| `quantity`         | Integer      | `@Positive`        | Cantidad de unidades/tickets|
+| Campo              | Tipo          | Validación         | Descripción                  |
+| ------------------ | ------------- | ------------------ | ---------------------------- |
+| `offerId`          | String        | `@NotNull`         | ID de la oferta              |
+| `startDate`        | LocalDate     | `@FutureOrPresent` | Fecha de inicio              |
+| `endDate`          | LocalDate     | `@FutureOrPresent` | Fecha de fin                 |
+| `quantity`         | Integer       | `@Positive`        | Cantidad de unidades/tickets |
+| `guestCount`       | Integer       | —                  | N° de huéspedes (solo ACCOMMODATION) |
 
 **Validaciones adicionales (service layer):**
+
 - La oferta debe existir y estar activa (consulta vía Feign)
 - No se permiten reservas de tipo `EVENT`
-- Para SERVICE/ACCOMMODATION: `serviceEndDate` debe ser posterior a `serviceStartDate`
+- Para SERVICE/ACCOMMODATION: `endDate` debe ser posterior a `startDate`
 - Para SERVICE/ACCOMMODATION: no debe superponerse con reservas CONFIRMED o PENDING_PAYMENT
+- Para ACCOMMODATION: `guestCount` es obligatorio y no puede exceder `maxGuests` de la oferta
 - Para PRODUCT: se deduce stock (si falla, la reserva no se crea)
 
 **Response:** `201 CREATED` — `BookingResponseDTO`
 
-| Campo             | Tipo         | Descripción                    |
-|-------------------|--------------|--------------------------------|
-| `id`              | Long         | ID de la reserva               |
-| `offerId`         | UUID         | ID de la oferta                |
-| `offerName`       | String       | Nombre de la oferta            |
-| `status`          | String       | Estado actual (`PENDING_PAYMENT`)|
-| `totalAmount`     | BigDecimal   | Monto total                    |
-| `currency`        | String       | Moneda (COP)                   |
-| `serviceStartDate`| LocalDateTime| Fecha/hora de inicio           |
-| `serviceEndDate`  | LocalDateTime| Fecha/hora de fin              |
-| `quantity`        | Integer      | Cantidad                       |
-| `expiresAt`       | LocalDateTime| Expiración (15 min desde creación)|
-| `createdAt`       | LocalDateTime| Fecha de creación              |
+| Campo              | Tipo          | Descripción                        |
+| ------------------ | ------------- | ---------------------------------- |
+| `id`               | Long          | ID de la reserva                   |
+| `offerId`          | UUID          | ID de la oferta                    |
+| `offerName`        | String        | Nombre de la oferta                |
+| `status`           | String        | Estado actual (`PENDING_PAYMENT`)  |
+| `totalAmount`      | BigDecimal    | Monto total                        |
+| `currency`         | String        | Moneda (COP)                       |
+| `startDate`        | LocalDate     | Fecha de inicio              |
+| `endDate`          | LocalDate     | Fecha de fin                 |
+| `quantity`         | Integer       | Cantidad                           |
+| `guestCount`       | Integer       | N° de huéspedes (solo ACCOMMODATION) |
+| `expiresAt`        | LocalDateTime | Expiración (15 min desde creación) |
+| `createdAt`        | LocalDateTime | Fecha de creación                  |
 
 ---
 
@@ -454,7 +465,7 @@ Service Discovery. Todos los servicios se registran aquí.
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -466,44 +477,45 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | Long   | ID reserva  |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | Long | ID reserva  |
 
 **Response:** `200 OK` — `BookingDetailResponseDTO`
 
-| Campo             | Tipo         | Descripción                    |
-|-------------------|--------------|--------------------------------|
-| `id`              | Long         | ID de la reserva               |
-| `offerId`         | UUID         | ID de la oferta                |
-| `offerName`       | String       | Nombre de la oferta            |
-| `totalAmount`     | BigDecimal   | Monto total                    |
-| `currency`        | String       | Moneda                         |
-| `serviceStartDate`| LocalDateTime| Fecha/hora de inicio           |
-| `serviceEndDate`  | LocalDateTime| Fecha/hora de fin              |
-| `quantity`        | Integer      | Cantidad                       |
-| `expiresAt`       | LocalDateTime| Expiración                     |
-| `createdAt`       | LocalDateTime| Fecha de creación              |
-| `payments`        | List         | Ver `PaymentResponseDTO` abajo |
-| `statusHistory`   | List         | Ver `BookingStatusHistoryDTO`  |
+| Campo              | Tipo          | Descripción                    |
+| ------------------ | ------------- | ------------------------------ |
+| `id`               | Long          | ID de la reserva               |
+| `offerId`          | UUID          | ID de la oferta                |
+| `offerName`        | String        | Nombre de la oferta            |
+| `totalAmount`      | BigDecimal    | Monto total                    |
+| `currency`         | String        | Moneda                         |
+| `startDate`        | LocalDate     | Fecha de inicio           |
+| `endDate`          | LocalDate     | Fecha de fin              |
+| `quantity`         | Integer       | Cantidad                       |
+| `guestCount`       | Integer       | N° de huéspedes (solo ACCOMMODATION) |
+| `expiresAt`        | LocalDateTime | Expiración                     |
+| `createdAt`        | LocalDateTime | Fecha de creación              |
+| `payments`         | List          | Ver `PaymentResponseDTO` abajo |
+| `statusHistory`    | List          | Ver `BookingStatusHistoryDTO`  |
 
 **PaymentResponseDTO (nested):**
 
-| Campo       | Tipo         |
-|-------------|--------------|
-| `id`        | Long         |
-| `status`    | String       |
-| `amount`    | BigDecimal   |
-| `currency`  | String       |
-| `paidAt`    | LocalDateTime|
-| `createdAt` | LocalDateTime|
+| Campo       | Tipo          |
+| ----------- | ------------- |
+| `id`        | Long          |
+| `status`    | String        |
+| `amount`    | BigDecimal    |
+| `currency`  | String        |
+| `paidAt`    | LocalDateTime |
+| `createdAt` | LocalDateTime |
 
 **BookingStatusHistoryDTO (nested):**
 
-| Campo       | Tipo         |
-|-------------|--------------|
-| `status`    | String       |
-| `changedAt` | LocalDateTime|
+| Campo       | Tipo          |
+| ----------- | ------------- |
+| `status`    | String        |
+| `changedAt` | LocalDateTime |
 
 ---
 
@@ -511,22 +523,24 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | Long   | ID reserva  |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | Long | ID reserva  |
 
 **Request Body:** `@Valid` `UpdateBookingRequestDTO` (todos opcionales, solo se actualizan los campos enviados)
 
-| Campo              | Tipo              | Validación                          | Descripción          |
-|--------------------|-------------------|-------------------------------------|----------------------|
-| `serviceStartDate` | LocalDateTime     | `@FutureOrPresent`                  | Nueva fecha de inicio|
-| `serviceEndDate`   | LocalDateTime     | `@Future`                           | Nueva fecha de fin   |
-| `quantity`         | Integer           | `@Min(1)`                           | Nueva cantidad       |
-| `newStatus`        | BookingStatusType | —                                   | Nuevo estado         |
+| Campo              | Tipo              | Validación         | Descripción           |
+| ------------------ | ----------------- | ------------------ | --------------------- |
+| `startDate`        | LocalDate     | `@FutureOrPresent` | Nueva fecha de inicio |
+| `endDate`          | LocalDate     | `@Future`          | Nueva fecha de fin    |
+| `quantity`         | Integer           | `@Min(1)`          | Nueva cantidad        |
+| `guestCount`       | Integer           | `@Min(1)`          | N° de huéspedes      |
+| `newStatus`        | BookingStatusType | —                  | Nuevo estado          |
 
 **BookingStatusType enum:** `PENDING_PAYMENT`, `CONFIRMED`, `CANCELLED`, `COMPLETED`, `EXPIRED`, `FAILED`
 
 **Transiciones válidas:**
+
 - `PENDING_PAYMENT` → `CANCELLED`
 - `CONFIRMED` → `CANCELLED`, `COMPLETED`
 
@@ -538,19 +552,20 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Headers:**
 
-| Nombre     | Tipo   | Requerido | Descripción |
-|------------|--------|-----------|-------------|
-| `X-User-Id`| String | Sí        | ID turista  |
+| Nombre      | Tipo   | Requerido | Descripción |
+| ----------- | ------ | --------- | ----------- |
+| `X-User-Id` | String | Sí        | ID turista  |
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | Long   | ID reserva  |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | Long | ID reserva  |
 
 **@PreAuthorize:** `#userId == @bookingServiceImpl.getBookingById(#id).customerId`
 
 **Comportamiento adicional:**
+
 - Si la reserva está CONFIRMED, restituye stock (PRODUCT) y procesa reembolso
 - Emite evento `booking.cancelled` en RabbitMQ
 
@@ -560,9 +575,9 @@ Service Discovery. Todos los servicios se registran aquí.
 
 #### CheckoutController
 
-| #  | Método | Path                                   | Descripción              |
-|----|--------|----------------------------------------|--------------------------|
-| 22 | POST   | `/api/v1/booking/{bookingId}/checkout` | Iniciar checkout y pago  |
+| #   | Método | Path                                   | Descripción             |
+| --- | ------ | -------------------------------------- | ----------------------- |
+| 22  | POST   | `/api/v1/booking/{bookingId}/checkout` | Iniciar checkout y pago |
 
 ---
 
@@ -570,29 +585,30 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Headers:**
 
-| Nombre     | Tipo   | Requerido | Descripción |
-|------------|--------|-----------|-------------|
-| `X-User-Id`| String | Sí        | ID turista  |
+| Nombre      | Tipo   | Requerido | Descripción |
+| ----------- | ------ | --------- | ----------- |
+| `X-User-Id` | String | Sí        | ID turista  |
 
 **Path Variables:**
 
-| Nombre      | Tipo   | Descripción |
-|-------------|--------|-------------|
-| `bookingId` | Long   | ID reserva  |
+| Nombre      | Tipo | Descripción |
+| ----------- | ---- | ----------- |
+| `bookingId` | Long | ID reserva  |
 
 **@PreAuthorize:** `#userId == @bookingServiceImpl.getBookingById(#bookingId).customerId`
 
 **Validaciones:**
+
 - El turista debe ser dueño de la reserva
 - La reserva debe estar en estado `PENDING_PAYMENT`
 
 **Response:** `200 OK` — `CheckoutResponse`
 
-| Campo         | Tipo       | Descripción                   |
-|---------------|------------|-------------------------------|
-| `checkoutUrl` | String     | URL de pago del proveedor     |
-| `amount`      | BigDecimal | Monto a pagar                 |
-| `currency`    | String     | Moneda                        |
+| Campo         | Tipo       | Descripción               |
+| ------------- | ---------- | ------------------------- |
+| `checkoutUrl` | String     | URL de pago del proveedor |
+| `amount`      | BigDecimal | Monto a pagar             |
+| `currency`    | String     | Moneda                    |
 
 **Errores:** `403 Forbidden` (no es dueño), `400 Bad Request` (no está PENDING_PAYMENT), `409 Conflict` (pago ya en progreso)
 
@@ -600,14 +616,14 @@ Service Discovery. Todos los servicios se registran aquí.
 
 #### PaymentWebhookController
 
-| #  | Método | Path                                            | Descripción                        |
-|----|--------|-------------------------------------------------|------------------------------------|
-| 23 | POST   | `/api/v1/webhooks/payments`                     | Webhook de pago (proveedor)        |
-| 24 | GET    | `/api/v1/webhooks/payments/success`              | Callback redirect post-pago exitoso|
-| 25 | GET    | `/api/v1/webhooks/payments/failure`              | Callback redirect post-pago fallido|
-| 26 | GET    | `/api/v1/webhooks/payments/pending`              | Callback redirect pago pendiente   |
-| 27 | POST   | `/api/v1/webhooks/payments/mock/success/{ref}`   | Simular pago exitoso (mock)        |
-| 28 | POST   | `/api/v1/webhooks/payments/mock/failure/{ref}`   | Simular pago fallido (mock)        |
+| #   | Método | Path                                           | Descripción                         |
+| --- | ------ | ---------------------------------------------- | ----------------------------------- |
+| 23  | POST   | `/api/v1/webhooks/payments`                    | Webhook de pago (proveedor)         |
+| 24  | GET    | `/api/v1/webhooks/payments/success`            | Callback redirect post-pago exitoso |
+| 25  | GET    | `/api/v1/webhooks/payments/failure`            | Callback redirect post-pago fallido |
+| 26  | GET    | `/api/v1/webhooks/payments/pending`            | Callback redirect pago pendiente    |
+| 27  | POST   | `/api/v1/webhooks/payments/mock/success/{ref}` | Simular pago exitoso (mock)         |
+| 28  | POST   | `/api/v1/webhooks/payments/mock/failure/{ref}` | Simular pago fallido (mock)         |
 
 ---
 
@@ -633,11 +649,11 @@ Estructura esperada de MercadoPago:
 
 **Query Parameters:**
 
-| Nombre              | Tipo   | Requerido | Descripción          |
-|---------------------|--------|-----------|----------------------|
-| `payment_id`        | String | No        | ID del pago          |
-| `status`            | String | No        | Estado del pago      |
-| `external_reference`| String | No        | Referencia externa   |
+| Nombre               | Tipo   | Requerido | Descripción        |
+| -------------------- | ------ | --------- | ------------------ |
+| `payment_id`         | String | No        | ID del pago        |
+| `status`             | String | No        | Estado del pago    |
+| `external_reference` | String | No        | Referencia externa |
 
 **Response:** `200 OK` — `"Pago procesado correctamente. Puedes cerrar esta ventana."`
 
@@ -648,7 +664,7 @@ Estructura esperada de MercadoPago:
 **Query Parameters:**
 
 | Nombre       | Tipo   | Requerido | Descripción |
-|--------------|--------|-----------|-------------|
+| ------------ | ------ | --------- | ----------- |
 | `payment_id` | String | No        | ID del pago |
 | `status`     | String | No        | Estado      |
 
@@ -661,7 +677,7 @@ Estructura esperada de MercadoPago:
 **Query Parameters:**
 
 | Nombre       | Tipo   | Requerido | Descripción |
-|--------------|--------|-----------|-------------|
+| ------------ | ------ | --------- | ----------- |
 | `payment_id` | String | No        | ID del pago |
 | `status`     | String | No        | Estado      |
 
@@ -673,9 +689,9 @@ Estructura esperada de MercadoPago:
 
 **Path Variables:**
 
-| Nombre              | Tipo   | Descripción          |
-|---------------------|--------|----------------------|
-| `providerReference` | String | Referencia del pago  |
+| Nombre              | Tipo   | Descripción         |
+| ------------------- | ------ | ------------------- |
+| `providerReference` | String | Referencia del pago |
 
 **Response:** `200 OK`
 
@@ -685,15 +701,16 @@ Estructura esperada de MercadoPago:
 
 **Path Variables:**
 
-| Nombre              | Tipo   | Descripción          |
-|---------------------|--------|----------------------|
-| `providerReference` | String | Referencia del pago  |
+| Nombre              | Tipo   | Descripción         |
+| ------------------- | ------ | ------------------- |
+| `providerReference` | String | Referencia del pago |
 
 **Response:** `200 OK`
 
 ---
 
 > **Flujo de pago (Checkout Pro):**
+>
 > 1. Frontend → `POST /api/v1/booking/{id}/checkout` → backend crea preferencia de pago → devuelve `checkoutUrl`
 > 2. Frontend redirige usuario a `checkoutUrl`
 > 3. Usuario paga → proveedor envía webhook a `POST /api/v1/webhooks/payments`
@@ -715,9 +732,6 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 | GET    | `/api/v1/providers/earnings`              | Ganancias por reserva (histórico)                  |
 | GET    | `/api/v1/providers/settlements`           | Historial de pagos semanales                       |
 | GET    | `/api/v1/providers/settlements/{id}`      | Detalle de pago semanal con bookings               |
-| POST   | `/api/v1/providers/payment-info`          | Registrar datos bancarios                          |
-| GET    | `/api/v1/providers/payment-info`          | Obtener datos bancarios                            |
-| PUT    | `/api/v1/providers/payment-info`          | Actualizar datos bancarios                         |
 | POST   | `/api/v1/booking/{id}/complete-request`   | Provider solicita completación                     |
 | POST   | `/api/v1/booking/{id}/confirm-completion` | Turista confirma completación                      |
 
@@ -727,25 +741,24 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### OfferController
 
-| #  | Método | Path                                             | Descripción                 |
-|----|--------|--------------------------------------------------|-----------------------------|
-| 25 | POST   | `/api/v1/offers`                                 | Crear oferta                |
-| 26 | PUT    | `/api/v1/offers/{id}`                            | Actualizar oferta           |
-| 27 | PATCH  | `/api/v1/offers/{id}/activate`                   | Activar oferta              |
-| 28 | PATCH  | `/api/v1/offers/{id}/deactivate`                 | Desactivar oferta           |
-| 29 | GET    | `/api/v1/offers/{id}`                            | Detalle de oferta           |
-| 30 | GET    | `/api/v1/offers`                                 | Listar ofertas              |
-| 31 | GET    | `/api/v1/offers/active`                          | Ofertas activas             |
-| 32 | GET    | `/api/v1/offers/provider/{providerId}`           | Ofertas por proveedor       |
-| 33 | GET    | `/api/v1/offers/city/{cityId}`                   | Ofertas por ciudad          |
-| 34 | GET    | `/api/v1/offers/city/{cityId}/active`            | Ofertas activas por ciudad  |
-| 35 | GET    | `/api/v1/offers/type/{type}`                     | Ofertas por tipo            |
-| 36 | GET    | `/api/v1/offers/type/{type}/active`              | Ofertas activas por tipo    |
-| 37 | GET    | `/api/v1/offers/search`                          | Buscar ofertas con filtros  |
-| 38 | GET    | `/api/v1/offers/featured`                        | Ofertas destacadas          |
-| 39 | PATCH  | `/api/v1/offers/{id}/featured`                   | Marcar/desmarcar destacada  |
-| 40 | GET    | `/api/v1/offers/type/{type}/category/{category}` | Ofertas por tipo y categoría|
-| —  | DELETE | `/api/v1/offers/{id}` | Eliminar oferta |
+| #   | Método | Path                                             | Descripción                  |
+| --- | ------ | ------------------------------------------------ | ---------------------------- |
+| 25  | POST   | `/api/v1/offers`                                 | Crear oferta                 |
+| 26  | PUT    | `/api/v1/offers/{id}`                            | Actualizar oferta            |
+| 27  | PATCH  | `/api/v1/offers/{id}/activate`                   | Activar oferta               |
+| 28  | PATCH  | `/api/v1/offers/{id}/deactivate`                 | Desactivar oferta            |
+| 29  | GET    | `/api/v1/offers/{id}`                            | Detalle de oferta            |
+| 30  | GET    | `/api/v1/offers`                                 | Listar ofertas               |
+| 31  | GET    | `/api/v1/offers/active`                          | Ofertas activas              |
+| 32  | GET    | `/api/v1/offers/provider/{providerId}`           | Ofertas por proveedor        |
+| 33  | GET    | `/api/v1/offers/city/{cityId}`                   | Ofertas por ciudad           |
+| 34  | GET    | `/api/v1/offers/city/{cityId}/active`            | Ofertas activas por ciudad   |
+| 35  | GET    | `/api/v1/offers/type/{type}`                     | Ofertas por tipo             |
+| 36  | GET    | `/api/v1/offers/type/{type}/active`              | Ofertas activas por tipo     |
+| 37  | GET    | `/api/v1/offers/search`                          | Buscar ofertas con filtros   |
+| 38  | GET    | `/api/v1/offers/featured`                        | Ofertas destacadas           |
+| 39  | PATCH  | `/api/v1/offers/{id}/featured`                   | Marcar/desmarcar destacada   |
+| 40  | GET    | `/api/v1/offers/type/{type}/category/{category}` | Ofertas por tipo y categoría |
 
 ---
 
@@ -757,73 +770,73 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Campos base (todos los subtipos):**
 
-| Campo        | Tipo         | Descripción              |
-|--------------|--------------|--------------------------|
-| `name`       | String       | Nombre                   |
-| `description`| String       | Descripción              |
-| `providerId` | String       | ID del proveedor         |
-| `baseprice`  | BigDecimal   | Precio base              |
-| `cityId`     | Long         | ID del municipio         |
-| `active`     | Boolean      | Activo (default `true`)  |
-| `featured`   | Boolean      | Destacada (default `false`)|
-| `images`     | List         | Lista de imágenes        |
+| Campo         | Tipo       | Descripción                 |
+| ------------- | ---------- | --------------------------- |
+| `name`        | String     | Nombre                      |
+| `description` | String     | Descripción                 |
+| `providerId`  | String     | ID del proveedor            |
+| `baseprice`   | BigDecimal | Precio base                 |
+| `cityId`      | Long       | ID del municipio            |
+| `active`      | Boolean    | Activo (default `true`)     |
+| `featured`    | Boolean    | Destacada (default `false`) |
+| `images`      | List       | Lista de imágenes           |
 
 **Subtipo `"product"` — ProductOffer:**
 
-| Campo              | Tipo            | Descripción |
-|--------------------|-----------------|-------------|
-| `productCategory`  | ProductCategory | Categoría   |
+| Campo              | Tipo            | Descripción                       |
+| ------------------ | --------------- | --------------------------------- |
+| `productCategory`  | ProductCategory | Categoría                         |
 | `isUnlimitedStock` | Boolean         | Stock ilimitado (default `false`) |
 
 **Subtipo `"service"` — ServiceOffer:**
 
-| Campo              | Tipo            | Descripción |
-|--------------------|-----------------|-------------|
-| `serviceCategory`  | ServiceCategory | Categoría   |
-| `requiresSchedule` | Boolean         | Requiere agenda |
-| `durationInMinutes`| Integer         | Duración en minutos |
-| `capacity`         | Integer         | Capacidad   |
-| `pricePerPerson`   | BigDecimal      | Precio por persona |
+| Campo               | Tipo            | Descripción         |
+| ------------------- | --------------- | ------------------- |
+| `serviceCategory`   | ServiceCategory | Categoría           |
+| `requiresSchedule`  | Boolean         | Requiere agenda     |
+| `durationInMinutes` | Integer         | Duración en minutos |
+| `capacity`          | Integer         | Capacidad           |
+| `pricePerPerson`    | BigDecimal      | Precio por persona  |
 
 **Subtipo `"event"` — EventOffer:**
 
-| Campo             | Tipo         | Descripción |
-|-------------------|--------------|-------------|
-| `startDate`       | LocalDateTime| Fecha inicio|
-| `endDate`         | LocalDateTime| Fecha fin   |
-| `maximumCapacity` | Integer      | Capacidad máxima |
-| `ticketPrice`     | BigDecimal   | Precio ticket |
-| `purchaseUrl`     | String       | URL de compra |
-| `eventType`       | EventType    | `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED` |
+| Campo             | Tipo          | Descripción                                         |
+| ----------------- | ------------- | --------------------------------------------------- |
+| `startDate`       | LocalDateTime | Fecha inicio                                        |
+| `endDate`         | LocalDateTime | Fecha fin                                           |
+| `maximumCapacity` | Integer       | Capacidad máxima                                    |
+| `ticketPrice`     | BigDecimal    | Precio ticket                                       |
+| `purchaseUrl`     | String        | URL de compra                                       |
+| `eventType`       | EventType     | `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED` |
 
 **Subtipo `"accommodation"` — AccommodationOffer:**
 
-| Campo                   | Tipo                 | Descripción |
-|-------------------------|----------------------|-------------|
-| `maxGuests`             | Integer              | Máx huéspedes |
-| `bedrooms`              | Integer              | Habitaciones |
-| `bathrooms`             | Integer              | Baños       |
-| `allowPets`             | Boolean              | Permitir mascotas |
-| `allowChildren`         | Boolean              | Permitir niños |
-| `pricePerNight`         | BigDecimal           | Precio por noche |
-| `accommodationCategory` | AccommodationCategory| Categoría   |
+| Campo                   | Tipo                  | Descripción       |
+| ----------------------- | --------------------- | ----------------- |
+| `maxGuests`             | Integer               | Máx huéspedes     |
+| `bedrooms`              | Integer               | Habitaciones      |
+| `bathrooms`             | Integer               | Baños             |
+| `allowPets`             | Boolean               | Permitir mascotas |
+| `allowChildren`         | Boolean               | Permitir niños    |
+| `pricePerNight`         | BigDecimal            | Precio por noche  |
+| `accommodationCategory` | AccommodationCategory | Categoría         |
 
 **Response:** `200 OK` — `OfferResponseDTO`
 
-| Campo        | Tipo         | Descripción                        |
-|--------------|--------------|------------------------------------|
-| `id`         | UUID         | ID de la oferta                    |
-| `providerId` | String       | ID del proveedor                   |
-| `name`       | String       | Nombre                             |
-| `description`| String       | Descripción                        |
-| `baseprice`  | BigDecimal   | Precio base                        |
-| `cityId`     | Long         | ID del municipio                   |
-| `type`       | String       | `"product"`, `"service"`, `"event"`, `"accommodation"` |
-| `category`   | String       | Categoría o null                   |
-| `active`     | boolean      | Activo                             |
-| `featured`   | boolean      | Destacada                          |
-| `createdAt`  | LocalDateTime| Fecha de creación                  |
-| `updatedAt`  | LocalDateTime| Fecha de actualización             |
+| Campo         | Tipo          | Descripción                                            |
+| ------------- | ------------- | ------------------------------------------------------ |
+| `id`          | UUID          | ID de la oferta                                        |
+| `providerId`  | String        | ID del proveedor                                       |
+| `name`        | String        | Nombre                                                 |
+| `description` | String        | Descripción                                            |
+| `baseprice`   | BigDecimal    | Precio base                                            |
+| `cityId`      | Long          | ID del municipio                                       |
+| `type`        | String        | `"product"`, `"service"`, `"event"`, `"accommodation"` |
+| `category`    | String        | Categoría o null                                       |
+| `active`      | boolean       | Activo                                                 |
+| `featured`    | boolean       | Destacada                                              |
+| `createdAt`   | LocalDateTime | Fecha de creación                                      |
+| `updatedAt`   | LocalDateTime | Fecha de actualización                                 |
 
 ---
 
@@ -833,9 +846,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID oferta   |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID oferta   |
 
 **Request Body:** `@Valid` `Offer` (polimórfico, mismos campos que creación)
 
@@ -849,9 +862,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID oferta   |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID oferta   |
 
 **Response:** `204 No Content`
 
@@ -863,9 +876,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID oferta   |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID oferta   |
 
 **Response:** `204 No Content`
 
@@ -875,16 +888,16 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID oferta   |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID oferta   |
 
 **Response:** `200 OK` — `OfferDetailDTO` (incluye campos base + campos específicos del tipo + `images: List<OfferImageDTO>`)
 
 **OfferImageDTO:**
 
 | Campo       | Tipo    |
-|-------------|---------|
+| ----------- | ------- |
 | `imageUrl`  | String  |
 | `isPrimary` | boolean |
 
@@ -895,7 +908,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -908,7 +921,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -920,14 +933,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre       | Tipo   | Descripción |
-|--------------|--------|-------------|
-| `providerId` | String | ID proveedor|
+| Nombre       | Tipo   | Descripción  |
+| ------------ | ------ | ------------ |
+| `providerId` | String | ID proveedor |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -940,13 +953,13 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre   | Tipo | Descripción |
-|----------|------|-------------|
+| -------- | ---- | ----------- |
 | `cityId` | Long | ID ciudad   |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -959,13 +972,13 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre   | Tipo | Descripción |
-|----------|------|-------------|
+| -------- | ---- | ----------- |
 | `cityId` | Long | ID ciudad   |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -977,14 +990,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Valores permitidos                           |
-|--------|--------|----------------------------------------------|
+| Nombre | Tipo   | Valores permitidos                                     |
+| ------ | ------ | ------------------------------------------------------ |
 | `type` | String | `"accommodation"`, `"service"`, `"product"`, `"event"` |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -996,14 +1009,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Valores permitidos                           |
-|--------|--------|----------------------------------------------|
+| Nombre | Tipo   | Valores permitidos                                     |
+| ------ | ------ | ------------------------------------------------------ |
 | `type` | String | `"accommodation"`, `"service"`, `"product"`, `"event"` |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -1015,25 +1028,25 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Query Parameters:**
 
-| Nombre          | Tipo          | Requerido | Descripción                           |
-|-----------------|---------------|-----------|---------------------------------------|
-| `providerId`    | String        | No        | ID del proveedor                      |
-| `cityId`        | Long          | No        | ID del municipio                      |
-| `active`        | Boolean       | No        | Filtrar por activas                   |
-| `name`          | String        | No        | Nombre (búsqueda parcial)             |
-| `type`          | String        | No        | Tipo de oferta                        |
-| `category`      | String        | No        | Categoría                             |
-| `featured`      | Boolean       | No        | Solo destacadas                       |
-| `minPrice`      | BigDecimal    | No        | Precio mínimo                         |
-| `maxPrice`      | BigDecimal    | No        | Precio máximo                         |
-| `maxGuests`     | Integer       | No        | Máximo huéspedes                      |
-| `allowPets`     | Boolean       | No        | Permitir mascotas                     |
-| `allowChildren` | Boolean       | No        | Permitir niños                        |
-| `startDate`     | LocalDateTime | No        | Fecha inicio (`ISO.DATE_TIME`)        |
-| `endDate`       | LocalDateTime | No        | Fecha fin (`ISO.DATE_TIME`)           |
-| `capacity`      | Integer       | No        | Capacidad                             |
-| `page`          | Integer       | No        | Página (default `0`)                  |
-| `size`          | Integer       | No        | Tamaño (default `20`)                 |
+| Nombre          | Tipo          | Requerido | Descripción                    |
+| --------------- | ------------- | --------- | ------------------------------ |
+| `providerId`    | String        | No        | ID del proveedor               |
+| `cityId`        | Long          | No        | ID del municipio               |
+| `active`        | Boolean       | No        | Filtrar por activas            |
+| `name`          | String        | No        | Nombre (búsqueda parcial)      |
+| `type`          | String        | No        | Tipo de oferta                 |
+| `category`      | String        | No        | Categoría                      |
+| `featured`      | Boolean       | No        | Solo destacadas                |
+| `minPrice`      | BigDecimal    | No        | Precio mínimo                  |
+| `maxPrice`      | BigDecimal    | No        | Precio máximo                  |
+| `maxGuests`     | Integer       | No        | Máximo huéspedes               |
+| `allowPets`     | Boolean       | No        | Permitir mascotas              |
+| `allowChildren` | Boolean       | No        | Permitir niños                 |
+| `startDate`     | LocalDateTime | No        | Fecha inicio (`ISO.DATE_TIME`) |
+| `endDate`       | LocalDateTime | No        | Fecha fin (`ISO.DATE_TIME`)    |
+| `capacity`      | Integer       | No        | Capacidad                      |
+| `page`          | Integer       | No        | Página (default `0`)           |
+| `size`          | Integer       | No        | Tamaño (default `20`)          |
 
 **Response:** `200 OK` — `Page<OfferResponseDTO>`
 
@@ -1044,7 +1057,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -1056,15 +1069,15 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID oferta   |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID oferta   |
 
 **Query Parameters:**
 
-| Nombre      | Tipo    | Requerido | Descripción |
-|-------------|---------|-----------|-------------|
-| `featured`  | boolean | Sí        | true/false  |
+| Nombre     | Tipo    | Requerido | Descripción |
+| ---------- | ------- | --------- | ----------- |
+| `featured` | boolean | Sí        | true/false  |
 
 **Response:** `204 No Content`
 
@@ -1075,14 +1088,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre     | Tipo   | Descripción |
-|------------|--------|-------------|
+| ---------- | ------ | ----------- |
 | `type`     | String | Tipo oferta |
 | `category` | String | Categoría   |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -1092,11 +1105,11 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### StockProductController
 
-| #  | Método | Path                                | Descripción            |
-|----|--------|-------------------------------------|------------------------|
-| 41 | POST   | `/api/v1/offers/{id}/stock/deduct`  | Deducir stock          |
-| 42 | POST   | `/api/v1/offers/{id}/stock/restock` | Reabastecer stock      |
-| 43 | GET    | `/api/v1/offers/{id}/stock`         | Obtener stock actual   |
+| #   | Método | Path                                | Descripción          |
+| --- | ------ | ----------------------------------- | -------------------- |
+| 41  | POST   | `/api/v1/offers/{id}/stock/deduct`  | Deducir stock        |
+| 42  | POST   | `/api/v1/offers/{id}/stock/restock` | Reabastecer stock    |
+| 43  | GET    | `/api/v1/offers/{id}/stock`         | Obtener stock actual |
 
 ---
 
@@ -1106,16 +1119,16 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID oferta   |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID oferta   |
 
 **Request Body:** `DeductStockRequest`
 
-| Campo         | Tipo   | Descripción              |
-|---------------|--------|--------------------------|
-| `quantity`    | Integer| Cantidad a deducir       |
-| `referenceId` | String | Referencia (ej: `booking-123`) |
+| Campo         | Tipo    | Descripción                    |
+| ------------- | ------- | ------------------------------ |
+| `quantity`    | Integer | Cantidad a deducir             |
+| `referenceId` | String  | Referencia (ej: `booking-123`) |
 
 **Response:** `200 OK`
 
@@ -1127,14 +1140,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID oferta   |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID oferta   |
 
 **Query Parameters:**
 
 | Nombre        | Tipo    | Requerido | Descripción |
-|---------------|---------|-----------|-------------|
+| ------------- | ------- | --------- | ----------- |
 | `quantity`    | Integer | Sí        | Cantidad    |
 | `description` | String  | No        | Descripción |
 
@@ -1146,9 +1159,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID oferta   |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID oferta   |
 
 **Response:** `200 OK` — `Integer`
 
@@ -1156,12 +1169,12 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### EventStatusHistoryController
 
-| #  | Método | Path                                                    | Descripción                  |
-|----|--------|---------------------------------------------------------|------------------------------|
-| 44 | POST   | `/api/v1/offers/event/{eventId}/events-status`          | Registrar cambio de estado   |
-| 45 | GET    | `/api/v1/offers/event/{eventId}/events-status`          | Obtener historial            |
-| 46 | GET    | `/api/v1/offers/event/{eventId}/events-status/latest`   | Último estado                |
-| 47 | GET    | `/api/v1/offers/event/{eventId}/events-status/{status}` | Buscar por estado            |
+| #   | Método | Path                                                    | Descripción                |
+| --- | ------ | ------------------------------------------------------- | -------------------------- |
+| 44  | POST   | `/api/v1/offers/event/{eventId}/events-status`          | Registrar cambio de estado |
+| 45  | GET    | `/api/v1/offers/event/{eventId}/events-status`          | Obtener historial          |
+| 46  | GET    | `/api/v1/offers/event/{eventId}/events-status/latest`   | Último estado              |
+| 47  | GET    | `/api/v1/offers/event/{eventId}/events-status/{status}` | Buscar por estado          |
 
 ---
 
@@ -1169,25 +1182,25 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
-| `eventId` | UUID   | ID evento   |
+| Nombre    | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `eventId` | UUID | ID evento   |
 
 **Request Body:** `EventStatusHistoryRequest`
 
-| Campo      | Tipo        | Validación  | Descripción |
-|------------|-------------|-------------|-------------|
-| `eventId`  | UUID        | `@NotNull`  | ID evento   |
-| `status`   | EventStatus | `@NotNull`  | `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED` |
+| Campo     | Tipo        | Validación | Descripción                                         |
+| --------- | ----------- | ---------- | --------------------------------------------------- |
+| `eventId` | UUID        | `@NotNull` | ID evento                                           |
+| `status`  | EventStatus | `@NotNull` | `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED` |
 
 **Response:** `200 OK` — `EventStatusHistoryResponse`
 
-| Campo       | Tipo        |
-|-------------|-------------|
-| `id`        | UUID        |
-| `eventId`   | UUID        |
-| `status`    | EventStatus |
-| `changedAt` | LocalDateTime|
+| Campo       | Tipo          |
+| ----------- | ------------- |
+| `id`        | UUID          |
+| `eventId`   | UUID          |
+| `status`    | EventStatus   |
+| `changedAt` | LocalDateTime |
 
 ---
 
@@ -1195,9 +1208,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
-| `eventId` | UUID   | ID evento   |
+| Nombre    | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `eventId` | UUID | ID evento   |
 
 **Response:** `200 OK` — `List<EventStatusHistoryResponse>`
 
@@ -1207,9 +1220,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
-| `eventId` | UUID   | ID evento   |
+| Nombre    | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `eventId` | UUID | ID evento   |
 
 **Response:** `200 OK` — `EventStatusHistoryResponse` | `404 Not Found`
 
@@ -1219,10 +1232,10 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Valores permitidos                                    |
-|-----------|--------|-------------------------------------------------------|
-| `eventId` | UUID   | ID evento                                             |
-| `status`  | String | `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED`  |
+| Nombre    | Tipo   | Valores permitidos                                  |
+| --------- | ------ | --------------------------------------------------- |
+| `eventId` | UUID   | ID evento                                           |
+| `status`  | String | `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED` |
 
 **Response:** `200 OK` — `List<EventStatusHistoryResponse>`
 
@@ -1230,14 +1243,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### OfferImageController
 
-| #  | Método | Path                                                | Descripción              |
-|----|--------|-----------------------------------------------------|--------------------------|
-| 48 | POST   | `/api/v1/offers/{offerId}/images`                   | Agregar imagen por URL   |
-| 49 | POST   | `/api/v1/offers/{offerId}/images/upload`            | Subir archivo de imagen  |
-| 50 | POST   | `/api/v1/offers/{offerId}/images/batch-upload`      | Subir múltiples imágenes |
-| 51 | GET    | `/api/v1/offers/{offerId}/images`                   | Listar imágenes          |
-| 52 | DELETE | `/api/v1/offers/{offerId}/images/{imageId}`         | Eliminar imagen          |
-| 53 | PATCH  | `/api/v1/offers/{offerId}/images/{imageId}/primary` | Marcar como principal    |
+| #   | Método | Path                                                | Descripción              |
+| --- | ------ | --------------------------------------------------- | ------------------------ |
+| 48  | POST   | `/api/v1/offers/{offerId}/images`                   | Agregar imagen por URL   |
+| 49  | POST   | `/api/v1/offers/{offerId}/images/upload`            | Subir archivo de imagen  |
+| 50  | POST   | `/api/v1/offers/{offerId}/images/batch-upload`      | Subir múltiples imágenes |
+| 51  | GET    | `/api/v1/offers/{offerId}/images`                   | Listar imágenes          |
+| 52  | DELETE | `/api/v1/offers/{offerId}/images/{imageId}`         | Eliminar imagen          |
+| 53  | PATCH  | `/api/v1/offers/{offerId}/images/{imageId}/primary` | Marcar como principal    |
 
 ---
 
@@ -1245,14 +1258,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
-| `offerId` | UUID   | ID oferta   |
+| Nombre    | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `offerId` | UUID | ID oferta   |
 
 **Request Body:** `ImageRequest`
 
 | Campo       | Tipo    | Validación  | Descripción |
-|-------------|---------|-------------|-------------|
+| ----------- | ------- | ----------- | ----------- |
 | `imageUrl`  | String  | `@NotBlank` | URL imagen  |
 | `isPrimary` | Boolean | —           | Principal   |
 
@@ -1264,14 +1277,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
-| `offerId` | UUID   | ID oferta   |
+| Nombre    | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `offerId` | UUID | ID oferta   |
 
 **Request Parameters (multipart):**
 
 | Nombre      | Tipo          | Requerido | Default |
-|-------------|---------------|-----------|---------|
+| ----------- | ------------- | --------- | ------- |
 | `file`      | MultipartFile | Sí        | —       |
 | `isPrimary` | Boolean       | No        | `false` |
 
@@ -1283,15 +1296,15 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
-| `offerId` | UUID   | ID oferta   |
+| Nombre    | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `offerId` | UUID | ID oferta   |
 
 **Request Parameters (multipart):**
 
-| Nombre   | Tipo                   | Requerido |
-|----------|------------------------|-----------|
-| `files`  | List\<MultipartFile\>  | Sí        |
+| Nombre  | Tipo                  | Requerido |
+| ------- | --------------------- | --------- |
+| `files` | List\<MultipartFile\> | Sí        |
 
 **Response:** `200 OK` — `List<OfferImage>`
 
@@ -1301,9 +1314,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
-| `offerId` | UUID   | ID oferta   |
+| Nombre    | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `offerId` | UUID | ID oferta   |
 
 **Response:** `200 OK` — `List<OfferImage>`
 
@@ -1313,9 +1326,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
-| `imageId` | UUID   | ID imagen   |
+| Nombre    | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `imageId` | UUID | ID imagen   |
 
 **Response:** `204 No Content`
 
@@ -1325,9 +1338,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
-| `imageId` | UUID   | ID imagen   |
+| Nombre    | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `imageId` | UUID | ID imagen   |
 
 **Response:** `204 No Content`
 
@@ -1335,10 +1348,10 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### CategoryController
 
-| #  | Método | Path                                     | Descripción                     |
-|----|--------|------------------------------------------|---------------------------------|
-| 54 | GET    | `/api/v1/offers/categories`              | Todas las categorías por tipo   |
-| 55 | GET    | `/api/v1/offers/types/{type}/categories` | Categorías por tipo de oferta   |
+| #   | Método | Path                                     | Descripción                   |
+| --- | ------ | ---------------------------------------- | ----------------------------- |
+| 54  | GET    | `/api/v1/offers/categories`              | Todas las categorías por tipo |
+| 55  | GET    | `/api/v1/offers/types/{type}/categories` | Categorías por tipo de oferta |
 
 ---
 
@@ -1361,8 +1374,8 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Valores permitidos                           |
-|--------|--------|----------------------------------------------|
+| Nombre | Tipo   | Valores permitidos                                     |
+| ------ | ------ | ------------------------------------------------------ |
 | `type` | String | `"accommodation"`, `"service"`, `"product"`, `"event"` |
 
 **Response:** `200 OK` — `List<String>`
@@ -1371,17 +1384,17 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### PriceListingController
 
-| #  | Método | Path                                     | Descripción             |
-|----|--------|------------------------------------------|-------------------------|
-| 56 | POST   | `/api/v1/prices`                         | Crear listing de precio |
-| 57 | PUT    | `/api/v1/prices/{id}`                    | Actualizar listing      |
-| 58 | GET    | `/api/v1/prices/{id}`                    | Listing por ID          |
-| 59 | GET    | `/api/v1/prices`                         | Listar todos            |
-| 60 | GET    | `/api/v1/prices/city/{cityId}`           | Filtrar por ciudad      |
-| 61 | GET    | `/api/v1/prices/category/{categoryName}` | Filtrar por categoría   |
-| 62 | GET    | `/api/v1/prices/range`                   | Filtrar por rango       |
-| 63 | GET    | `/api/v1/prices/active`                  | Listings activos        |
-| 64 | DELETE | `/api/v1/prices/{id}`                    | Eliminar listing        |
+| #   | Método | Path                                     | Descripción             |
+| --- | ------ | ---------------------------------------- | ----------------------- |
+| 56  | POST   | `/api/v1/prices`                         | Crear listing de precio |
+| 57  | PUT    | `/api/v1/prices/{id}`                    | Actualizar listing      |
+| 58  | GET    | `/api/v1/prices/{id}`                    | Listing por ID          |
+| 59  | GET    | `/api/v1/prices`                         | Listar todos            |
+| 60  | GET    | `/api/v1/prices/city/{cityId}`           | Filtrar por ciudad      |
+| 61  | GET    | `/api/v1/prices/category/{categoryName}` | Filtrar por categoría   |
+| 62  | GET    | `/api/v1/prices/range`                   | Filtrar por rango       |
+| 63  | GET    | `/api/v1/prices/active`                  | Listings activos        |
+| 64  | DELETE | `/api/v1/prices/{id}`                    | Eliminar listing        |
 
 ---
 
@@ -1389,20 +1402,20 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Request Body:** `@Valid` `PriceListingRequest`
 
-| Campo         | Tipo       | Validación                          | Descripción |
-|---------------|------------|-------------------------------------|-------------|
-| `name`        | String     | `@NotBlank`                         | Nombre      |
-| `description` | String     | —                                   | Descripción |
-| `category`    | String     | `@NotBlank`                         | Categoría   |
-| `minPrice`    | BigDecimal | `@NotNull`, `@Positive`             | Precio mín  |
-| `maxPrice`    | BigDecimal | `@NotNull`, `@Positive`             | Precio máx  |
-| `cityId`      | Long       | `@NotNull`                          | ID ciudad   |
-| `active`      | boolean    | —                                   | Activo      |
+| Campo         | Tipo       | Validación              | Descripción |
+| ------------- | ---------- | ----------------------- | ----------- |
+| `name`        | String     | `@NotBlank`             | Nombre      |
+| `description` | String     | —                       | Descripción |
+| `category`    | String     | `@NotBlank`             | Categoría   |
+| `minPrice`    | BigDecimal | `@NotNull`, `@Positive` | Precio mín  |
+| `maxPrice`    | BigDecimal | `@NotNull`, `@Positive` | Precio máx  |
+| `cityId`      | Long       | `@NotNull`              | ID ciudad   |
+| `active`      | boolean    | —                       | Activo      |
 
 **Response:** `201 CREATED` — `PriceListingResponse`
 
 | Campo            | Tipo       |
-|------------------|------------|
+| ---------------- | ---------- |
 | `id`             | UUID       |
 | `name`           | String     |
 | `description`    | String     |
@@ -1419,9 +1432,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID listing  |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID listing  |
 
 **Request Body:** `@Valid` `PriceListingRequest` (mismos campos que creación)
 
@@ -1433,9 +1446,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID listing  |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID listing  |
 
 **Response:** `200 OK` — `PriceListingResponse` | `404 Not Found`
 
@@ -1452,7 +1465,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre   | Tipo | Descripción |
-|----------|------|-------------|
+| -------- | ---- | ----------- |
 | `cityId` | Long | ID ciudad   |
 
 **Response:** `200 OK` — `List<PriceListingResponse>`
@@ -1464,7 +1477,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre         | Tipo   | Descripción |
-|----------------|--------|-------------|
+| -------------- | ------ | ----------- |
 | `categoryName` | String | Categoría   |
 
 **Response:** `200 OK` — `List<PriceListingResponse>`
@@ -1476,7 +1489,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo       | Requerido | Descripción |
-|--------|------------|-----------|-------------|
+| ------ | ---------- | --------- | ----------- |
 | `min`  | BigDecimal | Sí        | Precio mín  |
 | `max`  | BigDecimal | Sí        | Precio máx  |
 
@@ -1494,9 +1507,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID listing  |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID listing  |
 
 **Response:** `204 No Content`
 
@@ -1504,15 +1517,15 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### ReviewController
 
-| #  | Método | Path                                          | Descripción               |
-|----|--------|-----------------------------------------------|---------------------------|
-| 65 | POST   | `/api/v1/reviews`                             | Crear reseña              |
-| 66 | PUT    | `/api/v1/reviews/{id}`                        | Actualizar reseña         |
-| 67 | DELETE | `/api/v1/reviews/{id}`                        | Eliminar reseña           |
-| 68 | GET    | `/api/v1/reviews/{id}`                        | Reseña por ID             |
-| 69 | GET    | `/api/v1/reviews/user/{userId}`               | Reseñas por usuario       |
-| 70 | GET    | `/api/v1/reviews/offer/{offerId}`             | Reseñas por oferta        |
-| 71 | GET    | `/api/v1/reviews/service/{serviceId}/summary` | Resumen de calificaciones |
+| #   | Método | Path                                          | Descripción               |
+| --- | ------ | --------------------------------------------- | ------------------------- |
+| 65  | POST   | `/api/v1/reviews`                             | Crear reseña              |
+| 66  | PUT    | `/api/v1/reviews/{id}`                        | Actualizar reseña         |
+| 67  | DELETE | `/api/v1/reviews/{id}`                        | Eliminar reseña           |
+| 68  | GET    | `/api/v1/reviews/{id}`                        | Reseña por ID             |
+| 69  | GET    | `/api/v1/reviews/user/{userId}`               | Reseñas por usuario       |
+| 70  | GET    | `/api/v1/reviews/offer/{offerId}`             | Reseñas por oferta        |
+| 71  | GET    | `/api/v1/reviews/service/{serviceId}/summary` | Resumen de calificaciones |
 
 ---
 
@@ -1522,23 +1535,23 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Request Body:** `@Valid` `ReviewRequest`
 
-| Campo      | Tipo   | Validación   | Descripción |
-|------------|--------|--------------|-------------|
-| `offerId`  | String | `@NotBlank`  | ID oferta   |
-| `authorId` | String | `@NotNull`   | ID autor    |
-| `comment`  | String | `@NotBlank`  | Comentario  |
+| Campo      | Tipo   | Validación           | Descripción        |
+| ---------- | ------ | -------------------- | ------------------ |
+| `offerId`  | String | `@NotBlank`          | ID oferta          |
+| `authorId` | String | `@NotNull`           | ID autor           |
+| `comment`  | String | `@NotBlank`          | Comentario         |
 | `rating`   | int    | `@Min(1)`, `@Max(5)` | Calificación (1-5) |
 
 **Response:** `201 CREATED` — `ReviewResponse`
 
-| Campo       | Tipo         |
-|-------------|--------------|
-| `id`        | String       |
-| `offerId`   | String       |
-| `authorId`  | String       |
-| `comment`   | String       |
-| `rating`    | int          |
-| `createdAt` | LocalDateTime|
+| Campo       | Tipo          |
+| ----------- | ------------- |
+| `id`        | String        |
+| `offerId`   | String        |
+| `authorId`  | String        |
+| `comment`   | String        |
+| `rating`    | int           |
+| `createdAt` | LocalDateTime |
 
 ---
 
@@ -1549,7 +1562,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `id`   | String | ID reseña   |
 
 **Request Body:** `@Valid` `ReviewRequest` (mismos campos que creación)
@@ -1565,7 +1578,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `id`   | String | ID reseña   |
 
 **Response:** `204 No Content`
@@ -1577,7 +1590,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `id`   | String | ID reseña   |
 
 **Response:** `200 OK` — `ReviewResponse`
@@ -1589,13 +1602,13 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre   | Tipo   | Descripción |
-|----------|--------|-------------|
+| -------- | ------ | ----------- |
 | `userId` | String | ID usuario  |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -1608,13 +1621,13 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre    | Tipo   | Descripción |
-|-----------|--------|-------------|
+| --------- | ------ | ----------- |
 | `offerId` | String | ID oferta   |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `20`    |
 
@@ -1627,27 +1640,27 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre      | Tipo   | Descripción |
-|-------------|--------|-------------|
+| ----------- | ------ | ----------- |
 | `serviceId` | String | ID servicio |
 
 **Response:** `200 OK` — `RatingSummaryResponse`
 
-| Campo         | Tipo  |
-|---------------|-------|
-| `average`     | double|
-| `totalReviews`| long  |
+| Campo          | Tipo   |
+| -------------- | ------ |
+| `average`      | double |
+| `totalReviews` | long   |
 
 ---
 
 #### FavoriteController
 
-| #  | Método | Path                                | Descripción                  |
-|----|--------|-------------------------------------|------------------------------|
-| 105| GET    | `/api/v1/offers/favorites`          | Listar favoritos             |
-| 106| GET    | `/api/v1/offers/favorites/check`    | Verificar si es favorito     |
-| 107| POST   | `/api/v1/offers/favorites`          | Agregar favorito             |
-| 108| DELETE | `/api/v1/offers/favorites/{id}`     | Eliminar favorito por ID     |
-| 109| DELETE | `/api/v1/offers/favorites/by-offer` | Eliminar por usuario+oferta  |
+| #   | Método | Path                                | Descripción                 |
+| --- | ------ | ----------------------------------- | --------------------------- |
+| 105 | GET    | `/api/v1/offers/favorites`          | Listar favoritos            |
+| 106 | GET    | `/api/v1/offers/favorites/check`    | Verificar si es favorito    |
+| 107 | POST   | `/api/v1/offers/favorites`          | Agregar favorito            |
+| 108 | DELETE | `/api/v1/offers/favorites/{id}`     | Eliminar favorito por ID    |
+| 109 | DELETE | `/api/v1/offers/favorites/by-offer` | Eliminar por usuario+oferta |
 
 ---
 
@@ -1656,20 +1669,20 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre   | Tipo   | Requerido | Descripción |
-|----------|--------|-----------|-------------|
+| -------- | ------ | --------- | ----------- |
 | `userId` | String | Sí        | ID usuario  |
 
 **Response:** `200 OK` — `UserFavoritesResponseDTO`
 
-| Campo    | Tipo                    | Descripción |
-|----------|-------------------------|-------------|
-| `user`   | ProviderSummary         | Datos del usuario |
+| Campo    | Tipo                         | Descripción                |
+| -------- | ---------------------------- | -------------------------- |
+| `user`   | ProviderSummary              | Datos del usuario          |
 | `offers` | List\<FavoriteOfferItemDTO\> | Lista de ofertas favoritas |
 
 **ProviderSummary (nested):**
 
 | Campo         | Tipo    |
-|---------------|---------|
+| ------------- | ------- |
 | `id`          | String  |
 | `userName`    | String  |
 | `phoneNumber` | String  |
@@ -1684,14 +1697,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre    | Tipo   | Requerido | Descripción |
-|-----------|--------|-----------|-------------|
+| --------- | ------ | --------- | ----------- |
 | `userId`  | String | Sí        | ID usuario  |
 | `offerId` | UUID   | Sí        | ID oferta   |
 
 **Response:** `200 OK` — `FavoriteCheckResponseDTO`
 
 | Campo        | Tipo    |
-|--------------|---------|
+| ------------ | ------- |
 | `isFavorite` | boolean |
 
 ---
@@ -1700,19 +1713,19 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Request Body:** `@Valid` `FavoriteRequestDTO`
 
-| Campo      | Tipo   | Validación  | Descripción |
-|------------|--------|-------------|-------------|
-| `userId`   | String | `@NotBlank` | ID usuario  |
-| `offerId`  | UUID   | `@NotNull`  | ID oferta   |
+| Campo     | Tipo   | Validación  | Descripción |
+| --------- | ------ | ----------- | ----------- |
+| `userId`  | String | `@NotBlank` | ID usuario  |
+| `offerId` | UUID   | `@NotNull`  | ID oferta   |
 
 **Response:** `201 CREATED` — `FavoriteResponseDTO`
 
-| Campo       | Tipo               |
-|-------------|--------------------|
-| `id`        | UUID               |
-| `user`      | ProviderSummary    |
-| `offer`     | Offer (completo)   |
-| `createdAt` | LocalDateTime      |
+| Campo       | Tipo             |
+| ----------- | ---------------- |
+| `id`        | UUID             |
+| `user`      | ProviderSummary  |
+| `offer`     | Offer (completo) |
+| `createdAt` | LocalDateTime    |
 
 ---
 
@@ -1720,9 +1733,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `id`   | UUID   | ID favorito |
+| Nombre | Tipo | Descripción |
+| ------ | ---- | ----------- |
+| `id`   | UUID | ID favorito |
 
 **Response:** `204 No Content`
 
@@ -1733,7 +1746,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre    | Tipo   | Requerido | Descripción |
-|-----------|--------|-----------|-------------|
+| --------- | ------ | --------- | ----------- |
 | `userId`  | String | Sí        | ID usuario  |
 | `offerId` | UUID   | Sí        | ID oferta   |
 
@@ -1745,19 +1758,19 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### CityController (Municipality)
 
-| #  | Método | Path                                                                | Descripción                     |
-|----|--------|---------------------------------------------------------------------|---------------------------------|
-| 72 | POST   | `/api/v1/locations/cities`                                          | Crear ciudad/municipio          |
-| 73 | GET    | `/api/v1/locations/cities`                                          | Listar ciudades                 |
-| 74 | GET    | `/api/v1/locations/cities/{id}`                                     | Ciudad por ID                   |
-| 75 | PUT    | `/api/v1/locations/cities/{id}`                                     | Actualizar ciudad               |
-| 76 | DELETE | `/api/v1/locations/cities/{id}`                                     | Eliminar ciudad                 |
-| 77 | GET    | `/api/v1/locations/cities/by-name/{name}`                           | Buscar por nombre               |
-| 78 | GET    | `/api/v1/locations/cities/by-name/{name}/department/{departmentId}` | Buscar por nombre + departamento|
-| 79 | GET    | `/api/v1/locations/cities/search`                                   | Buscar ciudades (parcial)       |
-| 80 | GET    | `/api/v1/locations/cities/{id}/destinations`                        | Destinos por ciudad             |
-| 81 | GET    | `/api/v1/locations/cities/{cityId}/destinations/type/{type}`        | Destinos por ciudad y tipo      |
-| 82 | GET    | `/api/v1/locations/cities/featured`                                 | Ciudades destacadas             |
+| #   | Método | Path                                                                | Descripción                      |
+| --- | ------ | ------------------------------------------------------------------- | -------------------------------- |
+| 72  | POST   | `/api/v1/locations/cities`                                          | Crear ciudad/municipio           |
+| 73  | GET    | `/api/v1/locations/cities`                                          | Listar ciudades                  |
+| 74  | GET    | `/api/v1/locations/cities/{id}`                                     | Ciudad por ID                    |
+| 75  | PUT    | `/api/v1/locations/cities/{id}`                                     | Actualizar ciudad                |
+| 76  | DELETE | `/api/v1/locations/cities/{id}`                                     | Eliminar ciudad                  |
+| 77  | GET    | `/api/v1/locations/cities/by-name/{name}`                           | Buscar por nombre                |
+| 78  | GET    | `/api/v1/locations/cities/by-name/{name}/department/{departmentId}` | Buscar por nombre + departamento |
+| 79  | GET    | `/api/v1/locations/cities/search`                                   | Buscar ciudades (parcial)        |
+| 80  | GET    | `/api/v1/locations/cities/{id}/destinations`                        | Destinos por ciudad              |
+| 81  | GET    | `/api/v1/locations/cities/{cityId}/destinations/type/{type}`        | Destinos por ciudad y tipo       |
+| 82  | GET    | `/api/v1/locations/cities/featured`                                 | Ciudades destacadas              |
 
 ---
 
@@ -1765,22 +1778,22 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Request Body:** `@Valid` `MunicipalityRequestDTO`
 
-| Campo         | Tipo    | Descripción |
-|---------------|---------|-------------|
-| `name`        | String  | Nombre      |
-| `imageUrl`    | String  | URL imagen  |
-| `departmentId`| Long    | ID departamento |
-| `featured`    | Boolean | Destacada   |
+| Campo          | Tipo    | Descripción     |
+| -------------- | ------- | --------------- |
+| `name`         | String  | Nombre          |
+| `imageUrl`     | String  | URL imagen      |
+| `departmentId` | Long    | ID departamento |
+| `featured`     | Boolean | Destacada       |
 
 **Response:** `201 CREATED` — `MunicipalityResponseDTO`
 
-| Campo         | Tipo                    |
-|---------------|-------------------------|
-| `id`          | Long                    |
-| `name`        | String                  |
-| `imageUrl`    | String                  |
-| `featured`    | Boolean                 |
-| `department`  | DepartmentMunicipalityDTO (id: Long, name: String) |
+| Campo        | Tipo                                               |
+| ------------ | -------------------------------------------------- |
+| `id`         | Long                                               |
+| `name`       | String                                             |
+| `imageUrl`   | String                                             |
+| `featured`   | Boolean                                            |
+| `department` | DepartmentMunicipalityDTO (id: Long, name: String) |
 
 ---
 
@@ -1789,7 +1802,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
 
@@ -1802,7 +1815,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID ciudad   |
 
 **Response:** `200 OK` — `MunicipalityResponseDTO` | `404 Not Found`
@@ -1814,7 +1827,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID ciudad   |
 
 **Request Body:** `@Valid` `MunicipalityRequestDTO` (mismos campos que creación)
@@ -1828,7 +1841,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID ciudad   |
 
 **Response:** `204 No Content`
@@ -1839,9 +1852,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
-| `name` | String | Nombre ciudad|
+| Nombre | Tipo   | Descripción   |
+| ------ | ------ | ------------- |
+| `name` | String | Nombre ciudad |
 
 **Response:** `200 OK` — `MunicipalityResponseDTO` | `404 Not Found`
 
@@ -1851,9 +1864,9 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre         | Tipo   | Descripción |
-|----------------|--------|-------------|
-| `name`         | String | Nombre      |
+| Nombre         | Tipo   | Descripción     |
+| -------------- | ------ | --------------- |
+| `name`         | String | Nombre          |
 | `departmentId` | Long   | ID departamento |
 
 **Response:** `200 OK` — `MunicipalityResponseDTO` | `404 Not Found`
@@ -1865,7 +1878,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `q`    | String  | Sí        | —       |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
@@ -1879,24 +1892,24 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID ciudad   |
 
 **Response:** `200 OK` — `List<DestinationResponseDTO>`
 
 **DestinationResponseDTO:**
 
-| Campo          | Tipo                   |
-|----------------|------------------------|
-| `id`           | Long                   |
-| `name`         | String                 |
-| `description`  | String                 |
-| `municipality` | MunicipalityResponseDTO|
-| `latitude`     | Double                 |
-| `longitude`    | Double                 |
-| `active`       | Boolean                |
-| `featured`     | Boolean                |
-| `imageUrls`    | List\<String\>         |
+| Campo          | Tipo                    |
+| -------------- | ----------------------- |
+| `id`           | Long                    |
+| `name`         | String                  |
+| `description`  | String                  |
+| `municipality` | MunicipalityResponseDTO |
+| `latitude`     | Double                  |
+| `longitude`    | Double                  |
+| `active`       | Boolean                 |
+| `featured`     | Boolean                 |
+| `imageUrls`    | List\<String\>          |
 
 ---
 
@@ -1904,15 +1917,15 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre   | Tipo   | Descripción |
-|----------|--------|-------------|
-| `cityId` | Long   | ID ciudad   |
-| `type`   | String | Tipo destino|
+| Nombre   | Tipo   | Descripción  |
+| -------- | ------ | ------------ |
+| `cityId` | Long   | ID ciudad    |
+| `type`   | String | Tipo destino |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
 
@@ -1925,7 +1938,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
 
@@ -1935,14 +1948,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### DepartmentController
 
-| #  | Método | Path                                        | Descripción             |
-|----|--------|---------------------------------------------|-------------------------|
-| 83 | POST   | `/api/v1/locations/departments`             | Crear departamento      |
-| 84 | GET    | `/api/v1/locations/departments`             | Listar departamentos    |
-| 85 | GET    | `/api/v1/locations/departments/{id}`        | Departamento por ID     |
-| 86 | PUT    | `/api/v1/locations/departments/{id}`        | Actualizar departamento |
-| 87 | DELETE | `/api/v1/locations/departments/{id}`        | Eliminar departamento   |
-| 88 | GET    | `/api/v1/locations/departments/{id}/cities` | Con municipios          |
+| #   | Método | Path                                        | Descripción             |
+| --- | ------ | ------------------------------------------- | ----------------------- |
+| 83  | POST   | `/api/v1/locations/departments`             | Crear departamento      |
+| 84  | GET    | `/api/v1/locations/departments`             | Listar departamentos    |
+| 85  | GET    | `/api/v1/locations/departments/{id}`        | Departamento por ID     |
+| 86  | PUT    | `/api/v1/locations/departments/{id}`        | Actualizar departamento |
+| 87  | DELETE | `/api/v1/locations/departments/{id}`        | Eliminar departamento   |
+| 88  | GET    | `/api/v1/locations/departments/{id}/cities` | Con municipios          |
 
 ---
 
@@ -1951,13 +1964,13 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Request Body:** `@Valid` `DepartmentRequestDTO`
 
 | Campo  | Tipo   | Descripción |
-|--------|--------|-------------|
+| ------ | ------ | ----------- |
 | `name` | String | Nombre      |
 
 **Response:** `201 CREATED` — `DepartmentResponseDTO`
 
 | Campo  | Tipo   |
-|--------|--------|
+| ------ | ------ |
 | `id`   | Long   |
 | `name` | String |
 
@@ -1968,7 +1981,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
 
@@ -1981,7 +1994,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID depto    |
 
 **Response:** `200 OK` — `DepartmentResponseDTO` | `404 Not Found`
@@ -1993,7 +2006,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID depto    |
 
 **Request Body:** `@Valid` `DepartmentRequestDTO`
@@ -2007,7 +2020,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID depto    |
 
 **Response:** `204 No Content`
@@ -2019,33 +2032,33 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID depto    |
 
 **Response:** `200 OK` — `DepartmentWithMunicipalitiesDTO`
 
-| Campo            | Tipo                          |
-|------------------|-------------------------------|
-| `id`             | Long                          |
-| `name`           | String                        |
+| Campo            | Tipo                            |
+| ---------------- | ------------------------------- |
+| `id`             | Long                            |
+| `name`           | String                          |
 | `municipalities` | List\<MunicipalityResponseDTO\> |
 
 ---
 
 #### DestinationController
 
-| #  | Método | Path                                                          | Descripción                 |
-|----|--------|---------------------------------------------------------------|-----------------------------|
-| 89 | POST   | `/api/v1/locations/destinations`                              | Crear destino               |
-| 90 | GET    | `/api/v1/locations/destinations`                              | Listar destinos             |
-| 91 | GET    | `/api/v1/locations/destinations/active`                       | Destinos activos            |
-| 92 | GET    | `/api/v1/locations/destinations/{id}`                         | Destino por ID              |
-| 93 | PUT    | `/api/v1/locations/destinations/{id}`                         | Actualizar destino          |
-| 94 | DELETE | `/api/v1/locations/destinations/{id}`                         | Eliminar destino            |
-| 95 | GET    | `/api/v1/locations/destinations/by-city/{cityId}`             | Destinos por ciudad         |
-| 96 | GET    | `/api/v1/locations/destinations/by-city/{cityId}/active`      | Activos por ciudad          |
-| 97 | GET    | `/api/v1/locations/destinations/by-city/{cityId}/type/{type}` | Por ciudad y tipo           |
-| 98 | GET    | `/api/v1/locations/destinations/featured`                     | Destinos destacados         |
+| #   | Método | Path                                                          | Descripción         |
+| --- | ------ | ------------------------------------------------------------- | ------------------- |
+| 89  | POST   | `/api/v1/locations/destinations`                              | Crear destino       |
+| 90  | GET    | `/api/v1/locations/destinations`                              | Listar destinos     |
+| 91  | GET    | `/api/v1/locations/destinations/active`                       | Destinos activos    |
+| 92  | GET    | `/api/v1/locations/destinations/{id}`                         | Destino por ID      |
+| 93  | PUT    | `/api/v1/locations/destinations/{id}`                         | Actualizar destino  |
+| 94  | DELETE | `/api/v1/locations/destinations/{id}`                         | Eliminar destino    |
+| 95  | GET    | `/api/v1/locations/destinations/by-city/{cityId}`             | Destinos por ciudad |
+| 96  | GET    | `/api/v1/locations/destinations/by-city/{cityId}/active`      | Activos por ciudad  |
+| 97  | GET    | `/api/v1/locations/destinations/by-city/{cityId}/type/{type}` | Por ciudad y tipo   |
+| 98  | GET    | `/api/v1/locations/destinations/featured`                     | Destinos destacados |
 
 **Tipos de destino:** `VIEWPOINT`, `SPOT`, `HISTORICAL_SITE`, `MUSEUM`, `PARK`, `BEACH`, `NATURAL_RESERVE`
 
@@ -2055,32 +2068,32 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Request Body:** `@Valid` `DestinationRequestDTO`
 
-| Campo             | Tipo                     | Descripción |
-|-------------------|--------------------------|-------------|
-| `name`            | String                   | Nombre      |
-| `description`     | String                   | Descripción |
-| `imageUrl`        | String                   | URL imagen  |
-| `latitude`        | Double                   | Latitud     |
-| `longitude`       | Double                   | Longitud    |
-| `destinationType` | String                   | Tipo destino|
-| `municipalityId`  | Long                     | ID municipio|
-| `active`          | Boolean                  | Activo      |
-| `featured`        | Boolean                  | Destacado   |
-| `images`          | List\<ImageDestinationDTO\> | Imágenes |
+| Campo             | Tipo                        | Descripción  |
+| ----------------- | --------------------------- | ------------ |
+| `name`            | String                      | Nombre       |
+| `description`     | String                      | Descripción  |
+| `imageUrl`        | String                      | URL imagen   |
+| `latitude`        | Double                      | Latitud      |
+| `longitude`       | Double                      | Longitud     |
+| `destinationType` | String                      | Tipo destino |
+| `municipalityId`  | Long                        | ID municipio |
+| `active`          | Boolean                     | Activo       |
+| `featured`        | Boolean                     | Destacado    |
+| `images`          | List\<ImageDestinationDTO\> | Imágenes     |
 
 **Response:** `201 CREATED` — `DestinationResponseDTO`
 
-| Campo          | Tipo                   |
-|----------------|------------------------|
-| `id`           | Long                   |
-| `name`         | String                 |
-| `description`  | String                 |
-| `municipality` | MunicipalityResponseDTO|
-| `latitude`     | Double                 |
-| `longitude`    | Double                 |
-| `active`       | Boolean                |
-| `featured`     | Boolean                |
-| `imageUrls`    | List\<String\>         |
+| Campo          | Tipo                    |
+| -------------- | ----------------------- |
+| `id`           | Long                    |
+| `name`         | String                  |
+| `description`  | String                  |
+| `municipality` | MunicipalityResponseDTO |
+| `latitude`     | Double                  |
+| `longitude`    | Double                  |
+| `active`       | Boolean                 |
+| `featured`     | Boolean                 |
+| `imageUrls`    | List\<String\>          |
 
 ---
 
@@ -2089,7 +2102,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
 
@@ -2102,7 +2115,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
 
@@ -2115,7 +2128,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID destino  |
 
 **Response:** `200 OK` — `DestinationResponseDTO` | `404 Not Found`
@@ -2127,7 +2140,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID destino  |
 
 **Request Body:** `@Valid` `DestinationRequestDTO` (mismos campos que creación)
@@ -2141,7 +2154,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID destino  |
 
 **Response:** `204 No Content`
@@ -2153,7 +2166,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre   | Tipo | Descripción |
-|----------|------|-------------|
+| -------- | ---- | ----------- |
 | `cityId` | Long | ID ciudad   |
 
 **Response:** `200 OK` — `List<DestinationResponseDTO>`
@@ -2165,7 +2178,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre   | Tipo | Descripción |
-|----------|------|-------------|
+| -------- | ---- | ----------- |
 | `cityId` | Long | ID ciudad   |
 
 **Response:** `200 OK` — `List<DestinationResponseDTO>`
@@ -2176,10 +2189,10 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre   | Tipo   | Descripción |
-|----------|--------|-------------|
-| `cityId` | Long   | ID ciudad   |
-| `type`   | String | Tipo destino|
+| Nombre   | Tipo   | Descripción  |
+| -------- | ------ | ------------ |
+| `cityId` | Long   | ID ciudad    |
+| `type`   | String | Tipo destino |
 
 **Response:** `200 OK` — `List<DestinationResponseDTO>`
 
@@ -2190,7 +2203,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
 
@@ -2200,14 +2213,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### ImageDestinationController
 
-| #  | Método | Path                                                                   | Descripción              |
-|----|--------|------------------------------------------------------------------------|--------------------------|
-| 99 | GET    | `/api/v1/locations/images/by-destination/{destinationId}`              | Imágenes de un destino   |
-| 100| POST   | `/api/v1/locations/images/by-destination/{destinationId}`              | Crear imagen por URL     |
-| 101| POST   | `/api/v1/locations/images/upload/by-destination/{destinationId}`       | Subir archivo            |
-| 102| POST   | `/api/v1/locations/images/batch-upload/by-destination/{destinationId}` | Subir múltiples          |
-| 103| PUT    | `/api/v1/locations/images/{id}`                                        | Actualizar imagen        |
-| 104| DELETE | `/api/v1/locations/images/{id}`                                        | Eliminar imagen          |
+| #   | Método | Path                                                                   | Descripción            |
+| --- | ------ | ---------------------------------------------------------------------- | ---------------------- |
+| 99  | GET    | `/api/v1/locations/images/by-destination/{destinationId}`              | Imágenes de un destino |
+| 100 | POST   | `/api/v1/locations/images/by-destination/{destinationId}`              | Crear imagen por URL   |
+| 101 | POST   | `/api/v1/locations/images/upload/by-destination/{destinationId}`       | Subir archivo          |
+| 102 | POST   | `/api/v1/locations/images/batch-upload/by-destination/{destinationId}` | Subir múltiples        |
+| 103 | PUT    | `/api/v1/locations/images/{id}`                                        | Actualizar imagen      |
+| 104 | DELETE | `/api/v1/locations/images/{id}`                                        | Eliminar imagen        |
 
 ---
 
@@ -2216,19 +2229,19 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre          | Tipo | Descripción |
-|-----------------|------|-------------|
+| --------------- | ---- | ----------- |
 | `destinationId` | Long | ID destino  |
 
 **Response:** `200 OK` — `List<ImageDestinationDTO>`
 
 **ImageDestinationDTO:**
 
-| Campo          | Tipo   |
-|----------------|--------|
-| `id`           | Long   |
-| `url`          | String |
-| `publicId`     | String |
-| `destinationId`| Long   |
+| Campo           | Tipo   |
+| --------------- | ------ |
+| `id`            | Long   |
+| `url`           | String |
+| `publicId`      | String |
+| `destinationId` | Long   |
 
 ---
 
@@ -2237,15 +2250,15 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre          | Tipo | Descripción |
-|-----------------|------|-------------|
+| --------------- | ---- | ----------- |
 | `destinationId` | Long | ID destino  |
 
 **Request Body:** `@Valid` `ImageDestinationDTO`
 
-| Campo          | Tipo   | Descripción |
-|----------------|--------|-------------|
-| `url`          | String | URL imagen  |
-| `publicId`     | String | ID Cloudinary|
+| Campo      | Tipo   | Descripción   |
+| ---------- | ------ | ------------- |
+| `url`      | String | URL imagen    |
+| `publicId` | String | ID Cloudinary |
 
 **Response:** `201 CREATED` — `ImageDestinationDTO`
 
@@ -2256,14 +2269,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre          | Tipo | Descripción |
-|-----------------|------|-------------|
+| --------------- | ---- | ----------- |
 | `destinationId` | Long | ID destino  |
 
 **Request Parameters (multipart):**
 
-| Nombre   | Tipo          | Requerido |
-|----------|---------------|-----------|
-| `file`   | MultipartFile | Sí        |
+| Nombre | Tipo          | Requerido |
+| ------ | ------------- | --------- |
+| `file` | MultipartFile | Sí        |
 
 **Response:** `201 CREATED` — `ImageDestinationDTO`
 
@@ -2274,14 +2287,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre          | Tipo | Descripción |
-|-----------------|------|-------------|
+| --------------- | ---- | ----------- |
 | `destinationId` | Long | ID destino  |
 
 **Request Parameters (multipart):**
 
-| Nombre   | Tipo                   | Requerido |
-|----------|------------------------|-----------|
-| `files`  | List\<MultipartFile\>  | Sí        |
+| Nombre  | Tipo                  | Requerido |
+| ------- | --------------------- | --------- |
+| `files` | List\<MultipartFile\> | Sí        |
 
 **Response:** `201 CREATED` — `List<ImageDestinationDTO>`
 
@@ -2292,7 +2305,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID imagen   |
 
 **Request Body:** `@Valid` `ImageDestinationDTO`
@@ -2306,7 +2319,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Path Variables:**
 
 | Nombre | Tipo | Descripción |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `id`   | Long | ID imagen   |
 
 **Response:** `204 No Content`
@@ -2317,11 +2330,11 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 #### NotificationController
 
-| #  | Método | Path                                 | Descripción               |
-|----|--------|--------------------------------------|---------------------------|
-| 110| GET    | `/api/v1/notifications`              | Notificaciones del usuario|
-| 111| PATCH  | `/api/v1/notifications/{id}/read`    | Marcar como leída         |
-| 112| GET    | `/api/v1/notifications/unread-count` | Contar no leídas          |
+| #   | Método | Path                                 | Descripción                |
+| --- | ------ | ------------------------------------ | -------------------------- |
+| 110 | GET    | `/api/v1/notifications`              | Notificaciones del usuario |
+| 111 | PATCH  | `/api/v1/notifications/{id}/read`    | Marcar como leída          |
+| 112 | GET    | `/api/v1/notifications/unread-count` | Contar no leídas           |
 
 ---
 
@@ -2330,7 +2343,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre   | Tipo    | Requerido | Descripción |
-|----------|---------|-----------|-------------|
+| -------- | ------- | --------- | ----------- |
 | `userId` | String  | Sí        | ID usuario  |
 | `page`   | Integer | No        | Página      |
 | `size`   | Integer | No        | Tamaño      |
@@ -2339,27 +2352,27 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **NotificationEntity (MongoDB):**
 
-| Campo              | Tipo                          | Descripción |
-|--------------------|-------------------------------|-------------|
-| `id`               | String                        | ID          |
-| `userId`           | String                        | ID usuario  |
-| `notificationType` | NotificationType              | Tipo notificación |
-| `deliveries`       | List\<NotificationDeliveryStatus\> | Entregas |
-| `title`            | String                        | Título      |
-| `message`          | String                        | Mensaje     |
-| `metadata`         | Map\<String, Object\>         | Metadata    |
-| `createdAt`        | LocalDateTime                 | Fecha creación |
-| `read`             | Boolean                       | Leída       |
+| Campo              | Tipo                               | Descripción       |
+| ------------------ | ---------------------------------- | ----------------- |
+| `id`               | String                             | ID                |
+| `userId`           | String                             | ID usuario        |
+| `notificationType` | NotificationType                   | Tipo notificación |
+| `deliveries`       | List\<NotificationDeliveryStatus\> | Entregas          |
+| `title`            | String                             | Título            |
+| `message`          | String                             | Mensaje           |
+| `metadata`         | Map\<String, Object\>              | Metadata          |
+| `createdAt`        | LocalDateTime                      | Fecha creación    |
+| `read`             | Boolean                            | Leída             |
 
 **NotificationType enum:** `BOOKING_CONFIRMED`, `BOOKING_CANCELLED`, `PAYMENT_FAILED`, `NEW_REVIEW`, `SYSTEM_ALERT`, `BOOKING_REMINDER`
 
 **NotificationDeliveryStatus (nested):**
 
-| Campo         | Tipo                 |
-|---------------|----------------------|
+| Campo         | Tipo                                        |
+| ------------- | ------------------------------------------- |
 | `channel`     | NotificationChannelType (`EMAIL`, `IN_APP`) |
-| `delivered`   | Boolean              |
-| `deliveredAt` | LocalDateTime        |
+| `delivered`   | Boolean                                     |
+| `deliveredAt` | LocalDateTime                               |
 
 ---
 
@@ -2367,14 +2380,14 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 
 **Path Variables:**
 
-| Nombre | Tipo   | Descripción |
-|--------|--------|-------------|
+| Nombre | Tipo   | Descripción     |
+| ------ | ------ | --------------- |
 | `id`   | String | ID notificación |
 
 **Query Parameters:**
 
 | Nombre   | Tipo   | Requerido | Descripción |
-|----------|--------|-----------|-------------|
+| -------- | ------ | --------- | ----------- |
 | `userId` | String | Sí        | ID usuario  |
 
 **Response:** `200 OK`
@@ -2386,7 +2399,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 **Query Parameters:**
 
 | Nombre   | Tipo   | Requerido | Descripción |
-|----------|--------|-----------|-------------|
+| -------- | ------ | --------- | ----------- |
 | `userId` | String | Sí        | ID usuario  |
 
 **Response:** `200 OK` — `long`
@@ -2399,15 +2412,15 @@ Festividades culturales colombianas (Carnaval de Barranquilla, Feria de las Flor
 Son entidades informativas de calendario cultural, **no** ofertas vendibles — a diferencia de `EventOffer`,
 las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de administración del sistema.
 
-| #  | Método | Path                                   | Descripción           |
-|----|--------|----------------------------------------|-----------------------|
-| 113| POST   | `/api/v1/festivities`                  | Crear festividad      |
-| 114| GET    | `/api/v1/festivities`                  | Listar todas          |
-| 115| GET    | `/api/v1/festivities/{id}`             | Por ID                |
-| 116| PUT    | `/api/v1/festivities/{id}`             | Actualizar            |
-| 117| DELETE | `/api/v1/festivities/{id}`             | Eliminar              |
-| 118| GET    | `/api/v1/festivities/by-city/{cityId}` | Por ciudad            |
-| 119| GET    | `/api/v1/festivities/upcoming`         | Próximas              |
+| #   | Método | Path                                   | Descripción      |
+| --- | ------ | -------------------------------------- | ---------------- |
+| 113 | POST   | `/api/v1/festivities`                  | Crear festividad |
+| 114 | GET    | `/api/v1/festivities`                  | Listar todas     |
+| 115 | GET    | `/api/v1/festivities/{id}`             | Por ID           |
+| 116 | PUT    | `/api/v1/festivities/{id}`             | Actualizar       |
+| 117 | DELETE | `/api/v1/festivities/{id}`             | Eliminar         |
+| 118 | GET    | `/api/v1/festivities/by-city/{cityId}` | Por ciudad       |
+| 119 | GET    | `/api/v1/festivities/upcoming`         | Próximas         |
 
 ---
 
@@ -2415,28 +2428,28 @@ las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de 
 
 **Request Body:** `@Valid` `FestivityRequest`
 
-| Campo         | Tipo       | Validación  | Descripción |
-|---------------|------------|-------------|-------------|
-| `name`        | String     | `@NotBlank` | Nombre      |
-| `description` | String     | —           | Descripción |
-| `startDate`   | LocalDate  | `@NotNull`  | Fecha inicio|
-| `endDate`     | LocalDate  | `@NotNull`  | Fecha fin   |
-| `cityId`      | Long       | `@NotNull`  | ID municipio|
-| `image`       | String     | —           | URL imagen  |
-| `active`      | Boolean    | —           | Activo      |
+| Campo         | Tipo      | Validación  | Descripción  |
+| ------------- | --------- | ----------- | ------------ |
+| `name`        | String    | `@NotBlank` | Nombre       |
+| `description` | String    | —           | Descripción  |
+| `startDate`   | LocalDate | `@NotNull`  | Fecha inicio |
+| `endDate`     | LocalDate | `@NotNull`  | Fecha fin    |
+| `cityId`      | Long      | `@NotNull`  | ID municipio |
+| `image`       | String    | —           | URL imagen   |
+| `active`      | Boolean   | —           | Activo       |
 
 **Response:** `201 CREATED` — `FestivityResponse`
 
-| Campo         | Tipo       |
-|---------------|------------|
-| `id`          | UUID       |
-| `name`        | String     |
-| `description` | String     |
-| `startDate`   | LocalDate  |
-| `endDate`     | LocalDate  |
-| `cityId`      | Long       |
-| `image`       | String     |
-| `active`      | Boolean    |
+| Campo         | Tipo      |
+| ------------- | --------- |
+| `id`          | UUID      |
+| `name`        | String    |
+| `description` | String    |
+| `startDate`   | LocalDate |
+| `endDate`     | LocalDate |
+| `cityId`      | Long      |
+| `image`       | String    |
+| `active`      | Boolean   |
 
 ---
 
@@ -2445,7 +2458,7 @@ las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
 
@@ -2457,9 +2470,9 @@ las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de 
 
 **Path Variables:**
 
-| Nombre | Tipo | Descripción |
-|--------|------|-------------|
-| `id`   | UUID | ID festividad|
+| Nombre | Tipo | Descripción   |
+| ------ | ---- | ------------- |
+| `id`   | UUID | ID festividad |
 
 **Response:** `200 OK` — `FestivityResponse` | `404 Not Found`
 
@@ -2469,9 +2482,9 @@ las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de 
 
 **Path Variables:**
 
-| Nombre | Tipo | Descripción |
-|--------|------|-------------|
-| `id`   | UUID | ID festividad|
+| Nombre | Tipo | Descripción   |
+| ------ | ---- | ------------- |
+| `id`   | UUID | ID festividad |
 
 **Request Body:** `@Valid` `FestivityRequest` (mismos campos que creación)
 
@@ -2483,9 +2496,9 @@ las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de 
 
 **Path Variables:**
 
-| Nombre | Tipo | Descripción |
-|--------|------|-------------|
-| `id`   | UUID | ID festividad|
+| Nombre | Tipo | Descripción   |
+| ------ | ---- | ------------- |
+| `id`   | UUID | ID festividad |
 
 **Response:** `204 No Content`
 
@@ -2496,13 +2509,13 @@ las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de 
 **Path Variables:**
 
 | Nombre   | Tipo | Descripción |
-|----------|------|-------------|
+| -------- | ---- | ----------- |
 | `cityId` | Long | ID ciudad   |
 
 **Query Parameters:**
 
 | Nombre | Tipo    | Requerido | Default |
-|--------|---------|-----------|---------|
+| ------ | ------- | --------- | ------- |
 | `page` | Integer | No        | `0`     |
 | `size` | Integer | No        | `10`    |
 
@@ -2613,6 +2626,7 @@ MercadoPago envía un POST a `POST /api/v1/webhooks/payments` con este payload:
 ```
 
 El backend procesa así:
+
 1. Extrae el `payment_id` del payload
 2. Llama a `MercadoPagoProvider.getExternalReferenceFromPayment(mpPaymentId)` → hace GET a la API de MercadoPago para obtener el `external_reference`
 3. Busca el pago por `bookingId` en la DB
@@ -2631,11 +2645,13 @@ ngrok http 8080
 ```
 
 Esto te da una URL pública temporal como:
+
 ```
 https://abcd1234.ngrok-free.app
 ```
 
 Configurar en `.env`:
+
 ```env
 APP_BASE_URL=https://abcd1234.ngrok-free.app
 PAYMENT_PROVIDER=MERCADOPAGO
@@ -2643,6 +2659,7 @@ MERCADOPAGO_ACCESS_TOKEN=TEST-2109324389320804-...
 ```
 
 MercadoPago enviará el webhook a:
+
 ```
 POST https://abcd1234.ngrok-free.app/api/v1/webhooks/payments
 ```
@@ -2650,6 +2667,7 @@ POST https://abcd1234.ngrok-free.app/api/v1/webhooks/payments
 ### 8.4 Producción — MercadoPago Dashboard
 
 En el Dashboard de MercadoPago (`https://www.mercadopago.com.ar/developers`):
+
 1. Seleccionar tu aplicación
 2. Ir a **Webhooks**
 3. Configurar la URL: `https://tudominio.com/api/v1/webhooks/payments`
@@ -2658,18 +2676,18 @@ En el Dashboard de MercadoPago (`https://www.mercadopago.com.ar/developers`):
 
 ### 8.5 Variables de entorno relevantes
 
-| Variable | Descripción | Ejemplo |
-| --- | --- | --- |
-| `APP_BASE_URL` | URL pública del backend (donde MercadoPago envía notificaciones) | `https://abcd1234.ngrok-free.app` |
-| `PAYMENT_PROVIDER` | Proveedor activo: `MOCK` o `MERCADOPAGO` | `MERCADOPAGO` |
-| `MERCADOPAGO_ACCESS_TOKEN` | Token de acceso TEST o PROD | `TEST-2109324389320804-...` |
+| Variable                   | Descripción                                                      | Ejemplo                           |
+| -------------------------- | ---------------------------------------------------------------- | --------------------------------- |
+| `APP_BASE_URL`             | URL pública del backend (donde MercadoPago envía notificaciones) | `https://abcd1234.ngrok-free.app` |
+| `PAYMENT_PROVIDER`         | Proveedor activo: `MOCK` o `MERCADOPAGO`                         | `MERCADOPAGO`                     |
+| `MERCADOPAGO_ACCESS_TOKEN` | Token de acceso TEST o PROD                                      | `TEST-2109324389320804-...`       |
 
 ### 8.6 Tipos de notificación de MercadoPago
 
-| Tipo | Cuando se envía | Nuestro endpoint |
-| --- | --- | --- |
-| `payment` | Cuando cambia el estado de un pago | `POST /webhooks/payments` |
-| `merchant_order` | Cuando se crea/actualiza una orden | (no implementado) |
+| Tipo             | Cuando se envía                    | Nuestro endpoint          |
+| ---------------- | ---------------------------------- | ------------------------- |
+| `payment`        | Cuando cambia el estado de un pago | `POST /webhooks/payments` |
+| `merchant_order` | Cuando se crea/actualiza una orden | (no implementado)         |
 
 ### 8.7 Prueba del flujo completo (LOCAL)
 

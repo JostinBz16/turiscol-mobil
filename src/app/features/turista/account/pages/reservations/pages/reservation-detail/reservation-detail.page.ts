@@ -12,12 +12,12 @@ import {
   IonImg,
   IonButton,
   IonIcon,
+  IonSpinner,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { Offer, OfferType } from 'src/app/core/models/Offers';
 import { OfferService } from 'src/app/core/services/offers';
 import { NavigationService } from 'src/app/core/services/navigation.service';
-import { PaymentModalComponent } from 'src/app/components/payment-modal/payment-modal.component';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -35,7 +35,7 @@ import { PaymentModalComponent } from 'src/app/components/payment-modal/payment-
     IonContent,
     IonButton,
     IonIcon,
-    PaymentModalComponent,
+    IonSpinner,
   ],
 })
 export class ReservationDetailPage implements OnInit {
@@ -47,7 +47,7 @@ export class ReservationDetailPage implements OnInit {
 
   booking = signal<Booking | null>(null);
   offer = signal<Offer | null>(null);
-  showPaymentModal = signal(false);
+  processingPayment = signal(false);
 
   OFFER_TYPE_LABEL: Record<OfferType, string> = {
     [OfferType.ACCOMMODATION]: 'Alojamiento',
@@ -58,17 +58,25 @@ export class ReservationDetailPage implements OnInit {
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
+    const autoPay = this.route.snapshot.queryParamMap.get('pay') === 'true';
 
     this.bookingService.getBookingById(id).subscribe((booking) => {
       if (!booking) return;
 
       this.booking.set(booking);
 
-      this.offerService.getById(booking.offerId).subscribe((offer: any) => {
-        if (offer) {
-          this.offer.set(offer);
-        }
+      this.offerService.getById(booking.offerId).subscribe({
+        next: (offer: any) => {
+          if (offer) {
+            this.offer.set(offer);
+          }
+        },
+        error: () => {},
       });
+
+      if (autoPay && booking.status === BookingStatus.PENDING_PAYMENT) {
+        this.pay();
+      }
     });
   }
 
@@ -81,8 +89,22 @@ export class ReservationDetailPage implements OnInit {
     return b !== null && b.status === BookingStatus.PENDING_PAYMENT;
   }
 
-  openPayment() {
-    this.showPaymentModal.set(true);
+  pay() {
+    const b = this.booking();
+    if (!b) return;
+
+    this.processingPayment.set(true);
+
+    this.bookingService.checkout(b.id).subscribe({
+      next: (checkout) => {
+        this.processingPayment.set(false);
+        window.open(checkout.checkoutUrl, '_blank');
+      },
+      error: (err) => {
+        this.processingPayment.set(false);
+        console.error('Checkout error', err);
+      },
+    });
   }
 
   onPaymentSuccess(data: any) {

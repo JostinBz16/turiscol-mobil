@@ -220,22 +220,17 @@ export class BookingModalComponent implements OnInit {
 
     const { startDate, endDate, quantity, guests } = this.form.value;
 
-    const booking: any = {
+    const payload = {
       offerId: this.offer.id,
-      serviceStartDate: this.isProduct()
+      startDate: this.isProduct()
         ? new Date().toISOString()
         : startDate.split('T')[0],
-      serviceEndDate: endDate ? endDate.split('T')[0] : undefined,
+      endDate: endDate ? endDate.split('T')[0] : undefined,
+      quantity: this.isAccommodation() ? this.nights : quantity,
+      guestCount: this.isAccommodation() ? guests : undefined,
     };
 
-    if (this.isAccommodation()) {
-      booking.quantity = this.nights;
-      booking.guestCount = guests;
-    } else {
-      booking.quantity = quantity;
-    }
-
-    this.bookingService.createBooking(booking).subscribe({
+    this.bookingService.createBooking(payload).subscribe({
       next: (res: Booking) => {
         this.submitting.set(false);
         this.bookingCreated.emit(res);

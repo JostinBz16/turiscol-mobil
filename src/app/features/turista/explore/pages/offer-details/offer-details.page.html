@@ -173,17 +173,14 @@
     [offer]="offer"
     [(isOpen)]="showBookingModal"
     (bookingCreated)="onBookingCreated($event)"
-    (bookingReady)="onBookingReady($event)"
   ></app-booking-modal>
 
-  @if (currentBooking()) {
-  <app-payment-modal
-    [bookingId]="currentBooking()!.id"
-    [amount]="getPaymentAmount()"
-    [currency]="currentBooking()!.currency || 'COP'"
-    [(isOpen)]="showPaymentModal"
-    (paymentSuccess)="onPaymentSuccess($event)"
-    (paymentError)="onPaymentError($event)"
-  ></app-payment-modal>
+  @if (processingPayment()) {
+  <div class="processing-overlay">
+    <div class="processing-card">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Redirigiendo al pago...</p>
+    </div>
+  </div>
   }
 </ion-content>

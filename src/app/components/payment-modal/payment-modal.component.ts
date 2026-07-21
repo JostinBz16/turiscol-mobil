@@ -3,11 +3,8 @@ import {
   Input,
   Output,
   EventEmitter,
-  OnInit,
-  OnDestroy,
   inject,
   signal,
-  NgZone,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -41,7 +38,7 @@ import { PaymentService } from 'src/app/core/services/payment.service';
     IonIcon,
   ],
 })
-export class PaymentModalComponent implements OnInit, OnDestroy {
+export class PaymentModalComponent {
   @Input() bookingId!: number;
   @Input() amount = 0;
   @Input() currency = 'COP';
@@ -52,86 +49,29 @@ export class PaymentModalComponent implements OnInit, OnDestroy {
   @Output() paymentError = new EventEmitter<any>();
 
   private paymentService = inject(PaymentService);
-  private zone = inject(NgZone);
 
-  loading = signal(true);
   processing = signal(false);
   errorMessage = signal<string | null>(null);
-  brickReady = signal(false);
-
-  async ngOnInit() {
-    if (this.isOpen) {
-      await this.initBrick();
-    }
-  }
-
-  async ngOnDestroy() {
-    this.paymentService.destroyBrick();
-  }
-
-  async onWillPresent() {
-    await this.initBrick();
-  }
 
   onWillDismiss() {
-    this.paymentService.destroyBrick();
-    this.brickReady.set(false);
-    this.loading.set(true);
     this.errorMessage.set(null);
     this.isOpenChange.emit(false);
   }
 
-  async initBrick() {
-    this.loading.set(true);
-    this.errorMessage.set(null);
-
-    try {
-      await this.paymentService.loadSdk().toPromise();
-
-      this.zone.runOutsideAngular(() => {
-        this.paymentService.createBrick('mp-payment-brick', this.amount, this.currency, {
-          onFormReady: () => {
-            this.zone.run(() => {
-              this.loading.set(false);
-              this.brickReady.set(true);
-            });
-          },
-          onSubmit: (form: any) => {
-            this.zone.run(() => {
-              this.processPayment(form);
-            });
-          },
-          onError: (error: any) => {
-            this.zone.run(() => {
-              console.error('Brick error:', error);
-              this.errorMessage.set('Error al cargar el formulario de pago. Intenta de nuevo.');
-              this.loading.set(false);
-            });
-          },
-        });
-      });
-    } catch (err) {
-      this.errorMessage.set('Error al conectar con MercadoPago. Verifica tu conexión.');
-      this.loading.set(false);
-    }
-  }
-
-  private processPayment(form: any) {
+  pay() {
     this.processing.set(true);
     this.errorMessage.set(null);
 
     this.paymentService.checkout(this.bookingId).subscribe({
       next: (checkout) => {
-        const paymentData = {
-          ...form,
+        this.processing.set(false);
+        window.open(checkout.checkoutUrl, '_blank');
+        this.paymentSuccess.emit({
           checkoutUrl: checkout.checkoutUrl,
           bookingId: this.bookingId,
           amount: checkout.amount,
           currency: checkout.currency,
-        };
-
-        this.processing.set(false);
-        this.paymentSuccess.emit(paymentData);
+        });
         this.close();
       },
       error: (err) => {

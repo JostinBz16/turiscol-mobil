@@ -4,8 +4,8 @@ export interface Booking {
   status: BookingStatus;
   totalAmount: number;
   currency: string;
-  serviceStartDate: string;
-  serviceEndDate?: string;
+  startDate: string;
+  endDate?: string;
   quantity: number;
   expiresAt?: string;
   createdAt: string;
@@ -21,7 +21,6 @@ export interface PaymentResponse {
   amount: number;
   currency: string;
   status: string;
-  method?: string;
   createdAt: string;
 }
 
