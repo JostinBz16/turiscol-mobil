@@ -1,4 +1,9 @@
-<ion-modal [isOpen]="isOpen" (willDismiss)="onWillDismiss()" [backdropDismiss]="!submitting()" cssClass="booking-modal">
+<ion-modal
+  [isOpen]="isOpen"
+  (willDismiss)="onWillDismiss()"
+  [backdropDismiss]="!submitting()"
+  cssClass="booking-modal"
+>
   <ng-template>
     <ion-header>
       <ion-toolbar>
@@ -13,110 +18,158 @@
 
     <ion-content class="booking-content">
       @if (offer) {
-      <div class="offer-summary">
-        <h3>{{ offer.name }}</h3>
-        <span class="price-tag">
-          {{ estimatedTotal | currency:'COP':'symbol':'1.0-0' }}
-        </span>
-      </div>
+        <div class="offer-summary">
+          <h3>{{ offer.name }}</h3>
+          <span class="price-tag">
+            {{ estimatedTotal | currency: "COP" : "symbol" : "1.0-0" }}
+          </span>
+        </div>
 
-      @if (loadingBlocked()) {
-      <div class="availability-loading">
-        <ion-spinner name="crescent"></ion-spinner>
-        <span>Cargando disponibilidad...</span>
-      </div>
-      }
-
-      <form [formGroup]="form" (ngSubmit)="submit()" class="booking-form">
-        <!-- START DATE -->
-        @if (!isProduct()) {
-        <div class="form-field">
-          <label>{{ isAccommodation() ? 'Entrada' : 'Fecha de inicio' }}</label>
-          <div class="date-input" (click)="openDatePicker('startDate', $event)">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span [class.placeholder]="!form.get('startDate')?.value">
-              {{ formatDateDisplay(form.get('startDate')?.value) }}
-            </span>
+        @if (loadingBlocked()) {
+          <div class="availability-loading">
+            <ion-spinner name="crescent"></ion-spinner>
+            <span>Cargando disponibilidad...</span>
           </div>
-        </div>
         }
 
-        <!-- END DATE (solo alojamiento) -->
-        @if (isAccommodation()) {
-        <div class="form-field">
-          <label>Salida</label>
-          <div class="date-input" (click)="openDatePicker('endDate', $event)">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span [class.placeholder]="!form.get('endDate')?.value">
-              {{ formatDateDisplay(form.get('endDate')?.value) }}
-            </span>
+        <form [formGroup]="form" (ngSubmit)="submit()" class="booking-form">
+          <!-- START DATE -->
+          @if (!isProduct()) {
+            <div class="form-field">
+              <label>{{
+                isAccommodation() ? "Entrada" : "Fecha de inicio"
+              }}</label>
+              <div
+                class="date-input"
+                (click)="openDatePicker('startDate', $event)"
+              >
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span [class.placeholder]="!form.get('startDate')?.value">
+                  {{ formatDateDisplay(form.get("startDate")?.value) }}
+                </span>
+              </div>
+            </div>
+          }
+
+          <!-- END DATE (solo alojamiento) -->
+          @if (isAccommodation()) {
+            <div class="form-field">
+              <label>Salida</label>
+              <div
+                class="date-input"
+                (click)="openDatePicker('endDate', $event)"
+              >
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span [class.placeholder]="!form.get('endDate')?.value">
+                  {{ formatDateDisplay(form.get("endDate")?.value) }}
+                </span>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label>Huéspedes</label>
+              <ion-input
+                formControlName="guests"
+                type="number"
+                [min]="1"
+                [max]="maxGuests"
+                placeholder="1"
+                inputmode="numeric"
+              ></ion-input>
+              @if (
+                form.get("guests")?.hasError("max") &&
+                form.get("guests")?.touched
+              ) {
+                <ion-text color="danger" class="field-error">
+                  Máximo {{ maxGuests }} huéspedes
+                </ion-text>
+              }
+            </div>
+          }
+
+          <!-- QUANTITY (no accommodation) -->
+          @if (!isAccommodation() && !isProduct()) {
+            <div class="form-field">
+              <label>{{ unitLabel }}</label>
+              <ion-input
+                formControlName="quantity"
+                type="number"
+                [min]="1"
+                [max]="maxQuantity"
+                placeholder="1"
+                inputmode="numeric"
+              ></ion-input>
+            </div>
+          }
+
+          <!-- PRODUCT quantity -->
+          @if (isProduct()) {
+            <div class="form-field">
+              <label>{{ unitLabel }}</label>
+              <ion-input
+                formControlName="quantity"
+                type="number"
+                [min]="1"
+                [max]="maxQuantity"
+                placeholder="1"
+                inputmode="numeric"
+              ></ion-input>
+            </div>
+          }
+
+          <!-- ESTIMATED TOTAL -->
+          <div class="estimated-total" [class.product-total]="isProduct()">
+            <span>{{ isProduct() ? "Total a pagar" : "Estimado" }}</span>
+            <strong>{{
+              estimatedTotal | currency: "COP" : "symbol" : "1.0-0"
+            }}</strong>
           </div>
-        </div>
 
-        <div class="form-field">
-          <label>Huéspedes</label>
-          <ion-input formControlName="guests" type="number" [min]="1" [max]="maxGuests" placeholder="1"
-            inputmode="numeric"></ion-input>
-          @if (form.get('guests')?.hasError('max') && form.get('guests')?.touched) {
-          <ion-text color="danger" class="field-error">
-            Máximo {{ maxGuests }} huéspedes
-          </ion-text>
+          <!-- ERROR -->
+          @if (errorMessage()) {
+            <ion-text color="danger" class="error-text">
+              {{ errorMessage() }}
+            </ion-text>
           }
-        </div>
-        }
 
-        <!-- QUANTITY (no accommodation) -->
-        @if (!isAccommodation() && !isProduct()) {
-        <div class="form-field">
-          <label>{{ unitLabel }}</label>
-          <ion-input formControlName="quantity" type="number" [min]="1" [max]="maxQuantity" placeholder="1"
-            inputmode="numeric"></ion-input>
-        </div>
-        }
-
-        <!-- PRODUCT quantity -->
-        @if (isProduct()) {
-        <div class="form-field">
-          <label>{{ unitLabel }}</label>
-          <ion-input formControlName="quantity" type="number" [min]="1" [max]="maxQuantity" placeholder="1"
-            inputmode="numeric"></ion-input>
-        </div>
-        }
-
-        <!-- ESTIMATED TOTAL -->
-        <div class="estimated-total" [class.product-total]="isProduct()">
-          <span>{{ isProduct() ? 'Total a pagar' : 'Estimado' }}</span>
-          <strong>{{ estimatedTotal | currency:'COP':'symbol':'1.0-0' }}</strong>
-        </div>
-
-        <!-- ERROR -->
-        @if (errorMessage()) {
-        <ion-text color="danger" class="error-text">
-          {{ errorMessage() }}
-        </ion-text>
-        }
-
-        <!-- SUBMIT -->
-        <ion-button expand="block" type="submit" [disabled]="form.invalid || submitting() || isDateBlocked" [class.pay-btn]="isProduct()"
-          class="submit-btn">
-          @if (submitting()) {
-          <ion-spinner name="crescent" slot="start"></ion-spinner>
-          {{ isProduct() ? 'Procesando...' : 'Creando reserva...' }}
-          } @else {
-          {{ submitLabel() }}
-          }
-        </ion-button>
-      </form>
+          <!-- SUBMIT -->
+          <ion-button
+            expand="block"
+            type="submit"
+            [disabled]="form.invalid || submitting() || isDateBlocked"
+            [class.pay-btn]="isProduct()"
+            class="submit-btn"
+          >
+            @if (submitting()) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner>
+              {{ isProduct() ? "Procesando..." : "Creando reserva..." }}
+            } @else {
+              {{ submitLabel() }}
+            }
+          </ion-button>
+        </form>
       }
     </ion-content>
 
     <!-- DATE PICKER POPOVER -->
-    <ion-popover [isOpen]="showDatePicker()" (didDismiss)="cancelDatePicker()" [event]="popoverEvent()"
-      reference="trigger" alignment="center">
+    <ion-popover
+      [isOpen]="showDatePicker()"
+      (didDismiss)="cancelDatePicker()"
+      [event]="popoverEvent()"
+      reference="trigger"
+      alignment="center"
+    >
       <ng-template>
-        <ion-datetime [value]="tempDate()" [min]="today" presentation="date" locale="es-CO" [firstDayOfWeek]="1"
-          showDefaultButtons="true" [isDateDisabled]="isDateDisabledFn"
-          (ionChange)="tempDate.set($any($event.detail.value)); confirmDate()"></ion-datetime>
+        <ion-datetime
+          [value]="tempDate()"
+          [min]="today"
+          presentation="date"
+          locale="es-CO"
+          [firstDayOfWeek]="1"
+          showDefaultButtons="true"
+          [isDateEnabled]="isDateEnabledFn"
+          (ionChange)="tempDate.set($any($event.detail.value)); confirmDate()"
+        ></ion-datetime>
       </ng-template>
     </ion-popover>
   </ng-template>

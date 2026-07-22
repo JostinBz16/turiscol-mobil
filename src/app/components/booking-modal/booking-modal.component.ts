@@ -76,7 +76,7 @@ export class BookingModalComponent implements OnInit, OnChanges {
   submitting = signal(false);
   errorMessage = signal<string | null>(null);
   today = '';
-  blockedDates = signal<string[]>([]);
+  blockedDates = signal(new Set<string>());
   loadingBlocked = signal(false);
 
   showDatePicker = signal(false);
@@ -93,10 +93,20 @@ export class BookingModalComponent implements OnInit, OnChanges {
     this.today = now.toISOString().split('T')[0];
 
     this.form = this.fb.group({
-      startDate: [this.isProduct() ? now.toISOString() : '', Validators.required],
+      startDate: [
+        this.isProduct() ? now.toISOString() : '',
+        Validators.required,
+      ],
       endDate: [''],
       quantity: [1, [Validators.required, Validators.min(1)]],
-      guests: [1, [Validators.required, Validators.min(1), Validators.max(this.maxGuests)]],
+      guests: [
+        1,
+        [
+          Validators.required,
+          Validators.min(1),
+          Validators.max(this.maxGuests),
+        ],
+      ],
     });
   }
 
@@ -161,7 +171,11 @@ export class BookingModalComponent implements OnInit, OnChanges {
       return n * price;
     }
     const qty = this.form?.get('quantity')?.value ?? 1;
-    const price = this.offer.basePrice ?? this.offer.ticketPrice ?? this.offer.pricePerPerson ?? 0;
+    const price =
+      this.offer.basePrice ??
+      this.offer.ticketPrice ??
+      this.offer.pricePerPerson ??
+      0;
     return qty * price;
   }
 
@@ -217,7 +231,7 @@ export class BookingModalComponent implements OnInit, OnChanges {
     this.loadingBlocked.set(true);
     this.bookingService.getBlockedDates(this.offer.id).subscribe({
       next: (dates) => {
-        this.blockedDates.set(dates);
+        this.blockedDates.set(new Set(dates));
         this.loadingBlocked.set(false);
       },
       error: () => {
@@ -226,22 +240,21 @@ export class BookingModalComponent implements OnInit, OnChanges {
     });
   }
 
-  isDateDisabledFn = (dateString: string): boolean => {
+  isDateEnabledFn = (dateString: string): boolean => {
     const dateOnly = dateString.split('T')[0];
-    return this.blockedDates().includes(dateOnly);
+    return !this.blockedDates().has(dateOnly);
   };
-
   get isDateBlocked(): boolean {
     const date = this.form?.get('startDate')?.value;
     if (!date) return false;
-    return this.blockedDates().includes(date);
+    return this.blockedDates().has(date);
   }
 
   onWillDismiss() {
     this.form?.reset({ quantity: 1, guests: 1 });
     this.errorMessage.set(null);
     this.submitting.set(false);
-    this.blockedDates.set([]);
+    this.blockedDates.set(new Set());
     this.loadingBlocked.set(false);
     this.isOpenChange.emit(false);
   }
