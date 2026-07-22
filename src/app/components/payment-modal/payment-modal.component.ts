@@ -19,6 +19,7 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { PaymentService } from 'src/app/core/services/payment.service';
+import { Browser } from '@capacitor/browser';
 
 @Component({
   selector: 'app-payment-modal',
@@ -58,14 +59,14 @@ export class PaymentModalComponent {
     this.isOpenChange.emit(false);
   }
 
-  pay() {
+  async pay() {
     this.processing.set(true);
     this.errorMessage.set(null);
 
     this.paymentService.checkout(this.bookingId).subscribe({
-      next: (checkout) => {
+      next: async (checkout) => {
         this.processing.set(false);
-        window.open(checkout.checkoutUrl, '_blank');
+        await Browser.open({ url: checkout.checkoutUrl });
         this.paymentSuccess.emit({
           checkoutUrl: checkout.checkoutUrl,
           bookingId: this.bookingId,

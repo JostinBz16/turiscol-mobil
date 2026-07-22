@@ -31,7 +31,8 @@ import { BookingService } from 'src/app/core/services/booking';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { firstValueFrom } from 'rxjs';
 import { BookingModalComponent } from 'src/app/components/booking-modal/booking-modal.component';
-import { Booking } from 'src/app/core/models/Reservations';
+import { Booking, BookingStatus } from 'src/app/core/models/Reservations';
+import { Browser } from '@capacitor/browser';
 
 @Component({
   selector: 'app-offer-details',
@@ -150,14 +151,29 @@ export class OfferDetailsPage implements OnInit {
     this.showBookingModal.set(true);
   }
 
-  onBookingCreated(booking: Booking) {
+  async onBookingCreated(booking: Booking) {
     this.processingPayment.set(true);
 
     this.bookingService.checkout(booking.id).subscribe({
-      next: (checkout) => {
+      next: async (checkout) => {
         this.processingPayment.set(false);
-        window.open(checkout.checkoutUrl, '_blank');
         this.showBookingModal.set(false);
+
+        await Browser.open({ url: checkout.checkoutUrl });
+
+        Browser.addListener('browserFinished', () => {
+          this.bookingService.getBookingById(booking.id).subscribe((updated) => {
+            let status = 'pending';
+            if (updated.status === BookingStatus.CONFIRMED) {
+              status = 'success';
+            } else if (updated.status === BookingStatus.FAILED || updated.status === BookingStatus.CANCELLED) {
+              status = 'failure';
+            }
+            this.router.navigate(['/tabs/account/reservations/payment-result'], {
+              queryParams: { status, bookingId: booking.id },
+            });
+          });
+        });
       },
       error: (err) => {
         this.processingPayment.set(false);

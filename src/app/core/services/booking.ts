@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, map, of, throwError } from 'rxjs';
 import { Booking, BookingDetail } from '../models/Reservations';
 import { BookingResponseDto } from '../DTO/BookingResponseDto';
 import { BookingDetailResponseDto } from '../DTO/BookingDetailResponseDto';
@@ -160,6 +160,14 @@ export class BookingService {
           console.error('Error cancelling booking', err);
           return throwError(() => err);
         }),
+      );
+  }
+
+  getBlockedDates(offerId: string): Observable<string[]> {
+    return this.http
+      .get<string[]>(`${environment.apiUrl}/offers/${offerId}/blocked-dates`)
+      .pipe(
+        catchError(() => of([])),
       );
   }
 }

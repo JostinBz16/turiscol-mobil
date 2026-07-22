@@ -6,6 +6,9 @@ import {
   inject,
   signal,
   OnInit,
+  OnChanges,
+  SimpleChanges,
+  CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -40,6 +43,7 @@ import { OfferType } from 'src/app/core/models/Offers';
   standalone: true,
   templateUrl: './booking-modal.component.html',
   styleUrls: ['./booking-modal.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -58,7 +62,7 @@ import { OfferType } from 'src/app/core/models/Offers';
     IonPopover,
   ],
 })
-export class BookingModalComponent implements OnInit {
+export class BookingModalComponent implements OnInit, OnChanges {
   @Input() offer: any = null;
   @Input() isOpen = false;
   @Output() isOpenChange = new EventEmitter<boolean>();
@@ -72,6 +76,8 @@ export class BookingModalComponent implements OnInit {
   submitting = signal(false);
   errorMessage = signal<string | null>(null);
   today = '';
+  blockedDates = signal<string[]>([]);
+  loadingBlocked = signal(false);
 
   showDatePicker = signal(false);
   activeDateField = signal<'startDate' | 'endDate'>('startDate');
@@ -92,6 +98,12 @@ export class BookingModalComponent implements OnInit {
       quantity: [1, [Validators.required, Validators.min(1)]],
       guests: [1, [Validators.required, Validators.min(1), Validators.max(this.maxGuests)]],
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['isOpen']?.currentValue === true && this.offer) {
+      this.loadBlockedDates();
+    }
   }
 
   get maxGuests(): number {
@@ -200,10 +212,37 @@ export class BookingModalComponent implements OnInit {
     this.showDatePicker.set(false);
   }
 
+  loadBlockedDates() {
+    if (!this.offer || this.isProduct()) return;
+    this.loadingBlocked.set(true);
+    this.bookingService.getBlockedDates(this.offer.id).subscribe({
+      next: (dates) => {
+        this.blockedDates.set(dates);
+        this.loadingBlocked.set(false);
+      },
+      error: () => {
+        this.loadingBlocked.set(false);
+      },
+    });
+  }
+
+  isDateDisabledFn = (dateString: string): boolean => {
+    const dateOnly = dateString.split('T')[0];
+    return this.blockedDates().includes(dateOnly);
+  };
+
+  get isDateBlocked(): boolean {
+    const date = this.form?.get('startDate')?.value;
+    if (!date) return false;
+    return this.blockedDates().includes(date);
+  }
+
   onWillDismiss() {
     this.form?.reset({ quantity: 1, guests: 1 });
     this.errorMessage.set(null);
     this.submitting.set(false);
+    this.blockedDates.set([]);
+    this.loadingBlocked.set(false);
     this.isOpenChange.emit(false);
   }
 

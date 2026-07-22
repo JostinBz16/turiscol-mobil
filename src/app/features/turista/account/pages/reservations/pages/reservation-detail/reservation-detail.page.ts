@@ -18,6 +18,7 @@ import { CommonModule } from '@angular/common';
 import { Offer, OfferType } from 'src/app/core/models/Offers';
 import { OfferService } from 'src/app/core/services/offers';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { Browser } from '@capacitor/browser';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -89,16 +90,31 @@ export class ReservationDetailPage implements OnInit {
     return b !== null && b.status === BookingStatus.PENDING_PAYMENT;
   }
 
-  pay() {
+  async pay() {
     const b = this.booking();
     if (!b) return;
 
     this.processingPayment.set(true);
 
     this.bookingService.checkout(b.id).subscribe({
-      next: (checkout) => {
+      next: async (checkout) => {
         this.processingPayment.set(false);
-        window.open(checkout.checkoutUrl, '_blank');
+
+        await Browser.open({ url: checkout.checkoutUrl });
+
+        Browser.addListener('browserFinished', () => {
+          this.bookingService.getBookingById(b.id).subscribe((updated) => {
+            let status = 'pending';
+            if (updated.status === BookingStatus.CONFIRMED) {
+              status = 'success';
+            } else if (updated.status === BookingStatus.FAILED || updated.status === BookingStatus.CANCELLED) {
+              status = 'failure';
+            }
+            this.router.navigate(['/tabs/account/reservations/payment-result'], {
+              queryParams: { status, bookingId: b.id },
+            });
+          });
+        });
       },
       error: (err) => {
         this.processingPayment.set(false);

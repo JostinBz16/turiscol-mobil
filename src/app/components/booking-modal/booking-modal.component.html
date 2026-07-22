@@ -20,6 +20,13 @@
         </span>
       </div>
 
+      @if (loadingBlocked()) {
+      <div class="availability-loading">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Cargando disponibilidad...</span>
+      </div>
+      }
+
       <form [formGroup]="form" (ngSubmit)="submit()" class="booking-form">
         <!-- START DATE -->
         @if (!isProduct()) {
@@ -90,7 +97,7 @@
         }
 
         <!-- SUBMIT -->
-        <ion-button expand="block" type="submit" [disabled]="form.invalid || submitting()" [class.pay-btn]="isProduct()"
+        <ion-button expand="block" type="submit" [disabled]="form.invalid || submitting() || isDateBlocked" [class.pay-btn]="isProduct()"
           class="submit-btn">
           @if (submitting()) {
           <ion-spinner name="crescent" slot="start"></ion-spinner>
@@ -108,7 +115,8 @@
       reference="trigger" alignment="center">
       <ng-template>
         <ion-datetime [value]="tempDate()" [min]="today" presentation="date" locale="es-CO" [firstDayOfWeek]="1"
-          showDefaultButtons="true" (ionChange)="tempDate.set($any($event.detail.value)); confirmDate()"></ion-datetime>
+          showDefaultButtons="true" [isDateDisabled]="isDateDisabledFn"
+          (ionChange)="tempDate.set($any($event.detail.value)); confirmDate()"></ion-datetime>
       </ng-template>
     </ion-popover>
   </ng-template>
