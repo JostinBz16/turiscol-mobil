@@ -13,12 +13,14 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
+  IonChip,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { Offer, OfferType } from 'src/app/core/models/Offers';
 import { OfferService } from 'src/app/core/services/offers';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { Browser } from '@capacitor/browser';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -37,6 +39,7 @@ import { Browser } from '@capacitor/browser';
     IonButton,
     IonIcon,
     IonSpinner,
+    IonChip,
   ],
 })
 export class ReservationDetailPage implements OnInit {
@@ -48,7 +51,11 @@ export class ReservationDetailPage implements OnInit {
 
   booking = signal<BookingDetail | null>(null);
   offer = signal<Offer | null>(null);
+  loading = true;
+  error = false;
+  errorMessage = '';
   processingPayment = signal(false);
+  actionLoading = false;
 
   OFFER_TYPE_LABEL: Record<OfferType, string> = {
     [OfferType.ACCOMMODATION]: 'Alojamiento',
@@ -61,27 +68,30 @@ export class ReservationDetailPage implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     const autoPay = this.route.snapshot.queryParamMap.get('pay') === 'true';
 
-    this.bookingService.getBookingById(id).subscribe((booking) => {
-      if (!booking) return;
+    this.bookingService.getBookingById(id).subscribe({
+      next: (booking) => {
+        if (!booking) return;
+        this.booking.set(booking);
+        this.loading = false;
 
-      console.log('[ReservationDetail] Booking loaded:', JSON.stringify(booking, null, 2));
-      console.log('[ReservationDetail] Payments:', booking.payments);
-      console.log('[ReservationDetail] StatusHistory:', booking.statusHistory);
+        this.offerService.getById(booking.offerId).subscribe({
+          next: (offer: any) => {
+            if (offer) {
+              this.offer.set(offer);
+            }
+          },
+          error: () => {},
+        });
 
-      this.booking.set(booking);
-
-      this.offerService.getById(booking.offerId).subscribe({
-        next: (offer: any) => {
-          if (offer) {
-            this.offer.set(offer);
-          }
-        },
-        error: () => {},
-      });
-
-      if (autoPay && booking.status === BookingStatus.PENDING_PAYMENT) {
-        this.pay();
-      }
+        if (autoPay && booking.status === BookingStatus.PENDING_PAYMENT) {
+          this.pay();
+        }
+      },
+      error: () => {
+        this.loading = false;
+        this.error = true;
+        this.errorMessage = 'No se pudo cargar la reserva';
+      },
     });
   }
 
@@ -127,22 +137,23 @@ export class ReservationDetailPage implements OnInit {
     });
   }
 
-  onPaymentSuccess(data: any) {
-    this.router.navigate(['/tabs/account/reservations/payment-result'], {
-      queryParams: {
-        status: 'success',
-        bookingId: this.booking()?.id,
-      },
-    });
+  async confirmCompletion() {
+    const b = this.booking();
+    if (!b) return;
+
+    this.actionLoading = true;
+    try {
+      const updated = await firstValueFrom(this.bookingService.confirmCompletion(b.id));
+      this.booking.set({ ...b, status: updated.status as BookingStatus });
+    } catch (err) {
+      this.errorMessage = 'No se pudo confirmar la completación';
+      console.error('Error confirming completion', err);
+    }
+    this.actionLoading = false;
   }
 
-  onPaymentError(error: any) {
-    this.router.navigate(['/tabs/account/reservations/payment-result'], {
-      queryParams: {
-        status: 'failure',
-        bookingId: this.booking()?.id,
-      },
-    });
+  canConfirmCompletion(): boolean {
+    return this.booking()?.status === BookingStatus.COMPLETION_REQUESTED;
   }
 
   statusLabel(status: BookingStatus): string {
@@ -157,80 +168,30 @@ export class ReservationDetailPage implements OnInit {
     }[status] ?? status;
   }
 
-  statusClass(status: BookingStatus): string {
-    return status.toLowerCase().replace('_', '-');
+  statusChipColor(status: BookingStatus): string {
+    return {
+      PENDING_PAYMENT: 'warning',
+      CONFIRMED: 'primary',
+      COMPLETION_REQUESTED: 'tertiary',
+      COMPLETED: 'success',
+      CANCELLED: 'danger',
+      EXPIRED: 'medium',
+      FAILED: 'danger',
+    }[status] ?? 'medium';
   }
 
-  offerTypeLabel(type: OfferType): string {
-    return this.OFFER_TYPE_LABEL[type];
-  }
-
-  offerInfoLabel(): string {
-    if (!this.booking() || !this.offer()) return '';
-
-    if (this.offer()!.type === OfferType.PRODUCT) {
-      return `Unidades`;
-    }
-
-    if (this.offer()!.type === OfferType.ACCOMMODATION) {
-      return `Noches`;
-    }
-
-    if (this.offer()!.type === OfferType.EVENT) {
-      return `Entradas`;
-    }
-
-    return `Personas`;
-  }
-
-  dateLabel(): string {
-    if (this.isProduct()) {
-      return 'Fecha de compra';
-    }
-    return 'Fecha del servicio';
+  offerTypeLabel(type?: OfferType): string {
+    if (!type) return 'Oferta';
+    return this.OFFER_TYPE_LABEL[type] ?? type;
   }
 
   formatDate(dateStr: string): string {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('es-CO', {
+    return new Date(dateStr).toLocaleDateString('es-CO', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
-  }
-
-  peopleCount() {
-    return this.booking()?.quantity ?? 0;
-  }
-
-  unitPrice(): number {
-    const offer = this.offer() as any;
-    if (!offer) return 0;
-    if (offer.type === OfferType.ACCOMMODATION) {
-      return offer.pricePerNight ?? offer.basePrice ?? 0;
-    }
-    if (offer.type === OfferType.SERVICE) {
-      return offer.pricePerPerson ?? offer.basePrice ?? 0;
-    }
-    if (offer.type === OfferType.EVENT) {
-      return offer.ticketPrice ?? offer.basePrice ?? 0;
-    }
-    return offer.basePrice ?? 0;
-  }
-
-  subtotal() {
-    const booking = this.booking();
-    if (!booking) return 0;
-    return (booking.quantity || 1) * this.unitPrice();
-  }
-
-  taxes() {
-    return Math.round(this.subtotal() * 0.19);
-  }
-
-  total() {
-    return this.subtotal() + this.taxes();
   }
 
   hasPayment(): boolean {
@@ -239,10 +200,6 @@ export class ReservationDetailPage implements OnInit {
 
   getPayment() {
     return this.booking()?.payments?.[0] ?? null;
-  }
-
-  isConfirmed(): boolean {
-    return this.booking()?.status === BookingStatus.CONFIRMED;
   }
 
   paymentStatusLabel(status: string): string {
@@ -265,8 +222,7 @@ export class ReservationDetailPage implements OnInit {
 
   formatDateTime(dateStr: string): string {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('es-CO', {
+    return new Date(dateStr).toLocaleDateString('es-CO', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -297,5 +253,18 @@ export class ReservationDetailPage implements OnInit {
       EXPIRED: 'expired',
       FAILED: 'failed',
     }[status] ?? '';
+  }
+
+  get firstImage(): string {
+    return this.offer()?.images?.[0] ?? '';
+  }
+
+  get formattedTotal(): string {
+    const b = this.booking();
+    return b && b.totalAmount ? Number(b.totalAmount).toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0,
+    }) : '';
   }
 }

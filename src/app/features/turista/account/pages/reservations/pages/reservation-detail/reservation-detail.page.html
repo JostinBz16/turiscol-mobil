@@ -8,66 +8,87 @@
 </ion-header>
 
 <ion-content fullscreen class="detail-content">
-  @if (booking() && offer()) {
+  @if (loading) {
+  <div class="loading-state">
+    <ion-spinner></ion-spinner>
+    <p>Cargando detalle...</p>
+  </div>
+  } @else if (error) {
+  <div class="empty-state">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <h4>{{ errorMessage }}</h4>
+    <ion-button fill="outline" (click)="ngOnInit()">Reintentar</ion-button>
+  </div>
+  } @else if (booking()) {
 
   <!-- HERO IMAGE -->
   <div class="hero">
-    <ion-img [src]="offer()!.images[0]" />
+    @if (firstImage) {
+    <ion-img [src]="firstImage" />
+    } @else {
+    <div class="img-placeholder">
+      <ion-icon name="storefront-outline"></ion-icon>
+    </div>
+    }
+    <div class="hero-chip">
+      <ion-chip [color]="statusChipColor(booking()!.status)">
+        {{ statusLabel(booking()!.status) }}
+      </ion-chip>
+    </div>
   </div>
 
   <!-- MAIN CARD -->
   <div class="card main-card">
-    <h2>{{ offer()!.name }}</h2>
-
+    <h2>{{ offer()?.name ?? booking()!.offerName ?? 'Oferta' }}</h2>
+    <p class="offer-type">{{ offerTypeLabel(offer()?.type) }}</p>
+    @if (offer()?.description) {
     <div class="description">
       <p>{{ offer()!.description }}</p>
     </div>
+    }
   </div>
 
-  <!-- PAYMENT CARD -->
+  <!-- DETAILS -->
   <div class="card">
-    <div class="info">
-      <h3>{{ isProduct() ? 'Detalles de la compra' : 'Detalles de la reserva' }}</h3>
-      <div class="info-grid">
-        <div class="info-item">
-          <span>{{ offerInfoLabel() }}:</span>
-          <strong>{{ peopleCount() }}</strong>
-        </div>
-        <div class="info-item">
-          <span>Tipo:</span>
-          <strong>{{ offerTypeLabel(offer()!.type) }}</strong>
-        </div>
+    <h3>{{ isProduct() ? 'Detalles de la compra' : 'Detalles de la reserva' }}</h3>
+    <div class="info-list">
+      <div class="info-item">
+        <span>ID</span>
+        <strong>#{{ booking()!.id }}</strong>
       </div>
-
-      <div class="status-date">
-        <span class="date">
-          <ion-icon name="calendar-outline"></ion-icon>
-          {{ dateLabel() }}:
-          {{ formatDate(booking()!.startDate) }}
-        </span>
-
-        <span class="status-chip" [ngClass]="statusClass(booking()!.status)">
-          {{ statusLabel(booking()!.status) }}
-        </span>
+      <div class="info-item">
+        <span>Tipo</span>
+        <strong>{{ offerTypeLabel(offer()?.type) }}</strong>
       </div>
+      <div class="info-item">
+        <span>Cantidad</span>
+        <strong>{{ booking()!.quantity }}</strong>
+      </div>
+      @if (booking()!.guestCount) {
+      <div class="info-item">
+        <span>Huéspedes</span>
+        <strong>{{ booking()!.guestCount }}</strong>
+      </div>
+      }
+      <div class="info-item">
+        <span>{{ isProduct() ? 'Fecha de compra' : 'Fecha de inicio' }}</span>
+        <strong>{{ formatDate(booking()!.startDate) }}</strong>
+      </div>
+      @if (booking()!.endDate) {
+      <div class="info-item">
+        <span>Fecha de fin</span>
+        <strong>{{ formatDate(booking()!.endDate!) }}</strong>
+      </div>
+      }
     </div>
-    <div class="payment-summary">
-      <h3>Resumen de pago</h3>
+  </div>
 
-      <div class="price-row">
-        <span>{{ unitPrice() | currency:'COP':'symbol':'1.0-0' }} x {{ booking()!.quantity }}</span>
-        <span>{{ subtotal() | currency:'COP':'symbol':'1.0-0' }}</span>
-      </div>
-
-      <div class="price-row">
-        <span>IVA (19%)</span>
-        <span>{{ taxes() | currency:'COP':'symbol':'1.0-0' }}</span>
-      </div>
-
-      <div class="price-row total">
-        <strong>Total</strong>
-        <strong>{{ total() | currency:'COP':'symbol':'1.0-0' }}</strong>
-      </div>
+  <!-- PAYMENT SUMMARY -->
+  <div class="card">
+    <h3>Resumen de pago</h3>
+    <div class="price-row total">
+      <strong>Total</strong>
+      <strong>{{ formattedTotal }}</strong>
     </div>
   </div>
 
@@ -124,21 +145,37 @@
   </div>
   }
 
-  <!-- PAY BUTTON -->
-  @if (canPay()) {
-  <div class="pay-button-container">
-    @if (processingPayment()) {
+  <!-- ACTIONS -->
+  <div class="actions">
+    @if (actionLoading) {
     <div class="processing-state">
       <ion-spinner name="crescent"></ion-spinner>
-      <span>Redirigiendo al pago...</span>
+      <span>Procesando...</span>
     </div>
-    } @else {
-    <ion-button expand="block" (click)="pay()" class="pay-button">
-      <ion-icon name="card-outline" slot="start"></ion-icon>
-      Pagar Ahora
+    } @else if (canConfirmCompletion()) {
+    <div class="waiting-info">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>El proveedor solicitó completar el servicio</span>
+    </div>
+    <ion-button expand="block" class="confirm-button" (click)="confirmCompletion()">
+      <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+      Confirmar completación
     </ion-button>
+    } @else if (canPay()) {
+    <div class="pay-button-container">
+      @if (processingPayment()) {
+      <div class="processing-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Redirigiendo al pago...</span>
+      </div>
+      } @else {
+      <ion-button expand="block" (click)="pay()" class="pay-button">
+        <ion-icon name="card-outline" slot="start"></ion-icon>
+        Pagar Ahora
+      </ion-button>
+      }
+    </div>
     }
   </div>
-  }
   }
 </ion-content>

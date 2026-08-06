@@ -9,6 +9,7 @@ export interface Booking {
   startDate: string;
   endDate?: string;
   quantity: number;
+  guestCount?: number;
   expiresAt?: string;
   createdAt: string;
 }
