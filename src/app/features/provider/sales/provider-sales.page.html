@@ -24,36 +24,67 @@
       <p>Cuando un cliente reserve una de tus ofertas, aparecerá aquí</p>
     </div>
   } @else {
-    <div class="sales-list">
-      @for (sale of sales; track sale.id) {
-        <div class="sale-card" (click)="viewSale(sale.id)">
-          <div class="sale-image">
-            @if (sale.offerImage) {
-              <ion-img [src]="sale.offerImage" />
-            } @else {
-              <div class="img-placeholder">
-                <ion-icon name="storefront-outline"></ion-icon>
-              </div>
-            }
-          </div>
-          <div class="sale-body">
-            <div class="sale-header">
-              <h4>{{ sale.offerName }}</h4>
-              <ion-chip [color]="statusColor(sale.status)" class="status-chip">
-                {{ statusLabel(sale.status) }}
-              </ion-chip>
-            </div>
-            <div class="sale-info">
-              <span class="customer">{{ sale.customerName }}</span>
-              <span class="date">{{ sale.startDate | date:'shortDate' }}</span>
-            </div>
-            <div class="sale-footer">
-              <span class="amount">{{ sale.totalAmount | currency:'COP':'symbol':'1.0-0' }}</span>
-              <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
-            </div>
-          </div>
-        </div>
-      }
+    <div class="filter-bar">
+      <div class="filter-chip" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">
+        <span>Todas</span>
+        <span class="count">{{ filterCount('all') }}</span>
+      </div>
+      <div class="filter-chip" [class.active]="activeFilter === 'pending'" (click)="setFilter('pending')">
+        <span>Pendientes</span>
+        <span class="count">{{ filterCount('pending') }}</span>
+      </div>
+      <div class="filter-chip" [class.active]="activeFilter === 'confirmed'" (click)="setFilter('confirmed')">
+        <span>Confirmadas</span>
+        <span class="count">{{ filterCount('confirmed') }}</span>
+      </div>
+      <div class="filter-chip" [class.active]="activeFilter === 'completed'" (click)="setFilter('completed')">
+        <span>Completadas</span>
+        <span class="count">{{ filterCount('completed') }}</span>
+      </div>
+      <div class="filter-chip" [class.active]="activeFilter === 'cancelled'" (click)="setFilter('cancelled')">
+        <span>Canceladas</span>
+        <span class="count">{{ filterCount('cancelled') }}</span>
+      </div>
     </div>
+
+    @if (filteredSales().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="receipt-outline"></ion-icon>
+        <h4>Sin resultados</h4>
+        <p>No hay ventas en esta categoría</p>
+      </div>
+    } @else {
+      <div class="sales-list">
+        @for (sale of filteredSales(); track sale.id) {
+          <div class="sale-card" (click)="viewSale(sale.id)">
+            <div class="sale-image">
+              @if (sale.offerImage) {
+                <ion-img [src]="sale.offerImage" />
+              } @else {
+                <div class="img-placeholder">
+                  <ion-icon name="storefront-outline"></ion-icon>
+                </div>
+              }
+            </div>
+            <div class="sale-body">
+              <div class="sale-header">
+                <h4>{{ sale.offerName }}</h4>
+                <ion-chip [color]="statusColor(sale.status)" class="status-chip">
+                  {{ statusLabel(sale.status) }}
+                </ion-chip>
+              </div>
+              <div class="sale-info">
+                <span class="customer">{{ sale.customerName }}</span>
+                <span class="date">{{ sale.startDate | date:'shortDate' }}</span>
+              </div>
+              <div class="sale-footer">
+                <span class="amount">{{ sale.totalAmount | currency:'COP':'symbol':'1.0-0' }}</span>
+                <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
   }
 </ion-content>

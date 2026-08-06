@@ -21,12 +21,42 @@
       </div>
 
       <div class="stat-card">
+        <div class="stat-icon total-icon">
+          <ion-icon name="book-outline"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalBookings }}</span>
+          <span class="stat-label">Total reservas</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
         <div class="stat-icon pending-icon">
           <ion-icon name="receipt-outline"></ion-icon>
         </div>
         <div class="stat-info">
           <span class="stat-value">{{ stats.pendingBookings }}</span>
           <span class="stat-label">Reservas pendientes</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon completed-icon">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.completedBookings }}</span>
+          <span class="stat-label">Reservas completadas</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon cancelled-icon">
+          <ion-icon name="close-circle-outline"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.cancelledBookings }}</span>
+          <span class="stat-label">Reservas canceladas</span>
         </div>
       </div>
 
@@ -38,6 +68,25 @@
           <span class="stat-value">{{ stats.totalRevenue | currency:'COP':'symbol':'1.0-0' }}</span>
           <span class="stat-label">Ingresos totales</span>
         </div>
+      </div>
+    </div>
+
+    <div class="payout-card">
+      <div class="payout-left">
+        <ion-icon name="wallet-outline"></ion-icon>
+        <div class="payout-info">
+          <span class="payout-label">Disponible para pago</span>
+          <span class="payout-value">{{ stats.availableForPayout | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+      </div>
+      <div class="payout-right">
+        @if (stats.nextPayoutDate) {
+        <div class="payout-date">
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ stats.nextPayoutDate | date:'shortDate' }}
+        </div>
+        }
+        <div class="payout-sub">Próximo pago semanal</div>
       </div>
     </div>
 

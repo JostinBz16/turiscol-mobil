@@ -11,6 +11,7 @@ import {
   chevronForwardOutline, storefrontOutline, receiptOutline, eyeOutline,
 } from 'ionicons/icons';
 import { BookingService } from 'src/app/core/services/booking';
+import { Booking } from 'src/app/core/models/Reservations';
 import { firstValueFrom } from 'rxjs';
 
 interface SaleItem {
@@ -22,6 +23,8 @@ interface SaleItem {
   startDate: string;
   offerImage?: string;
 }
+
+type SaleFilter = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
 @Component({
   selector: 'app-provider-sales',
@@ -40,6 +43,7 @@ export class ProviderSalesPage implements OnInit {
   private router = inject(Router);
 
   sales: SaleItem[] = [];
+  activeFilter: SaleFilter = 'all';
   loading = true;
 
   constructor() {
@@ -56,15 +60,15 @@ export class ProviderSalesPage implements OnInit {
     this.loading = true;
     try {
       const res = await firstValueFrom(this.bookingService.getProviderBookings());
-      const content = res.content ?? res ?? [];
-      this.sales = (Array.isArray(content) ? content : []).map((b: any) => ({
+      const content = Array.isArray(res) ? res : (res.content ?? []);
+      this.sales = content.map((b: Booking) => ({
         id: b.id,
-        offerName: b.offer?.name ?? b.offerName ?? 'Oferta',
-        customerName: b.customerName ?? b.user?.userName ?? 'Cliente',
+        offerName: b.offerName ?? 'Oferta',
+        customerName: 'Cliente',
         status: b.status,
         totalAmount: b.totalAmount ?? 0,
         startDate: b.startDate ?? b.createdAt,
-        offerImage: b.offer?.images?.[0]?.imageUrl ?? b.offerImage ?? '',
+        offerImage: b.offerImage ?? '',
       }));
     } catch (err) {
       console.error('Error loading sales', err);
@@ -72,8 +76,46 @@ export class ProviderSalesPage implements OnInit {
     this.loading = false;
   }
 
+  setFilter(filter: SaleFilter) {
+    this.activeFilter = filter;
+  }
+
+  filteredSales(): SaleItem[] {
+    switch (this.activeFilter) {
+      case 'pending':
+        return this.sales.filter((s) =>
+          s.status === 'PENDING_PAYMENT' || s.status === 'CONFIRMED' || s.status === 'COMPLETION_REQUESTED'
+        );
+      case 'confirmed':
+        return this.sales.filter((s) => s.status === 'CONFIRMED');
+      case 'completed':
+        return this.sales.filter((s) => s.status === 'COMPLETED');
+      case 'cancelled':
+        return this.sales.filter((s) => s.status === 'CANCELLED');
+      default:
+        return this.sales;
+    }
+  }
+
+  filterCount(filter: SaleFilter): number {
+    switch (filter) {
+      case 'pending':
+        return this.sales.filter((s) =>
+          s.status === 'PENDING_PAYMENT' || s.status === 'CONFIRMED' || s.status === 'COMPLETION_REQUESTED'
+        ).length;
+      case 'confirmed':
+        return this.sales.filter((s) => s.status === 'CONFIRMED').length;
+      case 'completed':
+        return this.sales.filter((s) => s.status === 'COMPLETED').length;
+      case 'cancelled':
+        return this.sales.filter((s) => s.status === 'CANCELLED').length;
+      default:
+        return this.sales.length;
+    }
+  }
+
   viewSale(id: string | number) {
-    this.router.navigate(['/tabs/account/reservations/detail', id]);
+    this.router.navigate(['/tabs/provider-sales', id]);
   }
 
   async refresh(event: any) {
@@ -85,6 +127,7 @@ export class ProviderSalesPage implements OnInit {
     const map: Record<string, string> = {
       PENDING_PAYMENT: 'warning',
       CONFIRMED: 'primary',
+      COMPLETION_REQUESTED: 'tertiary',
       COMPLETED: 'success',
       CANCELLED: 'danger',
       EXPIRED: 'medium',
@@ -97,6 +140,7 @@ export class ProviderSalesPage implements OnInit {
     const map: Record<string, string> = {
       PENDING_PAYMENT: 'Pendiente',
       CONFIRMED: 'Confirmada',
+      COMPLETION_REQUESTED: 'En completación',
       COMPLETED: 'Completada',
       CANCELLED: 'Cancelada',
       EXPIRED: 'Expirada',

@@ -1,6 +1,8 @@
 export interface Booking {
   id: number;
   offerId: string;
+  offerName?: string;
+  offerImage?: string;
   status: BookingStatus;
   totalAmount: number;
   currency: string;
@@ -33,6 +35,7 @@ export interface BookingStatusHistory {
 export enum BookingStatus {
   PENDING_PAYMENT = 'PENDING_PAYMENT',
   CONFIRMED = 'CONFIRMED',
+  COMPLETION_REQUESTED = 'COMPLETION_REQUESTED',
   CANCELLED = 'CANCELLED',
   COMPLETED = 'COMPLETED',
   EXPIRED = 'EXPIRED',

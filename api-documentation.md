@@ -40,7 +40,7 @@ Reservas y pagos. Se comunica con experience-service vía Feign para validar ofe
 
 ### 1.1.4 Notification Service (8808)
 
-Notificaciones in-app. Escucha eventos de RabbitMQ y persiste en MongoDB.
+Notificaciones in-app y por email. Escucha eventos de RabbitMQ (`booking.*`, `payment.*`, `review.*`, `settlement.*`), persiste en MongoDB, empuja por WebSocket (STOMP) y envía emails con Thymeleaf templates.
 
 ### 1.1.5 Gateway Service (8080)
 
@@ -176,18 +176,18 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Subtipo `"PROVIDER"` — `ProviderRequestDTO`:**
 
-| Campo              | Tipo         | Validación  | Descripción                           |
-| ------------------ | ------------ | ----------- | ------------------------------------- |
-| `type`             | ProviderType | `@NotNull`  | `COMPANY` / `NATURAL_PERSON`          |
-| `razonSocial`      | String       | `@NotBlank` | Razón social                          |
-| `description`      | String       | —           | Descripción                           |
-| `certified`        | Boolean      | —           | Certificado                           |
-| `nitRut`           | String       | `@NotBlank` | NIT/RUT                               |
-| `documentType`     | DocumentType | —           | `CC` / `NIT` / `CE`                   |
-| `documentNumber`   | String       | —           | Número de documento                   |
-| `bankName`         | String       | —           | Nombre del banco                      |
-| `bankAccountType`  | String       | —           | `AHORROS` / `CORRIENTE`               |
-| `bankAccountNumber`| String       | —           | Número de cuenta bancaria             |
+| Campo               | Tipo         | Validación  | Descripción                  |
+| ------------------- | ------------ | ----------- | ---------------------------- |
+| `type`              | ProviderType | `@NotNull`  | `COMPANY` / `NATURAL_PERSON` |
+| `razonSocial`       | String       | `@NotBlank` | Razón social                 |
+| `description`       | String       | —           | Descripción                  |
+| `certified`         | Boolean      | —           | Certificado                  |
+| `nitRut`            | String       | `@NotBlank` | NIT/RUT                      |
+| `documentType`      | DocumentType | —           | `CC` / `NIT` / `CE`          |
+| `documentNumber`    | String       | —           | Número de documento          |
+| `bankName`          | String       | —           | Nombre del banco             |
+| `bankAccountType`   | String       | —           | `AHORROS` / `CORRIENTE`      |
+| `bankAccountNumber` | String       | —           | Número de cuenta bancaria    |
 
 **Response:** `201 CREATED` — `UserResponseDTO` o `ProviderResponseDTO`
 
@@ -204,19 +204,19 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **ProviderResponseDTO** (extiende UserResponseDTO):
 
-| Campo               | Tipo         |
-| ------------------- | ------------ |
-| `razonSocial`       | String       |
-| `description`       | String       |
-| `type`              | ProviderType |
-| `nitRut`            | String       |
-| `documentType`      | DocumentType |
-| `documentNumber`    | String       |
-| `bankName`          | String       |
-| `bankAccountType`   | String       |
-| `bankAccountNumber` | String       |
-| `onboardingCompleted` | Boolean    |
-| `certified`         | Boolean      |
+| Campo                 | Tipo         |
+| --------------------- | ------------ |
+| `razonSocial`         | String       |
+| `description`         | String       |
+| `type`                | ProviderType |
+| `nitRut`              | String       |
+| `documentType`        | DocumentType |
+| `documentNumber`      | String       |
+| `bankName`            | String       |
+| `bankAccountType`     | String       |
+| `bankAccountNumber`   | String       |
+| `onboardingCompleted` | Boolean      |
+| `certified`           | Boolean      |
 
 ---
 
@@ -246,6 +246,8 @@ Service Discovery. Todos los servicios se registran aquí.
 **Request Body:** `UserRequestDTO` (polimórfico, mismos campos que registro)
 
 **Response:** `200 OK` — `UserResponseDTO`
+
+> **Onboarding de proveedor:** al actualizar un proveedor, si se completan `bankName`, `bankAccountType` y `bankAccountNumber`, el campo `onboardingCompleted` se marca automáticamente en `true`. Hasta entonces queda `false`, y la liquidación semanal no procesa payouts para ese proveedor.
 
 ---
 
@@ -424,13 +426,13 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Request Body:** `@Valid` `CreateBookingRequestDTO`
 
-| Campo              | Tipo          | Validación         | Descripción                  |
-| ------------------ | ------------- | ------------------ | ---------------------------- |
-| `offerId`          | String        | `@NotNull`         | ID de la oferta              |
-| `startDate`        | LocalDate     | `@FutureOrPresent` | Fecha de inicio              |
-| `endDate`          | LocalDate     | `@FutureOrPresent` | Fecha de fin                 |
-| `quantity`         | Integer       | `@Positive`        | Cantidad de unidades/tickets |
-| `guestCount`       | Integer       | —                  | N° de huéspedes (solo ACCOMMODATION) |
+| Campo        | Tipo      | Validación         | Descripción                          |
+| ------------ | --------- | ------------------ | ------------------------------------ |
+| `offerId`    | String    | `@NotNull`         | ID de la oferta                      |
+| `startDate`  | LocalDate | `@FutureOrPresent` | Fecha de inicio                      |
+| `endDate`    | LocalDate | `@FutureOrPresent` | Fecha de fin                         |
+| `quantity`   | Integer   | `@Positive`        | Cantidad de unidades/tickets         |
+| `guestCount` | Integer   | —                  | N° de huéspedes (solo ACCOMMODATION) |
 
 **Validaciones adicionales (service layer):**
 
@@ -443,20 +445,20 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Response:** `201 CREATED` — `BookingResponseDTO`
 
-| Campo              | Tipo          | Descripción                        |
-| ------------------ | ------------- | ---------------------------------- |
-| `id`               | Long          | ID de la reserva                   |
-| `offerId`          | UUID          | ID de la oferta                    |
-| `offerName`        | String        | Nombre de la oferta                |
-| `status`           | String        | Estado actual (`PENDING_PAYMENT`)  |
-| `totalAmount`      | BigDecimal    | Monto total                        |
-| `currency`         | String        | Moneda (COP)                       |
-| `startDate`        | LocalDate     | Fecha de inicio              |
-| `endDate`          | LocalDate     | Fecha de fin                 |
-| `quantity`         | Integer       | Cantidad                           |
-| `guestCount`       | Integer       | N° de huéspedes (solo ACCOMMODATION) |
-| `expiresAt`        | LocalDateTime | Expiración (15 min desde creación) |
-| `createdAt`        | LocalDateTime | Fecha de creación                  |
+| Campo         | Tipo          | Descripción                          |
+| ------------- | ------------- | ------------------------------------ |
+| `id`          | Long          | ID de la reserva                     |
+| `offerId`     | UUID          | ID de la oferta                      |
+| `offerName`   | String        | Nombre de la oferta                  |
+| `status`      | String        | Estado actual (`PENDING_PAYMENT`)    |
+| `totalAmount` | BigDecimal    | Monto total                          |
+| `currency`    | String        | Moneda (COP)                         |
+| `startDate`   | LocalDate     | Fecha de inicio                      |
+| `endDate`     | LocalDate     | Fecha de fin                         |
+| `quantity`    | Integer       | Cantidad                             |
+| `guestCount`  | Integer       | N° de huéspedes (solo ACCOMMODATION) |
+| `expiresAt`   | LocalDateTime | Expiración (15 min desde creación)   |
+| `createdAt`   | LocalDateTime | Fecha de creación                    |
 
 ---
 
@@ -483,21 +485,21 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Response:** `200 OK` — `BookingDetailResponseDTO`
 
-| Campo              | Tipo          | Descripción                    |
-| ------------------ | ------------- | ------------------------------ |
-| `id`               | Long          | ID de la reserva               |
-| `offerId`          | UUID          | ID de la oferta                |
-| `offerName`        | String        | Nombre de la oferta            |
-| `totalAmount`      | BigDecimal    | Monto total                    |
-| `currency`         | String        | Moneda                         |
-| `startDate`        | LocalDate     | Fecha de inicio           |
-| `endDate`          | LocalDate     | Fecha de fin              |
-| `quantity`         | Integer       | Cantidad                       |
-| `guestCount`       | Integer       | N° de huéspedes (solo ACCOMMODATION) |
-| `expiresAt`        | LocalDateTime | Expiración                     |
-| `createdAt`        | LocalDateTime | Fecha de creación              |
-| `payments`         | List          | Ver `PaymentResponseDTO` abajo |
-| `statusHistory`    | List          | Ver `BookingStatusHistoryDTO`  |
+| Campo           | Tipo          | Descripción                          |
+| --------------- | ------------- | ------------------------------------ |
+| `id`            | Long          | ID de la reserva                     |
+| `offerId`       | UUID          | ID de la oferta                      |
+| `offerName`     | String        | Nombre de la oferta                  |
+| `totalAmount`   | BigDecimal    | Monto total                          |
+| `currency`      | String        | Moneda                               |
+| `startDate`     | LocalDate     | Fecha de inicio                      |
+| `endDate`       | LocalDate     | Fecha de fin                         |
+| `quantity`      | Integer       | Cantidad                             |
+| `guestCount`    | Integer       | N° de huéspedes (solo ACCOMMODATION) |
+| `expiresAt`     | LocalDateTime | Expiración                           |
+| `createdAt`     | LocalDateTime | Fecha de creación                    |
+| `payments`      | List          | Ver `PaymentResponseDTO` abajo       |
+| `statusHistory` | List          | Ver `BookingStatusHistoryDTO`        |
 
 **PaymentResponseDTO (nested):**
 
@@ -529,20 +531,23 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Request Body:** `@Valid` `UpdateBookingRequestDTO` (todos opcionales, solo se actualizan los campos enviados)
 
-| Campo              | Tipo              | Validación         | Descripción           |
-| ------------------ | ----------------- | ------------------ | --------------------- |
-| `startDate`        | LocalDate     | `@FutureOrPresent` | Nueva fecha de inicio |
-| `endDate`          | LocalDate     | `@Future`          | Nueva fecha de fin    |
-| `quantity`         | Integer           | `@Min(1)`          | Nueva cantidad        |
-| `guestCount`       | Integer           | `@Min(1)`          | N° de huéspedes      |
-| `newStatus`        | BookingStatusType | —                  | Nuevo estado          |
+| Campo        | Tipo              | Validación         | Descripción           |
+| ------------ | ----------------- | ------------------ | --------------------- |
+| `startDate`  | LocalDate         | `@FutureOrPresent` | Nueva fecha de inicio |
+| `endDate`    | LocalDate         | `@Future`          | Nueva fecha de fin    |
+| `quantity`   | Integer           | `@Min(1)`          | Nueva cantidad        |
+| `guestCount` | Integer           | `@Min(1)`          | N° de huéspedes       |
+| `newStatus`  | BookingStatusType | —                  | Nuevo estado          |
 
-**BookingStatusType enum:** `PENDING_PAYMENT`, `CONFIRMED`, `CANCELLED`, `COMPLETED`, `EXPIRED`, `FAILED`
+**BookingStatusType enum:** `PENDING_PAYMENT`, `CONFIRMED`, `COMPLETION_REQUESTED`, `COMPLETED`, `CANCELLED`, `EXPIRED`, `FAILED`
 
 **Transiciones válidas:**
 
 - `PENDING_PAYMENT` → `CANCELLED`
-- `CONFIRMED` → `CANCELLED`, `COMPLETED`
+- `CONFIRMED` → `CANCELLED`, `COMPLETION_REQUESTED`, `COMPLETED`
+- `COMPLETION_REQUESTED` → `COMPLETED`, `CANCELLED`
+
+> `CONFIRMED → COMPLETION_REQUESTED` la dispara el provider vía `POST /api/v1/booking/{id}/complete-request`; `COMPLETION_REQUESTED → COMPLETED` la confirma el turista vía `POST /api/v1/booking/{id}/confirm-completion`. En `COMPLETED` los earnings quedan disponibles para liquidación semanal.
 
 **Response:** `200 OK` — `BookingResponseDTO`
 
@@ -645,6 +650,36 @@ Estructura esperada de MercadoPago:
 
 ---
 
+##### Verificación de firma HMAC-SHA256
+
+MercadoPago firma cada notificación con HMAC-SHA256. El endpoint valida la firma antes de procesar el pago.
+
+**Headers:**
+
+| Nombre         | Tipo   | Requerido | Descripción                                                        |
+| -------------- | ------ | --------- | ------------------------------------------------------------------ |
+| `x-signature`  | String | Sí        | `ts=<timestamp>,v1=<hmac-hex>` (firma v1 de MercadoPago)           |
+| `x-request-id` | String | Sí        | UUID de la petición incluido en el manifest firmado                |
+
+**Algoritmo:** HMAC-SHA256 (clave = `MERCADOPAGO_WEBHOOK_SECRET`) sobre el manifest:
+
+```
+id:<data.id>;request-id:<x-request-id>;ts:<ts>;
+```
+
+El resultado (hexadecimal) debe ser idéntico al valor `v1` del header `x-signature`.
+
+**Respuestas:**
+
+| Código | Caso                                                       |
+| ------ | ---------------------------------------------------------- |
+| `401`  | Firma ausente o inválida (el webhook se rechaza)           |
+| `200`  | Firma válida y pago procesado                              |
+
+> Si `MERCADOPAGO_WEBHOOK_SECRET` no está configurado, la verificación queda **deshabilitada** (solo se loguea un warning). Configurar siempre el secret en `.env`.
+
+---
+
 ##### GET `/api/v1/webhooks/payments/success` — Callback éxito
 
 **Query Parameters:**
@@ -719,9 +754,9 @@ Estructura esperada de MercadoPago:
 
 > **Cancelación con reembolso:** `POST /api/v1/booking/{id}/cancel` en bookings CONFIRMED dispara automáticamente un reembolso vía el proveedor configurado.
 
-#### Planeado / No implementado
+#### Dashboard de proveedores y pagos semanales
 
-Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como parte del dashboard de proveedores y pagos semanales, pero **aún no tienen controller ni service en el código**. Se implementarán cuando se desarrolle el módulo de providers:
+Los siguientes endpoints del dashboard de proveedores y pagos semanales (documentados en `DOCUMENTACION_PAGOS.md`) están implementados en `ProviderDashboardController`:
 
 | Método | Path                                      | Descripción                                        |
 | ------ | ----------------------------------------- | -------------------------------------------------- |
@@ -2364,7 +2399,7 @@ Los siguientes endpoints están documentados en `DOCUMENTACION_PAGOS.md` como pa
 | `createdAt`        | LocalDateTime                      | Fecha creación    |
 | `read`             | Boolean                            | Leída             |
 
-**NotificationType enum:** `BOOKING_CONFIRMED`, `BOOKING_CANCELLED`, `PAYMENT_FAILED`, `NEW_REVIEW`, `SYSTEM_ALERT`, `BOOKING_REMINDER`
+**NotificationType enum:** `BOOKING_CONFIRMED`, `BOOKING_CANCELLED`, `BOOKING_COMPLETED`, `COMPLETION_REQUESTED`, `PAYMENT_FAILED`, `NEW_REVIEW`, `SYSTEM_ALERT`, `BOOKING_REMINDER`, `SETTLEMENT_PAID`
 
 **NotificationDeliveryStatus (nested):**
 
@@ -2554,7 +2589,7 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 | `booking.experience.queue` | `experience.*`                       | `booking.events.dlq`      | booking-service      |
 | `booking.payment.queue`    | `payment.*`                          | `booking.events.dlq`      | booking-service      |
 | `payment.booking.queue`    | `booking.*`                          | `booking.events.dlq`      | booking-service      |
-| `notification.events`      | `booking.*`, `payment.*`, `review.*` | `notification.events.dlq` | notification-service |
+| `notification.events`      | `booking.*`, `payment.*`, `review.*`, `settlement.*` | `notification.events.dlq` | notification-service |
 
 ### 5.3 Eventos del Dominio
 
@@ -2568,6 +2603,11 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 | `payment.completed`            | payment-module  | booking-service, notification-service | Pago procesado exitosamente              |
 | `payment.failed`               | payment-module  | booking-service, notification-service | Pago fallido                             |
 | `settlement.paid`              | booking-service | notification-service                  | Pago semanal transferido al proveedor    |
+
+**Notas del notification-service:**
+
+- Cada evento genera una notificación in-app (persistida en MongoDB + push WebSocket) y, si el payload incluye `email`, además un email con su template Thymeleaf (`booking-completed`, `completion-requested`, `settlement-paid`, etc.).
+- Para `settlement.paid` el destinatario no es el turista (`userId`) sino el **proveedor** (`providerId` del payload).
 
 ## 6. Acceso a servicios
 
@@ -2589,7 +2629,7 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 
 | Funcionalidad                                                                           | Prioridad                                                  |
 | --------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Sistema de pagos semanales a proveedores (comisiones, settlements, dashboard)           | 🔴 No implementado (planificado en DOCUMENTACION_PAGOS.md) |
+| Sistema de pagos semanales a proveedores (comisiones, settlements, dashboard)           | ✅ Implementado (ver DOCUMENTACION_PAGOS.md)       |
 | MercadoPago Checkout Pro + Webhooks + Reembolsos                                        | ✅ Implementado (Checkout Pro, webhooks, refunds)          |
 | Pasarela de pago real (Stripe/Wompi/MercadoPago)                                        | 🟡 Media                                                   |
 | Sistema de recomendaciones por IA (gustos e intereses del usuario → destinos y ofertas) | Alta                                                       |
@@ -2628,10 +2668,11 @@ MercadoPago envía un POST a `POST /api/v1/webhooks/payments` con este payload:
 El backend procesa así:
 
 1. Extrae el `payment_id` del payload
-2. Llama a `MercadoPagoProvider.getExternalReferenceFromPayment(mpPaymentId)` → hace GET a la API de MercadoPago para obtener el `external_reference`
-3. Busca el pago por `bookingId` en la DB
-4. Actualiza el estado a `PAID`
-5. Publica evento `payment.completed` en RabbitMQ → BookingService confirma la reserva
+2. **Verifica la firma HMAC-SHA256** (headers `x-signature` y `x-request-id` contra `MERCADOPAGO_WEBHOOK_SECRET`); si es inválida responde `401` y descarta la notificación
+3. Llama a `MercadoPagoProvider.getExternalReferenceFromPayment(mpPaymentId)` → hace GET a la API de MercadoPago para obtener el `external_reference`
+4. Busca el pago por `bookingId` en la DB
+5. Actualiza el estado a `PAID`
+6. Publica evento `payment.completed` en RabbitMQ → BookingService confirma la reserva
 
 ### 8.3 Desarrollo local — ngrok
 
@@ -2640,7 +2681,10 @@ El backend procesa así:
 **Solución:** Usar ngrok para exponer tu puerto local:
 
 ```bash
-# Instalar ngrok (https://ngrok.com)
+# 1. Asegurarse de que docker-compose esté corriendo
+docker-compose up -d
+
+# 2. En otra terminal, levantar ngrok
 ngrok http 8080
 ```
 
@@ -2650,52 +2694,79 @@ Esto te da una URL pública temporal como:
 https://abcd1234.ngrok-free.app
 ```
 
-Configurar en `.env`:
+### 8.4 Configurar ngrok paso a paso
+
+**Paso 1: Actualizar `.env`**
 
 ```env
 APP_BASE_URL=https://abcd1234.ngrok-free.app
 PAYMENT_PROVIDER=MERCADOPAGO
-MERCADOPAGO_ACCESS_TOKEN=TEST-2109324389320804-...
 ```
 
-MercadoPago enviará el webhook a:
+> **IMPORTANTE:** La URL de ngrok cambia cada vez que reiniciás ngrok. Actualizá `APP_BASE_URL` en `.env` cada vez que levantes ngrok.
 
+**Paso 2: Reiniciar docker-compose para que booking-service tome la nueva URL**
+
+```bash
+docker-compose down && docker-compose up -d
 ```
-POST https://abcd1234.ngrok-free.app/api/v1/webhooks/payments
-```
 
-### 8.4 Producción — MercadoPago Dashboard
+**Paso 3: Configurar webhook en MercadoPago Dashboard**
 
-En el Dashboard de MercadoPago (`https://www.mercadopago.com.ar/developers`):
-
-1. Seleccionar tu aplicación
-2. Ir a **Webhooks**
-3. Configurar la URL: `https://tudominio.com/api/v1/webhooks/payments`
-4. Seleccionar evento: **Pagos**
+1. Ir a https://www.mercadopago.com.ar/developers
+2. Seleccionar tu aplicación
+3. Ir a **Webhooks**
+4. Crear un webhook con:
+   - **URL:** `https://tu-url-ngrok.ngrok-free.app/api/v1/webhooks/payments`
+   - **Evento:** Pagos
 5. Guardar
 
-### 8.5 Variables de entorno relevantes
+**Paso 4: Verificar que MercadoPago puede alcanzar ngrok**
+
+Abrí la consola de ngrok en el navegador (`http://localhost:4040`) y verificá que aparezcan requests con status `200` cuando MercadoPago envía notificaciones.
+
+### 8.6 Variables de entorno relevantes
 
 | Variable                   | Descripción                                                      | Ejemplo                           |
 | -------------------------- | ---------------------------------------------------------------- | --------------------------------- |
 | `APP_BASE_URL`             | URL pública del backend (donde MercadoPago envía notificaciones) | `https://abcd1234.ngrok-free.app` |
 | `PAYMENT_PROVIDER`         | Proveedor activo: `MOCK` o `MERCADOPAGO`                         | `MERCADOPAGO`                     |
 | `MERCADOPAGO_ACCESS_TOKEN` | Token de acceso TEST o PROD                                      | `TEST-2109324389320804-...`       |
+| `MERCADOPAGO_PUBLIC_KEY`   | Public key para el widget de pago del frontend                   | `TEST-de8789eb-...`               |
+| `MERCADOPAGO_WEBHOOK_SECRET` | Secret para verificar la firma HMAC-SHA256 de los webhooks     | `74fdcd65a5b46d35ec...`           |
 
-### 8.6 Tipos de notificación de MercadoPago
+### 8.7 Tipos de notificación de MercadoPago
 
 | Tipo             | Cuando se envía                    | Nuestro endpoint          |
 | ---------------- | ---------------------------------- | ------------------------- |
 | `payment`        | Cuando cambia el estado de un pago | `POST /webhooks/payments` |
 | `merchant_order` | Cuando se crea/actualiza una orden | (no implementado)         |
 
-### 8.7 Prueba del flujo completo (LOCAL)
+### 8.8 Prueba del flujo completo (LOCAL)
 
-1. Levantar ngrok: `ngrok http 8080`
-2. Configurar `.env` con `APP_BASE_URL` de ngrok y `PAYMENT_PROVIDER=MERCADOPAGO`
-3. Crear reserva → ir a checkout → MercadoPago redirige a página de pago
-4. Usar tarjeta de prueba de MercadoPago (ej: `5031 7557 3453 0604`, CVV: `123`, vencimiento futuro)
-5. Completar el pago
-6. MercadoPago envía webhook a ngrok → se procesa → reserva se confirma
+1. Levantar docker-compose: `docker-compose up -d`
+2. Levantar ngrok: `ngrok http 8080`
+3. Copiar la URL de ngrok (ej: `https://abcd1234.ngrok-free.app`)
+4. Actualizar `APP_BASE_URL` en `.env` con esa URL
+5. Reiniciar booking-service: `docker-compose restart booking-service`
+6. Configurar el webhook en MercadoPago Dashboard con la URL de ngrok
+7. Crear reserva → ir a checkout → MercadoPago redirige a página de pago
+8. Usar tarjeta de prueba de MercadoPago:
+   - Número: `5031 7557 3453 0604`
+   - CVV: `123`
+   - Vencimiento: futuro (ej: 12/25)
+   - DNI: `12345678`
+9. Completar el pago
+10. MercadoPago envía webhook a ngrok → se procesa → reserva se confirma
+
+### 8.9 Troubleshooting
+
+| Problema                                     | Causa posible                                                 | Solución                                                                                                     |
+| -------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Botón de pago deshabilitado                  | Public key no coincide con el ambiente                        | Verificar que la public key en el frontend coincida con las credenciales en `.env`                           |
+| Pago se completa pero reserva no se confirma | Webhook no llega                                              | Verificar que ngrok esté corriendo y la URL en MercadoPago Dashboard sea correcta                            |
+| Webhook retorna error 5xx                    | booking-service no está corriendo o hay error en DB           | Revisar logs de booking-service con `docker-compose logs booking-service`                                    |
+| URL de ngrok cambió                          | ngrok se reinició                                             | Actualizar `APP_BASE_URL` en `.env`, reiniciar docker-compose, y actualizar webhook en MercadoPago Dashboard |
+| Reserva queda en PENDING_PAYMENT             | El pago fue aprobado pero el webhook no procesó correctamente | Verificar en la consola de ngrok (`localhost:4040`) que los requests llegan con status 200                   |
 
 ---

@@ -1,0 +1,139 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/provider-sales"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Venta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="detail-content">
+  @if (loading) {
+    <div class="loading-state">
+      <ion-spinner></ion-spinner>
+      <p>Cargando detalle...</p>
+    </div>
+  } @else if (error) {
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <h4>{{ errorMessage }}</h4>
+      <ion-button fill="outline" (click)="ngOnInit()">Reintentar</ion-button>
+    </div>
+  } @else if (booking()) {
+    <div class="hero">
+      @if (firstImage) {
+        <ion-img [src]="firstImage" />
+      } @else {
+        <div class="img-placeholder">
+          <ion-icon name="storefront-outline"></ion-icon>
+        </div>
+      }
+      <div class="hero-chip">
+        <ion-chip [color]="statusColor(booking()!.status)">
+          {{ statusLabel(booking()!.status) }}
+        </ion-chip>
+      </div>
+    </div>
+
+    <div class="card main-card">
+      <h2>{{ offer()?.name ?? 'Oferta' }}</h2>
+      <p class="offer-type">{{ typeLabel(offer()?.type) }}</p>
+      <p class="description">{{ offer()?.description }}</p>
+    </div>
+
+    <div class="card">
+      <h3>Detalles de la venta</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span>ID de venta</span>
+          <strong>#{{ booking()!.id }}</strong>
+        </div>
+        <div class="info-item">
+          <span>Tipo de oferta</span>
+          <strong>{{ typeLabel(offer()?.type) }}</strong>
+        </div>
+        <div class="info-item">
+          <span>Cantidad</span>
+          <strong>{{ booking()!.quantity }}</strong>
+        </div>
+        <div class="info-item">
+          <span>Fecha de inicio</span>
+          <strong>{{ formatDate(booking()!.startDate) }}</strong>
+        </div>
+        @if (booking()!.endDate) {
+        <div class="info-item">
+          <span>Fecha de fin</span>
+          <strong>{{ formatDate(booking()!.endDate!) }}</strong>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Resumen de pago</h3>
+      <div class="price-row total">
+        <strong>Total pagado</strong>
+        <strong>{{ formattedTotal }}</strong>
+      </div>
+    </div>
+
+    @if (hasPayment()) {
+    <div class="card">
+      <h3>Pago</h3>
+      <div class="payment-row">
+        <span>Monto</span>
+        <strong>{{ getPayment()!.amount | currency:'COP':'symbol':'1.0-0' }}</strong>
+      </div>
+      <div class="payment-row">
+        <span>Estado</span>
+        <span class="status-badge" [ngClass]="paymentStatusClass(getPayment()!.status)">
+          {{ paymentStatusLabel(getPayment()!.status) }}
+        </span>
+      </div>
+      <div class="payment-row">
+        <span>Fecha</span>
+        <strong>{{ formatDateTime(getPayment()!.paidAt) }}</strong>
+      </div>
+    </div>
+    }
+
+    @if (booking()!.statusHistory && booking()!.statusHistory.length > 0) {
+    <div class="card">
+      <h3>Historial de estados</h3>
+      <div class="status-timeline">
+        @for (entry of booking()!.statusHistory; track entry.changedAt; let last = $last) {
+        <div class="timeline-item">
+          <div class="timeline-dot" [ngClass]="historyClass(entry.status)"></div>
+          @if (!last) {
+          <div class="timeline-line"></div>
+          }
+          <div class="timeline-content">
+            <span class="timeline-label">{{ historyLabel(entry.status) }}</span>
+            <span class="timeline-date">{{ formatDateTime(entry.changedAt) }}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <div class="actions">
+      @if (actionLoading) {
+        <div class="processing-state">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Procesando...</span>
+        </div>
+      } @else if (canRequestCompletion()) {
+        <ion-button expand="block" class="action-btn" (click)="requestCompletion()">
+          <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+          Solicitar completación
+        </ion-button>
+      } @else if (isWaitingConfirmation()) {
+        <div class="waiting-info">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>Esperando confirmación del cliente</span>
+        </div>
+      }
+    </div>
+  }
+</ion-content>

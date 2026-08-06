@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { Observable, catchError, from, map, of, throwError, firstValueFrom } from 'rxjs';
 import { Booking, BookingDetail } from '../models/Reservations';
 import { BookingResponseDto } from '../DTO/BookingResponseDto';
 import { BookingDetailResponseDto } from '../DTO/BookingDetailResponseDto';
+import { ProviderDashboardDto } from '../DTO/ProviderDashboardDto';
 import {
   toBooking,
   toBookingDetail,
@@ -11,12 +12,14 @@ import {
 } from '../adapters/BookingAdapter';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { OfferService } from './offers';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BookingService {
   private http = inject(HttpClient);
+  private offerService = inject(OfferService);
 
   private readonly api = `${environment.apiUrl}/booking`;
 
@@ -38,22 +41,56 @@ export class BookingService {
       );
   }
 
-  getProviderBookings(params?: { page?: number; size?: number }): Observable<any> {
+  getProviderBookings(params?: { page?: number; size?: number }): Observable<{ content: Booking[] }> {
+    return from(this.fetchProviderBookings()).pipe(
+      map((content) => ({ content })),
+      catchError((err) => {
+        console.error('Error fetching provider bookings', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  private async fetchProviderBookings(params?: { page?: number; size?: number }): Promise<Booking[]> {
+    const userId = this.getCurrentUserId();
+    if (!userId) return [];
+
+    const offersRes = await firstValueFrom(
+      this.offerService.findAll({ providerId: userId, page: 0, size: 100 }),
+    );
+    const offers = offersRes.content ?? [];
+    if (offers.length === 0) return [];
+
+    const offerIds = new Set(offers.map((o: any) => String(o.id)));
+    const offerById = new Map(offers.map((o: any) => [String(o.id), o]));
+
     let httpParams = new HttpParams();
-    if (params?.page) httpParams = httpParams.set('page', params.page);
-    if (params?.size) httpParams = httpParams.set('size', params.size);
-    return this.http
-      .get<{ content: BookingResponseDto[] }>(`${this.api}/provider`, { params: httpParams })
-      .pipe(
-        map((res) => ({
-          ...res,
-          content: (res.content ?? []).map(toBooking),
-        })),
-        catchError((err) => {
-          console.error('Error fetching provider bookings', err);
-          return throwError(() => err);
-        }),
-      );
+    httpParams = httpParams.set('size', String(params?.size ?? 1000));
+    if (params?.page !== undefined) httpParams = httpParams.set('page', params.page);
+
+    const res = await firstValueFrom(
+      this.http.get<{ content: BookingResponseDto[] }>(this.api, { params: httpParams }),
+    );
+    const all = res.content ?? [];
+    return all
+      .filter((b) => offerIds.has(String(b.offerId)))
+      .map((b) => {
+        const offer = offerById.get(String(b.offerId)) as any;
+        return {
+          ...toBooking(b),
+          offerName: b.offerName ?? offer?.name,
+          offerImage: offer?.images?.[0]?.imageUrl ?? offer?.images?.[0] ?? '',
+        } as Booking;
+      });
+  }
+
+  getProviderDashboard(): Observable<ProviderDashboardDto> {
+    return this.http.get<ProviderDashboardDto>(`${environment.apiUrl}/providers/dashboard`).pipe(
+      catchError((err) => {
+        console.error('Error fetching provider dashboard', err);
+        return throwError(() => err);
+      }),
+    );
   }
 
   getUserBookings(userId: string, params?: { page?: number; size?: number }): Observable<any> {
@@ -161,6 +198,37 @@ export class BookingService {
           return throwError(() => err);
         }),
       );
+  }
+
+  requestCompletion(id: number | string): Observable<Booking> {
+    const headers = new HttpHeaders({ 'X-User-Id': this.getCurrentUserId() });
+    return this.http
+      .post<BookingResponseDto>(`${this.api}/${id}/complete-request`, {}, { headers })
+      .pipe(
+        map(toBooking),
+        catchError((err) => {
+          console.error('Error requesting completion', err);
+          return throwError(() => err);
+        }),
+      );
+  }
+
+  confirmCompletion(id: number | string): Observable<Booking> {
+    const headers = new HttpHeaders({ 'X-User-Id': this.getCurrentUserId() });
+    return this.http
+      .post<BookingResponseDto>(`${this.api}/${id}/confirm-completion`, {}, { headers })
+      .pipe(
+        map(toBooking),
+        catchError((err) => {
+          console.error('Error confirming completion', err);
+          return throwError(() => err);
+        }),
+      );
+  }
+
+  private getCurrentUserId(): string {
+    const raw = localStorage.getItem('user');
+    return raw ? (JSON.parse(raw).id ?? '') : '';
   }
 
   getBlockedDates(offerId: string): Observable<string[]> {

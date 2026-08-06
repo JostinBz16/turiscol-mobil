@@ -12,6 +12,7 @@ export function toBooking(dto: BookingResponseDto): Booking {
   return {
     id: dto.id,
     offerId: dto.offerId,
+    offerName: dto.offerName,
     status: dto.status as BookingStatus,
     totalAmount: dto.totalAmount,
     currency: dto.currency,

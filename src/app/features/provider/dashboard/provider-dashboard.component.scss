@@ -49,6 +49,10 @@
       color: #fff;
     }
 
+    &.total-icon {
+      background: linear-gradient(135deg, #8e2de2, #4a00e0);
+    }
+
     &.active-icon {
       background: linear-gradient(135deg, #4facfe, #00f2fe);
     }
@@ -57,8 +61,16 @@
       background: linear-gradient(135deg, #f093fb, #f5576c);
     }
 
-    &.revenue-icon {
+    &.completed-icon {
       background: linear-gradient(135deg, #43e97b, #38f9d7);
+    }
+
+    &.cancelled-icon {
+      background: linear-gradient(135deg, #f5576c, #c43a5e);
+    }
+
+    &.revenue-icon {
+      background: linear-gradient(135deg, #f7971e, #ffd200);
     }
   }
 
@@ -84,6 +96,60 @@
   flex-direction: column;
   gap: 10px;
   margin-bottom: 24px;
+}
+
+.payout-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: linear-gradient(135deg, #1f2937, #111827);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+
+  .payout-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    ion-icon {
+      font-size: 26px;
+      color: #ffd200;
+    }
+
+    .payout-info {
+      display: flex;
+      flex-direction: column;
+
+      .payout-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .payout-value {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #fff;
+      }
+    }
+  }
+
+  .payout-right {
+    text-align: right;
+
+    .payout-date {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .payout-sub {
+      font-size: 0.68rem;
+      color: rgba(255, 255, 255, 0.45);
+    }
+  }
 }
 
 .action-btn {

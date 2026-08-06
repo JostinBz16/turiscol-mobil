@@ -159,6 +159,7 @@ export class ReservationsPage implements OnInit {
     return {
       PENDING_PAYMENT: 'Pendiente de pago',
       CONFIRMED: 'Confirmada',
+      COMPLETION_REQUESTED: 'En completación',
       CANCELLED: 'Cancelada',
       COMPLETED: 'Completada',
       EXPIRED: 'Expirada',
@@ -170,6 +171,7 @@ export class ReservationsPage implements OnInit {
     return {
       PENDING_PAYMENT: 'pending',
       CONFIRMED: 'confirmed',
+      COMPLETION_REQUESTED: 'completion-requested',
       CANCELLED: 'cancelled',
       COMPLETED: 'completed',
       EXPIRED: 'expired',

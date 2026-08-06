@@ -156,6 +156,13 @@ export const routes: Routes = [
                 (m) => m.ProviderSalesPage,
               ),
           },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('../../features/provider/sales/booking-detail/booking-detail.page').then(
+                (m) => m.ProviderBookingDetailPage,
+              ),
+          },
         ],
       },
 
