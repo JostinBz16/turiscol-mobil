@@ -214,3 +214,178 @@ ion-back-button {
   text-transform: none;
   box-shadow: 0 8px 24px rgba(22, 163, 74, 0.35);
 }
+
+/* ================= PAYMENT CONFIRMED ================= */
+.payment-confirmed {
+  border: 1.5px solid #dcfce7;
+}
+
+.payment-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.payment-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 28px;
+    color: #16a34a;
+  }
+}
+
+.payment-title {
+  h3 {
+    margin: 0 0 2px;
+    font-size: 16px;
+    color: #166534;
+  }
+
+  .payment-method {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+  }
+}
+
+.payment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+
+  span {
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+}
+
+/* ================= PAYMENT STATUS BADGE ================= */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+
+  &.paid {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #166534;
+  }
+
+  &.pending {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+  }
+
+  &.failed {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #991b1b;
+  }
+
+  &.refunded {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+  }
+}
+
+/* ================= STATUS TIMELINE ================= */
+.status-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 14px;
+  position: relative;
+  padding-bottom: 20px;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+  position: relative;
+  z-index: 2;
+
+  &.pending {
+    background: #f59e0b;
+  }
+
+  &.confirmed {
+    background: #16a34a;
+  }
+
+  &.cancelled {
+    background: #ef4444;
+  }
+
+  &.completed {
+    background: #3b82f6;
+  }
+
+  &.expired {
+    background: #9ca3af;
+  }
+
+  &.failed {
+    background: #ef4444;
+  }
+}
+
+.timeline-line {
+  position: absolute;
+  left: 5px;
+  top: 15px;
+  bottom: 0;
+  width: 2px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timeline-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.timeline-date {
+  font-size: 12px;
+  color: #94a3b8;
+}

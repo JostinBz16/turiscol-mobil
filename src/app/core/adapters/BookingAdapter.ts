@@ -33,6 +33,7 @@ export function toBookingDetail(
       status: p.status,
       amount: p.amount,
       currency: p.currency,
+      paidAt: p.paidAt,
       createdAt: p.createdAt,
     })),
     statusHistory: (dto.statusHistory ?? []).map((h) => ({

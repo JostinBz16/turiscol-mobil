@@ -87,7 +87,20 @@
           <span class="price">
             {{ (offerPrice(item.offer) * item.booking.quantity) | currency:'COP':'symbol':'1.0-0' }}
           </span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
+          @if (item.booking.status === 'PENDING_PAYMENT') {
+            @if (isProcessing(item.booking.id)) {
+              <div class="pay-btn loading">
+                <ion-spinner name="crescent"></ion-spinner>
+              </div>
+            } @else {
+              <button class="pay-btn" (click)="pay($event, item.booking)">
+                <ion-icon name="card-outline"></ion-icon>
+                Pagar
+              </button>
+            }
+          } @else {
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          }
         </div>
       </div>
     </div>

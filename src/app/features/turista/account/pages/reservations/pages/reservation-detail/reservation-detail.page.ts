@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Booking, BookingStatus } from 'src/app/core/models/Reservations';
+import { Booking, BookingDetail, BookingStatus } from 'src/app/core/models/Reservations';
 import { BookingService } from 'src/app/core/services/booking';
 import {
   IonHeader,
@@ -46,7 +46,7 @@ export class ReservationDetailPage implements OnInit {
   private offerService = inject(OfferService);
   navService = inject(NavigationService);
 
-  booking = signal<Booking | null>(null);
+  booking = signal<BookingDetail | null>(null);
   offer = signal<Offer | null>(null);
   processingPayment = signal(false);
 
@@ -63,6 +63,10 @@ export class ReservationDetailPage implements OnInit {
 
     this.bookingService.getBookingById(id).subscribe((booking) => {
       if (!booking) return;
+
+      console.log('[ReservationDetail] Booking loaded:', JSON.stringify(booking, null, 2));
+      console.log('[ReservationDetail] Payments:', booking.payments);
+      console.log('[ReservationDetail] StatusHistory:', booking.statusHistory);
 
       this.booking.set(booking);
 
@@ -226,5 +230,69 @@ export class ReservationDetailPage implements OnInit {
 
   total() {
     return this.subtotal() + this.taxes();
+  }
+
+  hasPayment(): boolean {
+    return (this.booking()?.payments?.length ?? 0) > 0;
+  }
+
+  getPayment() {
+    return this.booking()?.payments?.[0] ?? null;
+  }
+
+  isConfirmed(): boolean {
+    return this.booking()?.status === BookingStatus.CONFIRMED;
+  }
+
+  paymentStatusLabel(status: string): string {
+    return {
+      PAID: 'Pagado',
+      PENDING: 'Pendiente',
+      FAILED: 'Fallido',
+      REFUNDED: 'Reembolsado',
+    }[status] ?? status;
+  }
+
+  paymentStatusClass(status: string): string {
+    return {
+      PAID: 'paid',
+      PENDING: 'pending',
+      FAILED: 'failed',
+      REFUNDED: 'refunded',
+    }[status] ?? '';
+  }
+
+  formatDateTime(dateStr: string): string {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  }
+
+  statusHistoryLabel(status: string): string {
+    return {
+      PENDING_PAYMENT: 'Pendiente de pago',
+      CONFIRMED: 'Confirmada',
+      CANCELLED: 'Cancelada',
+      COMPLETED: 'Completada',
+      EXPIRED: 'Expirada',
+      FAILED: 'Fallida',
+    }[status] ?? status;
+  }
+
+  statusHistoryClass(status: string): string {
+    return {
+      PENDING_PAYMENT: 'pending',
+      CONFIRMED: 'confirmed',
+      CANCELLED: 'cancelled',
+      COMPLETED: 'completed',
+      EXPIRED: 'expired',
+      FAILED: 'failed',
+    }[status] ?? '';
   }
 }

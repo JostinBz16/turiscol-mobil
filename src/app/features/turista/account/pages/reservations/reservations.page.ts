@@ -11,6 +11,7 @@ import {
   IonChip,
   IonIcon,
   IonButton,
+  IonSpinner,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { Booking, BookingStatus } from 'src/app/core/models/Reservations';
@@ -20,6 +21,7 @@ import { Offer } from 'src/app/core/models/Offers';
 import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { Browser } from '@capacitor/browser';
 
 @Component({
   selector: 'app-reservations',
@@ -38,6 +40,7 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
     IonChip,
     IonIcon,
     IonButton,
+    IonSpinner,
   ],
 })
 export class ReservationsPage implements OnInit {
@@ -50,6 +53,7 @@ export class ReservationsPage implements OnInit {
   offersByBooking = signal<Offer[]>([]);
   loading = signal(true);
   filtroActivo = signal<BookingStatus | 'ALL'>('ALL');
+  processingBookingId = signal<number | null>(null);
 
   readonly filtroOptions: { label: string; value: BookingStatus | 'ALL' }[] = [
     { label: 'Todas', value: 'ALL' },
@@ -103,6 +107,52 @@ export class ReservationsPage implements OnInit {
 
   goToExplore() {
     this.router.navigate(['/tabs/offers']);
+  }
+
+  isProcessing(bookingId: number): boolean {
+    return this.processingBookingId() === bookingId;
+  }
+
+  async pay(event: Event, booking: Booking) {
+    event.stopPropagation();
+    if (this.processingBookingId()) return;
+
+    this.processingBookingId.set(booking.id);
+
+    this.bookingService.checkout(booking.id).subscribe({
+      next: async (checkout) => {
+        await Browser.open({ url: checkout.checkoutUrl });
+
+        Browser.addListener('browserFinished', () => {
+          this.processingBookingId.set(null);
+          this.reloadBookings();
+        });
+      },
+      error: (err) => {
+        this.processingBookingId.set(null);
+        console.error('Checkout error', err);
+      },
+    });
+  }
+
+  private reloadBookings() {
+    this.loading.set(true);
+    this.bookingService.getBookings().pipe(
+      finalize(() => this.loading.set(false)),
+    ).subscribe((res) => {
+      const bookings: Booking[] = res.content ?? res;
+      this.bookings.set(bookings);
+
+      if (bookings.length === 0) return;
+
+      const requests = bookings.map((b: Booking) =>
+        this.offerService.getById(b.offerId),
+      );
+
+      forkJoin(requests).subscribe((offers: any) => {
+        this.offersByBooking.set((offers ?? []).filter(Boolean) as Offer[]);
+      });
+    });
   }
 
   statusLabel(status: BookingStatus): string {

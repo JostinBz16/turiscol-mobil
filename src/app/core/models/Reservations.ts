@@ -21,6 +21,7 @@ export interface PaymentResponse {
   amount: number;
   currency: string;
   status: string;
+  paidAt: string;
   createdAt: string;
 }
 

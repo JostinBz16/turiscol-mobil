@@ -314,3 +314,40 @@ ion-back-button {
     color: #cbd5e1;
   }
 }
+
+/* ================= PAY BUTTON ================= */
+.pay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  ion-icon {
+    font-size: 16px;
+    color: #ffffff;
+  }
+
+  &.loading {
+    padding: 8px 20px;
+    cursor: default;
+
+    ion-spinner {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}

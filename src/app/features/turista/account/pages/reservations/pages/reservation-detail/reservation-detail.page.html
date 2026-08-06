@@ -71,6 +71,59 @@
     </div>
   </div>
 
+  <!-- PAYMENT CONFIRMATION -->
+  @if (hasPayment()) {
+  <div class="card payment-confirmed">
+    <div class="payment-header">
+      <div class="payment-icon">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+      <div class="payment-title">
+        <h3>Pago confirmado</h3>
+        <span class="payment-method">MercadoPago</span>
+      </div>
+    </div>
+
+    <div class="payment-details">
+      <div class="payment-detail-row">
+        <span>Fecha del pago</span>
+        <strong>{{ formatDateTime(getPayment()!.paidAt) }}</strong>
+      </div>
+      <div class="payment-detail-row">
+        <span>Monto pagado</span>
+        <strong>{{ getPayment()!.amount | currency:'COP':'symbol':'1.0-0' }}</strong>
+      </div>
+      <div class="payment-detail-row">
+        <span>Estado</span>
+        <span class="status-badge" [ngClass]="paymentStatusClass(getPayment()!.status)">
+          {{ paymentStatusLabel(getPayment()!.status) }}
+        </span>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- STATUS HISTORY -->
+  @if (booking()!.statusHistory && booking()!.statusHistory.length > 0) {
+  <div class="card">
+    <h3>Historial de estados</h3>
+    <div class="status-timeline">
+      @for (entry of booking()!.statusHistory; track entry.changedAt; let last = $last) {
+      <div class="timeline-item">
+        <div class="timeline-dot" [ngClass]="statusHistoryClass(entry.status)"></div>
+        @if (!last) {
+          <div class="timeline-line"></div>
+        }
+        <div class="timeline-content">
+          <span class="timeline-label">{{ statusHistoryLabel(entry.status) }}</span>
+          <span class="timeline-date">{{ formatDateTime(entry.changedAt) }}</span>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
   <!-- PAY BUTTON -->
   @if (canPay()) {
   <div class="pay-button-container">
