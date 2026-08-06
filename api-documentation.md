@@ -656,10 +656,10 @@ MercadoPago firma cada notificación con HMAC-SHA256. El endpoint valida la firm
 
 **Headers:**
 
-| Nombre         | Tipo   | Requerido | Descripción                                                        |
-| -------------- | ------ | --------- | ------------------------------------------------------------------ |
-| `x-signature`  | String | Sí        | `ts=<timestamp>,v1=<hmac-hex>` (firma v1 de MercadoPago)           |
-| `x-request-id` | String | Sí        | UUID de la petición incluido en el manifest firmado                |
+| Nombre         | Tipo   | Requerido | Descripción                                              |
+| -------------- | ------ | --------- | -------------------------------------------------------- |
+| `x-signature`  | String | Sí        | `ts=<timestamp>,v1=<hmac-hex>` (firma v1 de MercadoPago) |
+| `x-request-id` | String | Sí        | UUID de la petición incluido en el manifest firmado      |
 
 **Algoritmo:** HMAC-SHA256 (clave = `MERCADOPAGO_WEBHOOK_SECRET`) sobre el manifest:
 
@@ -671,10 +671,10 @@ El resultado (hexadecimal) debe ser idéntico al valor `v1` del header `x-signat
 
 **Respuestas:**
 
-| Código | Caso                                                       |
-| ------ | ---------------------------------------------------------- |
-| `401`  | Firma ausente o inválida (el webhook se rechaza)           |
-| `200`  | Firma válida y pago procesado                              |
+| Código | Caso                                             |
+| ------ | ------------------------------------------------ |
+| `401`  | Firma ausente o inválida (el webhook se rechaza) |
+| `200`  | Firma válida y pago procesado                    |
 
 > Si `MERCADOPAGO_WEBHOOK_SECRET` no está configurado, la verificación queda **deshabilitada** (solo se loguea un warning). Configurar siempre el secret en `.env`.
 
@@ -2584,11 +2584,11 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 
 ### 5.2 Colas y Bindings
 
-| Cola                       | Routing Keys                         | Dead Letter               | Servicio             |
-| -------------------------- | ------------------------------------ | ------------------------- | -------------------- |
-| `booking.experience.queue` | `experience.*`                       | `booking.events.dlq`      | booking-service      |
-| `booking.payment.queue`    | `payment.*`                          | `booking.events.dlq`      | booking-service      |
-| `payment.booking.queue`    | `booking.*`                          | `booking.events.dlq`      | booking-service      |
+| Cola                       | Routing Keys                                         | Dead Letter               | Servicio             |
+| -------------------------- | ---------------------------------------------------- | ------------------------- | -------------------- |
+| `booking.experience.queue` | `experience.*`                                       | `booking.events.dlq`      | booking-service      |
+| `booking.payment.queue`    | `payment.*`                                          | `booking.events.dlq`      | booking-service      |
+| `payment.booking.queue`    | `booking.*`                                          | `booking.events.dlq`      | booking-service      |
 | `notification.events`      | `booking.*`, `payment.*`, `review.*`, `settlement.*` | `notification.events.dlq` | notification-service |
 
 ### 5.3 Eventos del Dominio
@@ -2627,15 +2627,12 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 
 ## 7. Mejoras pendientes (tener en cuenta)
 
-| Funcionalidad                                                                           | Prioridad                                                  |
-| --------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Sistema de pagos semanales a proveedores (comisiones, settlements, dashboard)           | ✅ Implementado (ver DOCUMENTACION_PAGOS.md)       |
-| MercadoPago Checkout Pro + Webhooks + Reembolsos                                        | ✅ Implementado (Checkout Pro, webhooks, refunds)          |
-| Pasarela de pago real (Stripe/Wompi/MercadoPago)                                        | 🟡 Media                                                   |
-| Sistema de recomendaciones por IA (gustos e intereses del usuario → destinos y ofertas) | Alta                                                       |
-| Chat bot para interacción con usuarios                                                  | Alta                                                       |
-| Tests de integración (Testcontainers)                                                   | Baja                                                       |
-| Cleanup de notificaciones viejas (TTL)                                                  | Baja                                                       |
+| Funcionalidad                                                                           | Prioridad                                         |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| Sistema de pagos semanales a proveedores (comisiones, settlements, dashboard)           | ✅ Implementado (ver DOCUMENTACION_PAGOS.md)      |
+| MercadoPago Checkout Pro + Webhooks + Reembolsos                                        | ✅ Implementado (Checkout Pro, webhooks, refunds) |
+| Sistema de recomendaciones por IA (gustos e intereses del usuario → destinos y ofertas) | Alta                                              |
+| Chat bot para interacción con usuarios                                                  | Alta                                              |
 
 **Contexto:** Para push notifications se necesita Firebase Cloud Messaging (FCM) + plugin `@capacitor/push-notifications` en Ionic.
 
@@ -2727,13 +2724,13 @@ Abrí la consola de ngrok en el navegador (`http://localhost:4040`) y verificá 
 
 ### 8.6 Variables de entorno relevantes
 
-| Variable                   | Descripción                                                      | Ejemplo                           |
-| -------------------------- | ---------------------------------------------------------------- | --------------------------------- |
-| `APP_BASE_URL`             | URL pública del backend (donde MercadoPago envía notificaciones) | `https://abcd1234.ngrok-free.app` |
-| `PAYMENT_PROVIDER`         | Proveedor activo: `MOCK` o `MERCADOPAGO`                         | `MERCADOPAGO`                     |
-| `MERCADOPAGO_ACCESS_TOKEN` | Token de acceso TEST o PROD                                      | `TEST-2109324389320804-...`       |
-| `MERCADOPAGO_PUBLIC_KEY`   | Public key para el widget de pago del frontend                   | `TEST-de8789eb-...`               |
-| `MERCADOPAGO_WEBHOOK_SECRET` | Secret para verificar la firma HMAC-SHA256 de los webhooks     | `74fdcd65a5b46d35ec...`           |
+| Variable                     | Descripción                                                      | Ejemplo                           |
+| ---------------------------- | ---------------------------------------------------------------- | --------------------------------- |
+| `APP_BASE_URL`               | URL pública del backend (donde MercadoPago envía notificaciones) | `https://abcd1234.ngrok-free.app` |
+| `PAYMENT_PROVIDER`           | Proveedor activo: `MOCK` o `MERCADOPAGO`                         | `MERCADOPAGO`                     |
+| `MERCADOPAGO_ACCESS_TOKEN`   | Token de acceso TEST o PROD                                      | `TEST-2109324389320804-...`       |
+| `MERCADOPAGO_PUBLIC_KEY`     | Public key para el widget de pago del frontend                   | `TEST-de8789eb-...`               |
+| `MERCADOPAGO_WEBHOOK_SECRET` | Secret para verificar la firma HMAC-SHA256 de los webhooks       | `74fdcd65a5b46d35ec...`           |
 
 ### 8.7 Tipos de notificación de MercadoPago
 

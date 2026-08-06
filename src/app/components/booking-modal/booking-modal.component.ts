@@ -271,13 +271,16 @@ export class BookingModalComponent implements OnInit, OnChanges {
     this.errorMessage.set(null);
 
     const { startDate, endDate, quantity, guests } = this.form.value;
+    const startDateOnly = startDate.split('T')[0];
 
     const payload = {
       offerId: this.offer.id,
-      startDate: this.isProduct()
-        ? new Date().toISOString()
-        : startDate.split('T')[0],
-      endDate: endDate ? endDate.split('T')[0] : undefined,
+      startDate: this.isProduct() ? new Date().toISOString() : startDateOnly,
+      endDate: this.isAccommodation()
+        ? (endDate ? endDate.split('T')[0] : undefined)
+        : this.isProduct()
+          ? undefined
+          : startDateOnly,
       quantity: this.isAccommodation() ? this.nights : quantity,
       guestCount: this.isAccommodation() ? guests : undefined,
     };
