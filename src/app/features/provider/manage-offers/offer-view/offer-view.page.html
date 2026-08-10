@@ -1,7 +1,7 @@
 <ion-header class="page-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/manage-offers"></ion-back-button>
+      <ion-back-button [defaultHref]="navService.returnUrl()"></ion-back-button>
     </ion-buttons>
     <ion-title>Detalle de Oferta</ion-title>
     <ion-buttons slot="end">
@@ -116,10 +116,40 @@
         <div class="features-grid">
           <div class="feature">
             <ion-icon name="cube-outline"></ion-icon>
-            <span>Stock: {{ offer.currentStock ?? offer.stock ?? '—' }}</span>
+            <span
+              >{{ offer.isUnlimitedStock ? 'Stock ilimitado' : 'Stock: ' + (stock ?? offer.currentStock ?? offer.stock ?? '—') }}</span
+            >
           </div>
         </div>
       </div>
+
+      @if (!offer.isUnlimitedStock) {
+      <div class="info-section">
+        <h3>Stock</h3>
+        @if (stockLoading) {
+        <div class="loading-state">
+          <ion-spinner></ion-spinner>
+        </div>
+        } @else {
+        <div class="stock-row">
+          <ion-input
+            type="number"
+            min="1"
+            [(ngModel)]="restockQty"
+            class="stock-input"
+            placeholder="Cantidad"
+          ></ion-input>
+          <ion-button color="primary" fill="solid" (click)="restock()" [disabled]="restocking || restockQty < 1">
+            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+            Reponer
+          </ion-button>
+        </div>
+        @if (stockMessage) {
+        <p class="stock-message">{{ stockMessage }}</p>
+        }
+        }
+      </div>
+      }
       }
 
       <!-- IDs -->
@@ -135,17 +165,120 @@
         </div>
       </div>
 
-      <!-- Galería -->
-      @if (offer.images && offer.images.length > 1) {
+      <!-- Galería editable -->
       <div class="info-section">
-        <h3>Galería ({{ offer.images.length }})</h3>
+        <h3>Imágenes ({{ images.length }})</h3>
+
+        @if (imagesLoading) {
+        <div class="loading-state">
+          <ion-spinner></ion-spinner>
+        </div>
+        }
+
+        @if (images.length > 0) {
         <div class="gallery">
-          @for (img of offer.images; track $index) {
-          <ion-img [src]="img"></ion-img>
+          @for (img of images; track img.id) {
+          <div class="gallery-item" [class.primary]="img.isPrimary">
+            <ion-img [src]="img.imageUrl"></ion-img>
+            @if (img.isPrimary) {
+            <div class="primary-badge">
+              <ion-icon name="star-outline"></ion-icon>
+            </div>
+            }
+            <div class="image-actions">
+              @if (!img.isPrimary) {
+              <ion-button size="small" fill="clear" class="img-action" (click)="setPrimary(img)" [disabled]="imageActionId === img.id">
+                <ion-icon slot="icon-only" name="star-outline"></ion-icon>
+              </ion-button>
+              }
+              <ion-button size="small" fill="clear" class="img-action danger" (click)="deleteImage(img)" [disabled]="imageActionId === img.id">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
           }
         </div>
+        } @else {
+        <p class="muted">Aún no hay imágenes</p>
+        }
+
+        <div class="image-inputs">
+          <div class="url-row">
+            <ion-input
+              placeholder="Pegar URL de imagen"
+              [(ngModel)]="newImageUrl"
+              class="url-input"
+            ></ion-input>
+            <ion-button color="primary" fill="solid" (click)="addImageByUrl()" [disabled]="!newImageUrl.trim()">
+              <ion-icon slot="icon-only" name="link-outline"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div class="upload-row">
+            <input
+              type="file"
+              accept="image/*"
+              id="offer-image-upload"
+              class="file-input"
+              (change)="onFileSelected($event)"
+            />
+            <label for="offer-image-upload" class="upload-label">
+              <ion-icon name="camera-outline"></ion-icon>
+              <span>{{ uploading ? 'Subiendo...' : 'Subir imagen' }}</span>
+            </label>
+          </div>
+        </div>
       </div>
-      }
+
+      <!-- Reseñas -->
+      <div class="info-section">
+        <h3>Reseñas ({{ totalReviews }})</h3>
+
+        @if (reviewsLoading) {
+        <div class="loading-state">
+          <ion-spinner></ion-spinner>
+        </div>
+        }
+
+        @if (totalReviews > 0) {
+        <div class="rating-summary">
+          <span class="rating-value">{{ averageRating.toFixed(1) }}</span>
+          <span class="rating-stars">
+            @for (star of getStars(5); track $index) {
+            <ion-icon
+              [name]="$index < Math.round(averageRating) ? 'star' : 'star-outline'"
+              class="star"
+            ></ion-icon>
+            }
+          </span>
+        </div>
+        }
+
+        @if (reviews.length > 0) {
+        <ion-list class="reviews-list">
+          @for (review of reviews; track review.id) {
+          <ion-item lines="full" class="review-item">
+            <ion-label>
+              <div class="review-header">
+                <span class="review-stars">
+                  @for (star of getStars(5); track $index) {
+                  <ion-icon
+                    [name]="$index < review.rating ? 'star' : 'star-outline'"
+                    class="star small"
+                  ></ion-icon>
+                  }
+                </span>
+                <span class="review-date">{{ formatDate(review.createdAt) }}</span>
+              </div>
+              <p class="review-comment">{{ review.comment }}</p>
+            </ion-label>
+          </ion-item>
+          }
+        </ion-list>
+        } @else if (!reviewsLoading) {
+        <p class="muted">Sin reseñas todavía</p>
+        }
+      </div>
     </div>
 
     <!-- Botón editar -->

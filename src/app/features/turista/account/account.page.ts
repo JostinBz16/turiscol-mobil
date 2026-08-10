@@ -27,9 +27,15 @@ import {
   heartOutline,
   gridOutline,
   receiptOutline,
+  cardOutline,
+  checkmarkCircleOutline,
+  walletOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../auth/login/services/auth';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { UserService } from 'src/app/core/services/User';
+import { User } from 'src/app/core/models/User';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-account',
@@ -56,7 +62,9 @@ export class AccountPage implements OnInit {
   private navService = inject(NavigationService);
 
   private authStore = inject(AuthService);
+  private userService = inject(UserService);
   role = this.authStore.role;
+  profile: User | null = null;
   constructor() {
     addIcons({
       arrowBack,
@@ -70,6 +78,9 @@ export class AccountPage implements OnInit {
       settingsOutline,
       gridOutline,
       receiptOutline,
+      cardOutline,
+      checkmarkCircleOutline,
+      walletOutline,
     });
   }
 
@@ -82,6 +93,18 @@ export class AccountPage implements OnInit {
       notificationsOutline,
       logOutOutline,
     });
+
+    if (this.role() === 'proveedor') {
+      this.loadProfile();
+    }
+  }
+
+  private async loadProfile() {
+    try {
+      this.profile = await firstValueFrom(this.userService.getProfile());
+    } catch (err) {
+      console.error('Error loading profile', err);
+    }
   }
 
   goBack() {
@@ -116,8 +139,22 @@ export class AccountPage implements OnInit {
     this.router.navigate(['/tabs/manage-offers']);
   }
 
+  get onboardingCompleted(): boolean {
+    return this.profile?.onboardingCompleted ?? false;
+  }
+
   goToSales() {
     this.navService.setReturnUrl('/tabs/account');
     this.router.navigate(['/tabs/provider-sales']);
+  }
+
+  goToFinance() {
+    this.navService.setReturnUrl('/tabs/account');
+    this.router.navigate(['/tabs/provider-finance']);
+  }
+
+  goToPayments() {
+    this.navService.setReturnUrl('/tabs/account');
+    this.router.navigate(['/tabs/provider-payments']);
   }
 }

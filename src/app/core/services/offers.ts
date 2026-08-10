@@ -219,4 +219,37 @@ export class OfferService {
   ): Observable<AccommodationOffer | EventOffer | ProductOffer> {
     return this.factory.getStrategy(offer.type).getDetail(offer.id);
   }
+
+  getStock(offerId: string): Observable<number> {
+    return this.http.get<number>(`${this.api}/${offerId}/stock`).pipe(
+      catchError((err) => {
+        console.error('Error fetching stock', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  restock(offerId: string, quantity: number, description?: string): Observable<void> {
+    let params = new HttpParams().set('quantity', quantity);
+    if (description) params = params.set('description', description);
+    return this.http
+      .post<void>(`${this.api}/${offerId}/stock/restock`, {}, { params })
+      .pipe(
+        catchError((err) => {
+          console.error('Error restocking product', err);
+          return throwError(() => err);
+        }),
+      );
+  }
+
+  deductStock(offerId: string, quantity: number, referenceId?: string): Observable<void> {
+    return this.http
+      .post<void>(`${this.api}/${offerId}/stock/deduct`, { quantity, referenceId })
+      .pipe(
+        catchError((err) => {
+          console.error('Error deducting stock', err);
+          return throwError(() => err);
+        }),
+      );
+  }
 }

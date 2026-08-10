@@ -172,11 +172,196 @@ h1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 120px;
 
   ion-img {
-    border-radius: 8px;
-    height: 120px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+  }
+
+  &.primary {
+    outline: 2px solid var(--ion-color-warning);
+    outline-offset: -2px;
+  }
+
+  .primary-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(var(--ion-color-warning-rgb), 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 14px;
+      color: #fff;
+    }
+  }
+
+  .image-actions {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    display: flex;
+    gap: 2px;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 8px;
+    padding: 2px;
+
+    .img-action {
+      --padding-start: 6px;
+      --padding-end: 6px;
+      margin: 0;
+      height: 28px;
+      color: #fff;
+
+      &.danger {
+        color: #ff9b9b;
+      }
+    }
+  }
+}
+
+.image-inputs {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .url-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    .url-input {
+      flex: 1;
+      --padding-start: 12px;
+      --padding-end: 12px;
+      --background: var(--ion-color-light);
+      border-radius: 10px;
+    }
+  }
+
+  .upload-row {
+    .file-input {
+      display: none;
+    }
+
+    .upload-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      border: 1.5px dashed var(--ion-color-medium-tint, #d1d5db);
+      border-radius: 10px;
+      color: var(--ion-color-medium, #6b7280);
+      font-size: 0.85rem;
+      cursor: pointer;
+
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+.muted {
+  color: var(--ion-color-medium);
+  font-size: 0.85rem;
+}
+
+.rating-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+
+  .rating-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ion-color-warning);
+  }
+
+  .rating-stars {
+    display: flex;
+    gap: 2px;
+
+    .star {
+      font-size: 1.3rem;
+      color: var(--ion-color-warning);
+    }
+  }
+}
+
+.stock-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  .stock-input {
+    flex: 1;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --background: var(--ion-color-light);
+    border-radius: 10px;
+  }
+}
+
+.stock-message {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--ion-color-success);
+}
+
+.reviews-list {
+  background: transparent;
+  padding: 0;
+
+  .review-item {
+    --background: transparent;
+    --padding-start: 0;
+    --padding-end: 0;
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+
+      .review-stars {
+        display: flex;
+        gap: 1px;
+
+        .star.small {
+          font-size: 0.9rem;
+          color: var(--ion-color-warning);
+        }
+      }
+
+      .review-date {
+        font-size: 0.75rem;
+        color: var(--ion-color-medium);
+      }
+    }
+
+    .review-comment {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--ion-color-dark);
+      line-height: 1.5;
+    }
   }
 }
 

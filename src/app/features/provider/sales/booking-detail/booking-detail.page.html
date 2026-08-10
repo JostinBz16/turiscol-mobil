@@ -1,7 +1,7 @@
 <ion-header class="page-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/provider-sales"></ion-back-button>
+      <ion-back-button [defaultHref]="navService.returnUrl()"></ion-back-button>
     </ion-buttons>
     <ion-title>Detalle de Venta</ion-title>
   </ion-toolbar>

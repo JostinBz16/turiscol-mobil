@@ -35,10 +35,19 @@ export class UserService {
       return throwError(() => new Error('User ID no disponible'));
     }
 
+    const payload = {
+      ...user,
+      userType: this.user.role === 'proveedor' ? 'PROVIDER' : 'TOURIST',
+    };
+
     return this.http
-      .put<User>(`${this.API}/${this.user.id}`, user)
+      .put<User>(`${this.API}/${this.user.id}`, payload)
       .pipe(
-        tap((updatedUser) => this.currentUser$.next(updatedUser)),
+        tap((updatedUser) => {
+          this.currentUser$.next(updatedUser);
+          this.user = { ...this.user!, ...updatedUser };
+          localStorage.setItem('user', JSON.stringify(this.user));
+        }),
         catchError((err) => {
           console.error('Error updating profile', err);
           return throwError(() => err);

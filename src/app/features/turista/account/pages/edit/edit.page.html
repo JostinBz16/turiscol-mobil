@@ -33,7 +33,7 @@
             label="Número de teléfono"
             labelPlacement="stacked"
             type="tel"
-            formControlName="phone"
+            formControlName="phoneNumber"
           ></ion-input>
         </ion-item>
 
@@ -82,6 +82,12 @@
               labelPlacement="stacked"
               formControlName="website"
             ></ion-input>
+          </ion-item>
+
+          <ion-item button (click)="goToPayments()">
+            <ion-label class="payments-link">
+              Configuración de pagos: toca para actualizar tus datos bancarios
+            </ion-label>
           </ion-item>
         </ng-container>
       </ion-list>

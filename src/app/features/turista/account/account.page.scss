@@ -101,6 +101,21 @@ ion-item {
   color: #333;
 }
 
+.item-left .subtext {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #8a8a8a;
+}
+
+.icon-box.warning {
+  background: rgba(var(--ion-color-warning-rgb), 0.15);
+}
+
+.icon-box.warning ion-icon {
+  color: var(--ion-color-warning);
+}
+
 /* Chevron */
 ion-icon[slot="end"] {
   font-size: 20px;

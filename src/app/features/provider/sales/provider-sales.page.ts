@@ -2,16 +2,29 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-  IonIcon, IonChip, IonImg,
-  IonSpinner, IonRefresher, IonRefresherContent,
+  IonContent,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonBackButton,
+  IonIcon,
+  IonChip,
+  IonImg,
+  IonSpinner,
+  IonRefresher,
+  IonRefresherContent,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  chevronForwardOutline, storefrontOutline, receiptOutline, eyeOutline,
+  chevronForwardOutline,
+  storefrontOutline,
+  receiptOutline,
+  eyeOutline,
 } from 'ionicons/icons';
 import { BookingService } from 'src/app/core/services/booking';
 import { Booking } from 'src/app/core/models/Reservations';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 import { firstValueFrom } from 'rxjs';
 
 interface SaleItem {
@@ -30,10 +43,20 @@ type SaleFilter = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
   selector: 'app-provider-sales',
   standalone: true,
   imports: [
-    CommonModule, RouterModule,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-    IonIcon, IonChip, IonImg,
-    IonSpinner, IonRefresher, IonRefresherContent,
+    CommonModule,
+    RouterModule,
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonBackButton,
+    IonIcon,
+    IonChip,
+    IonImg,
+    IonSpinner,
+    IonRefresher,
+    IonRefresherContent,
   ],
   templateUrl: './provider-sales.page.html',
   styleUrls: ['./provider-sales.page.scss'],
@@ -41,6 +64,7 @@ type SaleFilter = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 export class ProviderSalesPage implements OnInit {
   private bookingService = inject(BookingService);
   private router = inject(Router);
+  navService = inject(NavigationService);
 
   sales: SaleItem[] = [];
   activeFilter: SaleFilter = 'all';
@@ -48,7 +72,10 @@ export class ProviderSalesPage implements OnInit {
 
   constructor() {
     addIcons({
-      chevronForwardOutline, storefrontOutline, receiptOutline, eyeOutline,
+      chevronForwardOutline,
+      storefrontOutline,
+      receiptOutline,
+      eyeOutline,
     });
   }
 
@@ -59,8 +86,9 @@ export class ProviderSalesPage implements OnInit {
   async loadSales() {
     this.loading = true;
     try {
-      const res = await firstValueFrom(this.bookingService.getProviderBookings());
-      const content = Array.isArray(res) ? res : (res.content ?? []);
+      const content = await firstValueFrom(
+        this.bookingService.getProviderBookings(),
+      );
       this.sales = content.map((b: Booking) => ({
         id: b.id,
         offerName: b.offerName ?? 'Oferta',
@@ -83,9 +111,7 @@ export class ProviderSalesPage implements OnInit {
   filteredSales(): SaleItem[] {
     switch (this.activeFilter) {
       case 'pending':
-        return this.sales.filter((s) =>
-          s.status === 'PENDING_PAYMENT' || s.status === 'CONFIRMED' || s.status === 'COMPLETION_REQUESTED'
-        );
+        return this.sales.filter((s) => s.status === 'PENDING_PAYMENT');
       case 'confirmed':
         return this.sales.filter((s) => s.status === 'CONFIRMED');
       case 'completed':
@@ -100,9 +126,7 @@ export class ProviderSalesPage implements OnInit {
   filterCount(filter: SaleFilter): number {
     switch (filter) {
       case 'pending':
-        return this.sales.filter((s) =>
-          s.status === 'PENDING_PAYMENT' || s.status === 'CONFIRMED' || s.status === 'COMPLETION_REQUESTED'
-        ).length;
+        return this.sales.filter((s) => s.status === 'PENDING_PAYMENT').length;
       case 'confirmed':
         return this.sales.filter((s) => s.status === 'CONFIRMED').length;
       case 'completed':
@@ -115,6 +139,7 @@ export class ProviderSalesPage implements OnInit {
   }
 
   viewSale(id: string | number) {
+    this.navService.setReturnUrl('/tabs/provider-sales');
     this.router.navigate(['/tabs/provider-sales', id]);
   }
 

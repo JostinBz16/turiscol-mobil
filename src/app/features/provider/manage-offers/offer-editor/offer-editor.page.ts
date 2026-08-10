@@ -25,6 +25,7 @@ import { saveOutline, closeOutline } from 'ionicons/icons';
 import { OfferService } from 'src/app/core/services/offers';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 import { MunicipalityService } from 'src/app/core/services/municipality.service';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -59,6 +60,7 @@ export class OfferEditorPage implements OnInit {
   private offerService = inject(OfferService);
   private authStore = inject(AuthService);
   private municipalityService = inject(MunicipalityService);
+  navService = inject(NavigationService);
 
   isNew = true;
   loading = false;
@@ -243,7 +245,7 @@ export class OfferEditorPage implements OnInit {
       } else if (this.offerId) {
         await firstValueFrom(this.offerService.update(this.offerId, data));
       }
-      this.router.navigate(['/tabs/manage-offers']);
+      this.router.navigate([this.navService.returnUrl()]);
     } catch (err) {
       console.error('Error saving offer', err);
     }
@@ -251,6 +253,6 @@ export class OfferEditorPage implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['/tabs/manage-offers']);
+    this.router.navigate([this.navService.returnUrl()]);
   }
 }

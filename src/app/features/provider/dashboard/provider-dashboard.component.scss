@@ -72,6 +72,18 @@
     &.revenue-icon {
       background: linear-gradient(135deg, #f7971e, #ffd200);
     }
+
+    &.upcoming-icon {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    &.lowstock-icon {
+      background: linear-gradient(135deg, #f7575e, #f5366f);
+    }
+
+    &.rating-icon {
+      background: linear-gradient(135deg, #ffb347, #ffcc33);
+    }
   }
 
   .stat-info {
@@ -280,4 +292,76 @@
   text-align: center;
   padding: 48px 0;
   color: var(--ion-color-medium, #6b7280);
+}
+
+.onboarding-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(var(--ion-color-warning-rgb), 0.12);
+  border: 1px solid rgba(var(--ion-color-warning-rgb), 0.4);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  cursor: pointer;
+
+  ion-icon:first-child {
+    font-size: 24px;
+    color: var(--ion-color-warning);
+  }
+
+  .onboarding-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    span {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ion-text-color, #111827);
+    }
+
+    small {
+      font-size: 0.75rem;
+      color: var(--ion-color-medium, #6b7280);
+    }
+  }
+
+  .chevron {
+    font-size: 18px;
+    color: var(--ion-color-medium, #9ca3af);
+  }
+}
+
+.month-grid {
+  display: flex;
+  gap: 10px;
+
+  .month-card {
+    flex: 1;
+    background: var(--ion-card-background, #fff);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .month-label {
+      font-size: 0.75rem;
+      color: var(--ion-color-medium, #6b7280);
+    }
+
+    .month-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--ion-text-color, #111827);
+    }
+  }
+}
+
+.type-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

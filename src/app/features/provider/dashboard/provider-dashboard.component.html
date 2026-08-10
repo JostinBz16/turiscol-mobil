@@ -6,8 +6,21 @@
   } @else {
     <div class="header-section">
       <h1>Panel de control</h1>
-      <p class="business-name">{{ user?.razonSocial || user?.userName || 'Mi negocio' }}</p>
+      <p class="business-name">
+        {{ user?.razonSocial || user?.userName || "Mi negocio" }}
+      </p>
     </div>
+
+    @if (!stats.onboardingCompleted) {
+      <div class="onboarding-alert" (click)="goToPayments()">
+        <ion-icon name="card-outline"></ion-icon>
+        <div class="onboarding-text">
+          <span>Completa tus datos bancarios para recibir pagos</span>
+          <small>Toca aquí para configurar</small>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+      </div>
+    }
 
     <div class="stats-grid">
       <div class="stat-card">
@@ -65,7 +78,9 @@
           <ion-icon name="trending-up-outline"></ion-icon>
         </div>
         <div class="stat-info">
-          <span class="stat-value">{{ stats.totalRevenue | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="stat-value">{{
+            stats.totalRevenue | currency: "COP" : "symbol" : "1.0-0"
+          }}</span>
           <span class="stat-label">Ingresos totales</span>
         </div>
       </div>
@@ -76,32 +91,90 @@
         <ion-icon name="wallet-outline"></ion-icon>
         <div class="payout-info">
           <span class="payout-label">Disponible para pago</span>
-          <span class="payout-value">{{ stats.availableForPayout | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="payout-value">{{
+            stats.availableForPayout | currency: "COP" : "symbol" : "1.0-0"
+          }}</span>
         </div>
       </div>
       <div class="payout-right">
         @if (stats.nextPayoutDate) {
-        <div class="payout-date">
-          <ion-icon name="calendar-outline"></ion-icon>
-          {{ stats.nextPayoutDate | date:'shortDate' }}
-        </div>
+          <div class="payout-date">
+            <ion-icon name="calendar-outline"></ion-icon>
+            {{ stats.nextPayoutDate | date: "shortDate" }}
+          </div>
         }
         <div class="payout-sub">Próximo pago semanal</div>
       </div>
     </div>
 
+    @if (stats.currentMonthRevenue > 0 || stats.previousMonthRevenue > 0) {
+      <div class="section">
+        <h3>Ingresos por mes</h3>
+        <div class="month-grid">
+          <div class="month-card">
+            <span class="month-label">Este mes</span>
+            <span class="month-value">{{
+              stats.currentMonthRevenue | currency: "COP" : "symbol" : "1.0-0"
+            }}</span>
+          </div>
+          <div class="month-card">
+            <span class="month-label">Mes anterior</span>
+            <span class="month-value">{{
+              stats.previousMonthRevenue | currency: "COP" : "symbol" : "1.0-0"
+            }}</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (offersByTypeEntries().length > 0) {
+      <div class="section">
+        <h3>Ofertas por tipo</h3>
+        <div class="type-chips">
+          @for (entry of offersByTypeEntries(); track entry.type) {
+            <ion-chip>
+              {{ typeLabel(entry.type) }} · {{ entry.count }}
+            </ion-chip>
+          }
+        </div>
+      </div>
+    }
+
     <div class="quick-actions">
-      <ion-button expand="block" fill="outline" class="action-btn" (click)="goToManageOffers()">
+      <ion-button
+        expand="block"
+        fill="outline"
+        class="action-btn"
+        (click)="goToManageOffers()"
+      >
         <ion-icon slot="start" name="grid-outline"></ion-icon>
         Mis Ofertas
       </ion-button>
-      <ion-button expand="block" class="action-btn primary" (click)="goToCreateOffer()">
+      <ion-button
+        expand="block"
+        class="action-btn primary"
+        (click)="goToCreateOffer()"
+      >
         <ion-icon slot="start" name="add-outline"></ion-icon>
         Nueva Oferta
       </ion-button>
-      <ion-button expand="block" fill="outline" class="action-btn" (click)="goToSales()">
+      <ion-button
+        expand="block"
+        fill="outline"
+        class="action-btn"
+        (click)="goToSales()"
+      >
         <ion-icon slot="start" name="receipt-outline"></ion-icon>
         Ventas
+      </ion-button>
+      <ion-button
+        expand="block"
+        fill="outline"
+        class="action-btn"
+        (click)="goToFinance()"
+      >
+        <ion-icon slot="start" name="wallet-outline"></ion-icon>
+        Pagos y liquidaciones
       </ion-button>
     </div>
 
@@ -123,13 +196,18 @@
               <div class="booking-info">
                 <span class="booking-offer">{{ b.offerName }}</span>
                 <span class="booking-customer">{{ b.customerName }}</span>
-                <span class="booking-date">{{ b.startDate | date:'shortDate' }}</span>
+                <span class="booking-date">{{
+                  b.startDate | date: "shortDate"
+                }}</span>
               </div>
               <div class="booking-end">
                 <ion-chip [color]="statusColor(b.status)">
                   {{ statusLabel(b.status) }}
                 </ion-chip>
-                <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+                <ion-icon
+                  name="chevron-forward-outline"
+                  class="chevron"
+                ></ion-icon>
               </div>
             </div>
           }

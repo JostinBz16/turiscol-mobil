@@ -166,6 +166,36 @@ export const routes: Routes = [
         ],
       },
 
+      /* =============== PROVIDER FINANCE (PROVEEDOR) ============ */
+      {
+        path: 'provider-finance',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('../../features/provider/finance/provider-finance.page').then(
+                (m) => m.ProviderFinancePage,
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('../../features/provider/finance/settlement-detail/settlement-detail.page').then(
+                (m) => m.ProviderSettlementDetailPage,
+              ),
+          },
+        ],
+      },
+
+      /* =============== PROVIDER PAYMENTS (PROVEEDOR) ============ */
+      {
+        path: 'provider-payments',
+        loadComponent: () =>
+          import('../../features/provider/payments/payments.page').then(
+            (m) => m.ProviderPaymentsPage,
+          ),
+      },
+
       /* ===================== ACCOUNT =================== */
       {
         path: 'account',

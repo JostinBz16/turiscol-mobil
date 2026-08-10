@@ -15,6 +15,7 @@ import {
   IonSelect,
   IonSelectOption,
   IonTextarea,
+  IonLabel,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
@@ -41,6 +42,7 @@ import { UserService } from 'src/app/core/services/User';
     IonSelect,
     IonSelectOption,
     IonTextarea,
+    IonLabel,
   ],
 })
 export class EditPage implements OnInit {
@@ -54,13 +56,19 @@ export class EditPage implements OnInit {
   form = this.fb.group({
     username: [''],
     email: ['', [Validators.required, Validators.email]],
-    phone: [''],
+    phoneNumber: [''],
     // Provider fields
     type: ['NATURAL_PERSON'],
     razonSocial: [''],
     nitRut: [''],
     description: [''],
     website: [''],
+    // Bank/onboarding fields
+    documentType: [''],
+    documentNumber: [''],
+    bankName: [''],
+    bankAccountType: [''],
+    bankAccountNumber: [''],
   });
 
   ngOnInit() {
@@ -70,12 +78,17 @@ export class EditPage implements OnInit {
         this.form.patchValue({
           username: user.userName,
           email: user.email,
-          phone: user.phoneNumber,
+          phoneNumber: user.phoneNumber,
           type: user.type || 'NATURAL_PERSON',
           razonSocial: user.razonSocial,
           nitRut: user.nitRut,
           description: user.description,
           website: user.website,
+          documentType: user.documentType,
+          documentNumber: user.documentNumber,
+          bankName: user.bankName,
+          bankAccountType: user.bankAccountType,
+          bankAccountNumber: user.bankAccountNumber,
         });
 
         if (this.selectedRole === 'proveedor') {
@@ -100,5 +113,10 @@ export class EditPage implements OnInit {
       },
       error: (err) => console.error('Error updating profile', err),
     });
+  }
+
+  goToPayments() {
+    this.navService.setReturnUrl('/tabs/account/edit');
+    this.router.navigate(['/tabs/provider-payments']);
   }
 }

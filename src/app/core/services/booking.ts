@@ -1,9 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, from, map, of, throwError, firstValueFrom } from 'rxjs';
+import { Observable, catchError, map, of, throwError, combineLatest } from 'rxjs';
 import { Booking, BookingDetail } from '../models/Reservations';
 import { BookingResponseDto } from '../DTO/BookingResponseDto';
 import { BookingDetailResponseDto } from '../DTO/BookingDetailResponseDto';
-import { ProviderDashboardDto } from '../DTO/ProviderDashboardDto';
 import {
   toBooking,
   toBookingDetail,
@@ -12,14 +11,12 @@ import {
 } from '../adapters/BookingAdapter';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { OfferService } from './offers';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BookingService {
   private http = inject(HttpClient);
-  private offerService = inject(OfferService);
 
   private readonly api = `${environment.apiUrl}/booking`;
 
@@ -41,53 +38,32 @@ export class BookingService {
       );
   }
 
-  getProviderBookings(params?: { page?: number; size?: number }): Observable<{ content: Booking[] }> {
-    return from(this.fetchProviderBookings()).pipe(
-      map((content) => ({ content })),
+  getProviderBookings(params?: { page?: number; size?: number }): Observable<any[]> {
+    const base = `${environment.apiUrl}/providers/bookings`;
+    return combineLatest([
+      this.http.get<any[]>(`${base}/pending`),
+      this.http.get<any[]>(`${base}/completed`),
+      this.http.get<any[]>(`${base}/cancelled`),
+    ]).pipe(
+      map(([pending, completed, cancelled]) =>
+        [...pending, ...completed, ...cancelled].map((b) => ({
+          id: b.id,
+          customerId: b.customerId,
+          offerId: b.offerId,
+          offerName: b.offerName ?? 'Oferta',
+          status: b.status,
+          totalAmount: b.totalAmount ?? 0,
+          currency: b.currency,
+          startDate: b.startDate,
+          endDate: b.endDate,
+          quantity: b.quantity,
+          guestCount: b.guestCount,
+          createdAt: b.createdAt,
+          offerImage: '',
+        })),
+      ),
       catchError((err) => {
         console.error('Error fetching provider bookings', err);
-        return throwError(() => err);
-      }),
-    );
-  }
-
-  private async fetchProviderBookings(params?: { page?: number; size?: number }): Promise<Booking[]> {
-    const userId = this.getCurrentUserId();
-    if (!userId) return [];
-
-    const offersRes = await firstValueFrom(
-      this.offerService.findAll({ providerId: userId, page: 0, size: 100 }),
-    );
-    const offers = offersRes.content ?? [];
-    if (offers.length === 0) return [];
-
-    const offerIds = new Set(offers.map((o: any) => String(o.id)));
-    const offerById = new Map(offers.map((o: any) => [String(o.id), o]));
-
-    let httpParams = new HttpParams();
-    httpParams = httpParams.set('size', String(params?.size ?? 1000));
-    if (params?.page !== undefined) httpParams = httpParams.set('page', params.page);
-
-    const res = await firstValueFrom(
-      this.http.get<{ content: BookingResponseDto[] }>(this.api, { params: httpParams }),
-    );
-    const all = res.content ?? [];
-    return all
-      .filter((b) => offerIds.has(String(b.offerId)))
-      .map((b) => {
-        const offer = offerById.get(String(b.offerId)) as any;
-        return {
-          ...toBooking(b),
-          offerName: b.offerName ?? offer?.name,
-          offerImage: offer?.images?.[0]?.imageUrl ?? offer?.images?.[0] ?? '',
-        } as Booking;
-      });
-  }
-
-  getProviderDashboard(): Observable<ProviderDashboardDto> {
-    return this.http.get<ProviderDashboardDto>(`${environment.apiUrl}/providers/dashboard`).pipe(
-      catchError((err) => {
-        console.error('Error fetching provider dashboard', err);
         return throwError(() => err);
       }),
     );

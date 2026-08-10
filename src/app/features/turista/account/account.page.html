@@ -54,6 +54,27 @@
       <ion-icon slot="end" name="chevron-forward-outline" class="chevron"></ion-icon>
     </ion-item>
     } @if (role() === 'proveedor') {
+    <ion-item button detail="false" (click)="goToPayments()">
+      <div class="item-left">
+        <div class="icon-box" [class.warning]="!onboardingCompleted">
+          <ion-icon
+            [name]="onboardingCompleted ? 'checkmark-circle-outline' : 'card-outline'"
+          ></ion-icon>
+        </div>
+        <div>
+          <span>Pagos</span>
+          <p class="subtext">
+            {{
+              onboardingCompleted
+                ? 'Cuenta bancaria configurada'
+                : 'Completa tus datos bancarios para recibir pagos'
+            }}
+          </p>
+        </div>
+      </div>
+      <ion-icon slot="end" name="chevron-forward-outline" class="chevron"></ion-icon>
+    </ion-item>
+
     <ion-item button detail="false" (click)="goToManageOffers()">
       <div class="item-left">
         <div class="icon-box">
@@ -69,6 +90,15 @@
           <ion-icon name="receipt-outline"></ion-icon>
         </div>
         <span>Mis Ventas</span>
+      </div>
+      <ion-icon slot="end" name="chevron-forward-outline" class="chevron"></ion-icon>
+    </ion-item>
+    <ion-item button detail="false" (click)="goToFinance()">
+      <div class="item-left">
+        <div class="icon-box">
+          <ion-icon name="wallet-outline"></ion-icon>
+        </div>
+        <span>Mis Pagos</span>
       </div>
       <ion-icon slot="end" name="chevron-forward-outline" class="chevron"></ion-icon>
     </ion-item>

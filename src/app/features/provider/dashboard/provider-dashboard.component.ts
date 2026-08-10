@@ -6,19 +6,24 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  gridOutline, addOutline, receiptOutline, trendingUpOutline, eyeOutline, chevronForwardOutline, storefrontOutline, alertCircleOutline, checkmarkDoneOutline, closeCircleOutline, calendarOutline, walletOutline, bookOutline,
+  gridOutline, addOutline, receiptOutline, trendingUpOutline, eyeOutline, chevronForwardOutline, storefrontOutline, alertCircleOutline, checkmarkDoneOutline, closeCircleOutline, calendarOutline, walletOutline, bookOutline, cardOutline, starOutline, alertOutline,
 } from 'ionicons/icons';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
-import { OfferService } from 'src/app/core/services/offers';
 import { BookingService } from 'src/app/core/services/booking';
 import { UserService } from 'src/app/core/services/User';
 import { User } from 'src/app/core/models/User';
 import { Booking } from 'src/app/core/models/Reservations';
+import { ProviderFinanceService } from 'src/app/core/services/provider-finance.service';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 import { firstValueFrom } from 'rxjs';
 
 interface DashboardStats {
   activeOffers: number;
+  inactiveOffers: number;
   totalOffers: number;
+  offersByType: Record<string, number>;
+  lowStockOffers: number;
+  upcomingBookings: number;
   pendingBookings: number;
   completedBookings: number;
   cancelledBookings: number;
@@ -27,6 +32,11 @@ interface DashboardStats {
   totalPaid: number;
   availableForPayout: number;
   nextPayoutDate: string | null;
+  currentMonthRevenue: number;
+  previousMonthRevenue: number;
+  averageRating: number;
+  ratingCount: number;
+  onboardingCompleted: boolean;
 }
 
 interface RecentBooking {
@@ -51,16 +61,20 @@ interface RecentBooking {
 })
 export class ProviderDashboardComponent implements OnInit {
   private authStore = inject(AuthService);
-  private offerService = inject(OfferService);
   private bookingService = inject(BookingService);
   private userService = inject(UserService);
+  private financeService = inject(ProviderFinanceService);
   private router = inject(Router);
+  private navService = inject(NavigationService);
 
   user: User | null = null;
   stats: DashboardStats = {
-    activeOffers: 0, totalOffers: 0, pendingBookings: 0, completedBookings: 0,
-    cancelledBookings: 0, totalBookings: 0, totalRevenue: 0, totalPaid: 0,
-    availableForPayout: 0, nextPayoutDate: null,
+    activeOffers: 0, inactiveOffers: 0, totalOffers: 0, offersByType: {},
+    lowStockOffers: 0, upcomingBookings: 0, pendingBookings: 0,
+    completedBookings: 0, cancelledBookings: 0, totalBookings: 0,
+    totalRevenue: 0, totalPaid: 0, availableForPayout: 0, nextPayoutDate: null,
+    currentMonthRevenue: 0, previousMonthRevenue: 0, averageRating: 0,
+    ratingCount: 0, onboardingCompleted: false,
   };
   recentBookings: RecentBooking[] = [];
   loading = true;
@@ -69,7 +83,8 @@ export class ProviderDashboardComponent implements OnInit {
     addIcons({
       gridOutline, addOutline, receiptOutline, trendingUpOutline, eyeOutline,
       chevronForwardOutline, storefrontOutline, alertCircleOutline,
-      checkmarkDoneOutline, closeCircleOutline, calendarOutline, walletOutline, bookOutline,
+      checkmarkDoneOutline, closeCircleOutline, calendarOutline, walletOutline,
+      bookOutline, cardOutline, starOutline, alertOutline,
     });
   }
 
@@ -84,32 +99,32 @@ export class ProviderDashboardComponent implements OnInit {
     } catch { }
 
     try {
-      const providerId = this.authStore.userId();
-      if (providerId) {
-        const offersRes = await firstValueFrom(
-          this.offerService.findAll({ providerId, page: 0, size: 100 })
-        );
-        const offers = offersRes.content ?? [];
-        this.stats.totalOffers = offersRes.totalElements ?? offers.length;
-        this.stats.activeOffers = offers.filter((o: any) => o.active).length;
-      }
+      const dashboard = await firstValueFrom(this.financeService.getDashboard());
+      this.stats = {
+        activeOffers: Number(dashboard.activeOffers ?? 0),
+        inactiveOffers: Number(dashboard.inactiveOffers ?? 0),
+        totalOffers: Number(dashboard.totalOffers ?? 0),
+        offersByType: dashboard.offersByType ?? {},
+        lowStockOffers: Number(dashboard.lowStockOffers ?? 0),
+        upcomingBookings: Number(dashboard.upcomingBookings ?? 0),
+        pendingBookings: Number(dashboard.pendingBookings ?? 0),
+        completedBookings: Number(dashboard.completedBookings ?? 0),
+        cancelledBookings: Number(dashboard.cancelledBookings ?? 0),
+        totalBookings: Number(dashboard.totalBookings ?? 0),
+        totalRevenue: Number(dashboard.totalRevenue ?? 0),
+        totalPaid: Number(dashboard.totalPaid ?? 0),
+        availableForPayout: Number(dashboard.availableForPayout ?? 0),
+        nextPayoutDate: dashboard.nextPayoutDate ?? null,
+        currentMonthRevenue: Number(dashboard.currentMonthRevenue ?? 0),
+        previousMonthRevenue: Number(dashboard.previousMonthRevenue ?? 0),
+        averageRating: Number(dashboard.averageRating ?? 0),
+        ratingCount: Number(dashboard.ratingCount ?? 0),
+        onboardingCompleted: Boolean(dashboard.onboardingCompleted),
+      };
     } catch { }
 
     try {
-      const dashboard = await firstValueFrom(this.bookingService.getProviderDashboard());
-      this.stats.totalRevenue = Number(dashboard.totalRevenue ?? 0);
-      this.stats.totalPaid = Number(dashboard.totalPaid ?? 0);
-      this.stats.availableForPayout = Number(dashboard.availableForPayout ?? 0);
-      this.stats.pendingBookings = Number(dashboard.pendingBookings ?? 0);
-      this.stats.completedBookings = Number(dashboard.completedBookings ?? 0);
-      this.stats.cancelledBookings = Number(dashboard.cancelledBookings ?? 0);
-      this.stats.totalBookings = Number(dashboard.totalBookings ?? 0);
-      this.stats.nextPayoutDate = dashboard.nextPayoutDate ?? null;
-    } catch { }
-
-    try {
-      const res = await firstValueFrom(this.bookingService.getProviderBookings());
-      const bookings = res.content ?? [];
+      const bookings = await firstValueFrom(this.bookingService.getProviderBookings());
       const sorted = [...bookings].sort((a: any, b: any) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
@@ -128,19 +143,50 @@ export class ProviderDashboardComponent implements OnInit {
   }
 
   goToManageOffers() {
+    this.navService.setReturnUrl('/tabs/home');
     this.router.navigate(['/tabs/manage-offers']);
   }
 
   goToCreateOffer() {
+    this.navService.setReturnUrl('/tabs/home');
     this.router.navigate(['/tabs/manage-offers/new']);
   }
 
   goToSales() {
+    this.navService.setReturnUrl('/tabs/home');
     this.router.navigate(['/tabs/provider-sales']);
   }
 
+  goToFinance() {
+    this.navService.setReturnUrl('/tabs/home');
+    this.router.navigate(['/tabs/provider-finance']);
+  }
+
+  goToPayments() {
+    this.navService.setReturnUrl('/tabs/home');
+    this.router.navigate(['/tabs/provider-payments']);
+  }
+
   viewBooking(booking: RecentBooking) {
+    this.navService.setReturnUrl('/tabs/home');
     this.router.navigate(['/tabs/provider-sales', booking.id]);
+  }
+
+  offersByTypeEntries(): { type: string; count: number }[] {
+    return Object.entries(this.stats.offersByType).map(([type, count]) => ({
+      type,
+      count: Number(count),
+    }));
+  }
+
+  typeLabel(type: string): string {
+    const map: Record<string, string> = {
+      accommodation: 'Alojamiento',
+      event: 'Evento',
+      service: 'Servicio',
+      product: 'Producto',
+    };
+    return map[type?.toLowerCase()] ?? type;
   }
 
   statusColor(status: string): string {
@@ -169,3 +215,4 @@ export class ProviderDashboardComponent implements OnInit {
     return map[status] ?? status;
   }
 }
+

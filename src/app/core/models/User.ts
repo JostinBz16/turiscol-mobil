@@ -11,6 +11,12 @@ export interface User {
   description?: string;
   nitRut?: string;
   website?: string;
+  documentType?: string;
+  documentNumber?: string;
+  bankName?: string;
+  bankAccountType?: string;
+  bankAccountNumber?: string;
+  onboardingCompleted?: boolean;
 }
 
 export interface UserApi {

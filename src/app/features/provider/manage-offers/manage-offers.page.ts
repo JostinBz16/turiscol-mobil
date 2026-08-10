@@ -12,6 +12,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 import { OfferService } from 'src/app/core/services/offers';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 import { Offer } from 'src/app/core/models/Offers';
 import { firstValueFrom } from 'rxjs';
 
@@ -40,6 +41,7 @@ export class ManageOffersPage implements OnInit {
   private offerService = inject(OfferService);
   private authStore = inject(AuthService);
   private router = inject(Router);
+  navService = inject(NavigationService);
 
   offers: OfferItem[] = [];
   loading = true;
@@ -105,14 +107,17 @@ export class ManageOffersPage implements OnInit {
   }
 
   viewOffer(id: string) {
+    this.navService.setReturnUrl('/tabs/manage-offers');
     this.router.navigate(['/tabs/manage-offers', id]);
   }
 
   editOffer(id: string) {
+    this.navService.setReturnUrl('/tabs/manage-offers');
     this.router.navigate(['/tabs/manage-offers', id, 'edit']);
   }
 
   createOffer() {
+    this.navService.setReturnUrl('/tabs/manage-offers');
     this.router.navigate(['/tabs/manage-offers/new']);
   }
 

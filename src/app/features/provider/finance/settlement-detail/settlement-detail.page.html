@@ -1,0 +1,83 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="navService.returnUrl()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Pago</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading) {
+    <div class="loading-state">
+      <ion-spinner></ion-spinner>
+      <p>Cargando...</p>
+    </div>
+  } @else if (settlement()) {
+    <div class="detail">
+      <div class="hero" [class.paid]="settlement()!.status === 'PAID'">
+        <div class="hero-icon">
+          <ion-icon [name]="settlement()!.status === 'PAID' ? 'checkmark-done-outline' : 'time-outline'"></ion-icon>
+        </div>
+        <span class="hero-label">
+          {{ settlement()!.status === 'PAID' ? 'Pagado' : 'Pendiente de pago' }}
+        </span>
+        <span class="hero-amount">{{ settlement()!.netAmount | currency:'COP':'symbol':'1.0-0' }}</span>
+        <span class="hero-period">
+          {{ formatDate(settlement()!.periodStart) }} — {{ formatDate(settlement()!.periodEnd) }}
+        </span>
+      </div>
+
+      <div class="section">
+        <h3>Resumen</h3>
+        <div class="row">
+          <span>Bruto</span>
+          <span>{{ settlement()!.grossAmount | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="row">
+          <span>Comisión plataforma</span>
+          <span>{{ settlement()!.totalCommission | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="row">
+          <span>Gateway fee</span>
+          <span>{{ settlement()!.totalGatewayFee | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="row total">
+          <span>Neto a pagar</span>
+          <span>{{ settlement()!.netAmount | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        @if (settlement()!.paidAt) {
+        <div class="row">
+          <span>Pagado el</span>
+          <span>{{ formatDate(settlement()!.paidAt) }}</span>
+        </div>
+        }
+      </div>
+
+      <div class="section">
+        <h3>Reservas incluidas ({{ settlement()!.bookings?.length ?? 0 }})</h3>
+        @if ((settlement()!.bookings?.length ?? 0) === 0) {
+          <p class="muted">Sin reservas en este periodo</p>
+        } @else {
+          <div class="booking-row">
+            @for (b of settlement()!.bookings; track b.id) {
+              <div class="booking-item">
+                <ion-icon name="receipt-outline"></ion-icon>
+                <div class="booking-info">
+                  <span>Reserva #{{ b.bookingId }}</span>
+                  <span class="detail">Comisión {{ b.commissionAmount | currency:'COP':'symbol':'1.0-0' }}</span>
+                </div>
+                <span class="payout">{{ b.providerPayout | currency:'COP':'symbol':'1.0-0' }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  } @else if (error) {
+    <div class="error-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <h4>{{ errorMessage }}</h4>
+    </div>
+  }
+</ion-content>

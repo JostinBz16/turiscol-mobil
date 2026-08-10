@@ -1,0 +1,100 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="navService.returnUrl()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pagos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-segment [value]="segment" (ionChange)="setSegment($event)" class="finance-segment">
+    <ion-segment-button value="settlements">
+      <ion-label>Liquidaciones</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="earnings">
+      <ion-label>Ganancias</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  @if (loading) {
+    <div class="loading-state">
+      <ion-spinner></ion-spinner>
+      <p>Cargando pagos...</p>
+    </div>
+  } @else if (segment === 'settlements') {
+    @if (settlements.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="wallet-outline"></ion-icon>
+        <h4>Aún no hay liquidaciones</h4>
+        <p>Tu primer pago semanal aparecerá aquí</p>
+      </div>
+    } @else {
+      <div class="list">
+        @for (s of settlements; track s.id) {
+          <div class="card" (click)="viewSettlement(s.id)">
+            <div class="card-icon" [class.paid]="s.status === 'PAID'">
+              <ion-icon [name]="s.status === 'PAID' ? 'checkmark-done-outline' : 'time-outline'"></ion-icon>
+            </div>
+            <div class="card-body">
+              <div class="card-header">
+                <h4>Semana del {{ formatDate(s.periodStart) }}</h4>
+                <ion-chip [color]="s.status === 'PAID' ? 'success' : 'warning'" class="status-chip">
+                  {{ s.status === 'PAID' ? 'Pagado' : 'Pendiente' }}
+                </ion-chip>
+              </div>
+              <div class="card-info">
+                <span>{{ s.bookings?.length ?? 0 }} reservas</span>
+                <span>Comisión: {{ s.totalCommission | currency:'COP':'symbol':'1.0-0' }}</span>
+              </div>
+              <div class="card-footer">
+                <span class="amount">{{ s.netAmount | currency:'COP':'symbol':'1.0-0' }}</span>
+                <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  } @else {
+    @if (earnings.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="trending-up-outline"></ion-icon>
+        <h4>Sin ganancias registradas</h4>
+        <p>Cuando completes reservas, verás aquí el detalle de tus ganancias</p>
+      </div>
+    } @else {
+      <div class="list">
+        @for (e of earnings; track e.bookingId) {
+          <div class="card">
+            <div class="card-icon earn">
+              <ion-icon name="cash-outline"></ion-icon>
+            </div>
+            <div class="card-body">
+              <div class="card-header">
+                <h4>{{ e.offerName }}</h4>
+                <ion-chip [color]="payoutColor(e.payoutStatus)" class="status-chip">
+                  {{ payoutLabel(e.payoutStatus) }}
+                </ion-chip>
+              </div>
+              <div class="card-info">
+                <span>Reserva #{{ e.bookingId }}</span>
+                <span>{{ e.completedAt ? (e.completedAt | date:'shortDate') : '—' }}</span>
+              </div>
+              <div class="card-footer">
+                <div class="footer-left">
+                  <span class="amount">{{ e.providerPayout | currency:'COP':'symbol':'1.0-0' }}</span>
+                  <span class="detail">Comisión {{ e.commissionAmount | currency:'COP':'symbol':'1.0-0' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</ion-content>

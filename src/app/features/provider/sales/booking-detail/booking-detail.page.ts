@@ -13,6 +13,7 @@ import {
 import { Booking, BookingDetail, BookingStatus } from 'src/app/core/models/Reservations';
 import { BookingService } from 'src/app/core/services/booking';
 import { OfferService } from 'src/app/core/services/offers';
+import { NavigationService } from 'src/app/core/services/navigation.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -30,6 +31,7 @@ export class ProviderBookingDetailPage implements OnInit {
   private route = inject(ActivatedRoute);
   private bookingService = inject(BookingService);
   private offerService = inject(OfferService);
+  navService = inject(NavigationService);
 
   booking = signal<BookingDetail | null>(null);
   offer = signal<any>(null);

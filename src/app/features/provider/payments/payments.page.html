@@ -1,0 +1,114 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="navService.returnUrl()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Datos de Pago</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="payments-content">
+  @if (loading) {
+  <div class="loading-state">
+    <ion-spinner></ion-spinner>
+    <p>Cargando...</p>
+  </div>
+  } @else {
+  <div class="payments-wrapper">
+    <div class="intro">
+      <div class="status-badge" [class.complete]="onboardingCompleted">
+        <ion-icon
+          [name]="onboardingCompleted ? 'checkmark-circle-outline' : 'card-outline'"
+        ></ion-icon>
+        <span>{{
+          onboardingCompleted
+            ? 'Cuenta bancaria configurada'
+            : 'Configura tu cuenta para recibir tus pagos semanales'
+        }}</span>
+      </div>
+      <p class="hint">
+        Estos datos se usan para transferirte el dinero de tus ventas cada
+        semana. Deben coincidir con el titular de la cuenta.
+      </p>
+    </div>
+
+    <form (ngSubmit)="save()">
+      <ion-list lines="none" class="form-card">
+        <ion-item>
+          <ion-select
+            label="Tipo de documento"
+            label-placement="stacked"
+            [(ngModel)]="form.documentType"
+            name="documentType"
+          >
+            <ion-select-option value="CC">Cédula de ciudadanía</ion-select-option>
+            <ion-select-option value="NIT">NIT</ion-select-option>
+            <ion-select-option value="CE">Cédula de extranjería</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            label="Número de documento del titular"
+            labelPlacement="stacked"
+            type="tel"
+            inputmode="numeric"
+            [(ngModel)]="form.documentNumber"
+            name="documentNumber"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            label="Banco"
+            labelPlacement="stacked"
+            placeholder="Ej: Bancolombia, Davivienda..."
+            [(ngModel)]="form.bankName"
+            name="bankName"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-select
+            label="Tipo de cuenta"
+            label-placement="stacked"
+            [(ngModel)]="form.bankAccountType"
+            name="bankAccountType"
+          >
+            <ion-select-option value="AHORROS">Ahorros</ion-select-option>
+            <ion-select-option value="CORRIENTE">Corriente</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            label="Número de cuenta"
+            labelPlacement="stacked"
+            type="tel"
+            inputmode="numeric"
+            [(ngModel)]="form.bankAccountNumber"
+            name="bankAccountNumber"
+          ></ion-input>
+        </ion-item>
+      </ion-list>
+
+      @if (errorMessage) {
+      <p class="message error">{{ errorMessage }}</p>
+      }
+      @if (savedMessage) {
+      <p class="message success">{{ savedMessage }}</p>
+      }
+
+      <div class="actions">
+        <ion-button
+          expand="block"
+          type="submit"
+          [disabled]="saving || !isFormValid()"
+        >
+          {{ saving ? 'Guardando...' : 'Guardar Datos' }}
+        </ion-button>
+      </div>
+    </form>
+  </div>
+  }
+</ion-content>
