@@ -1,0 +1,38 @@
+.not-found-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 8px;
+
+  .code {
+    font-size: 5rem;
+    font-weight: 800;
+    color: var(--ion-color-medium);
+    opacity: 0.4;
+    line-height: 1;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0d3b66;
+  }
+
+  p {
+    margin: 0;
+    color: var(--ion-color-medium);
+  }
+
+  .btn {
+    --background: #0d3b66;
+    --color: #fff;
+    --border-radius: 10px;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    max-width: 260px;
+  }
+}

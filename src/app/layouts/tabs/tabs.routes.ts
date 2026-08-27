@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { roleGuard } from '../../features/auth/login/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -99,6 +100,8 @@ export const routes: Routes = [
       /* =============== MANAGE OFFERS (PROVEEDOR) ============ */
       {
         path: 'manage-offers',
+        canActivate: [roleGuard],
+        data: { role: 'proveedor' },
         children: [
           {
             path: '',
@@ -134,6 +137,8 @@ export const routes: Routes = [
       /* =============== ADMIN PRICES ============ */
       {
         path: 'admin',
+        canActivate: [roleGuard],
+        data: { role: 'admin' },
         children: [
           {
             path: '',
@@ -148,6 +153,8 @@ export const routes: Routes = [
       /* =============== PROVIDER SALES (PROVEEDOR) ============ */
       {
         path: 'provider-sales',
+        canActivate: [roleGuard],
+        data: { role: 'proveedor' },
         children: [
           {
             path: '',
@@ -169,6 +176,8 @@ export const routes: Routes = [
       /* =============== PROVIDER FINANCE (PROVEEDOR) ============ */
       {
         path: 'provider-finance',
+        canActivate: [roleGuard],
+        data: { role: 'proveedor' },
         children: [
           {
             path: '',
@@ -190,6 +199,8 @@ export const routes: Routes = [
       /* =============== PROVIDER PAYMENTS (PROVEEDOR) ============ */
       {
         path: 'provider-payments',
+        canActivate: [roleGuard],
+        data: { role: 'proveedor' },
         loadComponent: () =>
           import('../../features/provider/payments/payments.page').then(
             (m) => m.ProviderPaymentsPage,

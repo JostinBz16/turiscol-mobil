@@ -1,10 +1,15 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 
-@Injectable({ providedIn: 'root' })
-export class RoleGuard {
-  canActivate(route: ActivatedRouteSnapshot): boolean {
-    const role = localStorage.getItem('role');
-    return route.data['role'] === role;
+export const roleGuard: CanActivateFn = (route) => {
+  const router = inject(Router);
+  const role = localStorage.getItem('role');
+  const requiredRole = route.data?.['role'];
+
+  if (role === requiredRole) {
+    return true;
   }
-}
+
+  router.navigate(['/tabs/home']);
+  return false;
+};

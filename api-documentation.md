@@ -2631,8 +2631,13 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 | --------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | Sistema de pagos semanales a proveedores (comisiones, settlements, dashboard)           | ✅ Implementado (ver DOCUMENTACION_PAGOS.md)      |
 | MercadoPago Checkout Pro + Webhooks + Reembolsos                                        | ✅ Implementado (Checkout Pro, webhooks, refunds) |
-| Sistema de recomendaciones por IA (gustos e intereses del usuario → destinos y ofertas) | Alta                                              |
-| Chat bot para interacción con usuarios                                                  | Alta                                              |
+| Onboarding bancario de proveedores (endpoint dedicado)                                  | ✅ Implementado (PUT /user/providers/{id}/onboarding/banking) |
+| Forgot password vía email (Keycloak)                                                    | ✅ Implementado (POST /auth/forgot-password)       |
+| Chatbot con LLM (Function Calling)                                                      | 📋 Documentado (ver DOCUMENTACION_CHATBOT.md)     |
+| Pasarela de pago adicional (Stripe/Wompi)                                                | 🟡 Media                                          |
+| Sistema de recomendaciones por IA                                                        | Alta                                              |
+| Push notifications (FCM)                                                                 | Media                                             |
+| Cleanup de notificaciones viejas (TTL)                                                  | Baja                                              |
 
 **Contexto:** Para push notifications se necesita Firebase Cloud Messaging (FCM) + plugin `@capacitor/push-notifications` en Ionic.
 

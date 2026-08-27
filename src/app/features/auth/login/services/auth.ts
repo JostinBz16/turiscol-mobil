@@ -43,6 +43,17 @@ export class AuthService {
       );
   }
 
+  forgotPassword(email: string) {
+    return this.http
+      .post<void>(`${this.API}/forgot-password`, { email })
+      .pipe(
+        catchError((err) => {
+          console.error('Forgot password error', err);
+          return throwError(() => err);
+        }),
+      );
+  }
+
   refreshToken(): any {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) return throwError(() => new Error('No refresh token'));

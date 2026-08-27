@@ -8,13 +8,110 @@
 </ion-header>
 
 <ion-content>
-  <div class="admin-placeholder">
-    <ion-icon name="add-circle-outline"></ion-icon>
-    <h3>Administración de Precios</h3>
-    <p>Aquí podrás crear y gestionar los precios de las ofertas.</p>
-    <ion-button expand="block" color="primary">
-      <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-      Crear Precio
-    </ion-button>
-  </div>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading()) {
+    <div class="loading-center">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else {
+    <!-- Lista de precios -->
+    @if (prices().length === 0) {
+      <div class="empty-state">
+        <p>No hay precios registrados</p>
+      </div>
+    } @else {
+      <ion-list>
+        @for (price of prices(); track price.id) {
+          <ion-item class="price-item">
+            <ion-label>
+              <h2>{{ price.name }}</h2>
+              <p>{{ categoryLabel(price.category) }} · {{ price.municipalityId }}</p>
+              <p class="range">
+                {{ price.minPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
+                —
+                {{ price.maxPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
+              </p>
+            </ion-label>
+            <ion-badge [color]="price.active ? 'success' : 'medium'" slot="end">
+              {{ price.active ? 'Activo' : 'Inactivo' }}
+            </ion-badge>
+            <ion-button fill="clear" slot="end" (click)="openEdit(price)">
+              <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" color="danger" slot="end" (click)="confirmDelete(price)">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    <!-- FAB crear -->
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="openCreate()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
+
+  <!-- Formulario modal -->
+  @if (showForm()) {
+    <div class="form-overlay" (click)="closeForm()">
+      <div class="form-panel" (click)="$event.stopPropagation()">
+        <div class="form-header">
+          <h3>{{ editingId() ? 'Editar' : 'Crear' }} Precio</h3>
+          <ion-button fill="clear" (click)="closeForm()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="save()" class="form-body">
+          <ion-item>
+            <ion-input label="Nombre" labelPlacement="stacked" formControlName="name" placeholder="Ej: Precio guía"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-textarea label="Descripción" labelPlacement="stacked" formControlName="description" placeholder="Descripción opcional" [autoGrow]="true"></ion-textarea>
+          </ion-item>
+
+          <ion-item>
+            <ion-select label="Categoría" labelPlacement="stacked" formControlName="category" placeholder="Seleccionar">
+              @for (cat of categories; track cat) {
+                <ion-select-option [value]="cat">{{ categoryLabel(cat) }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <div class="price-row">
+            <ion-item>
+              <ion-input label="Precio mín." labelPlacement="stacked" type="number" formControlName="minPrice" placeholder="0"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Precio máx." labelPlacement="stacked" type="number" formControlName="maxPrice" placeholder="0"></ion-input>
+            </ion-item>
+          </div>
+
+          <ion-item>
+            <ion-input label="ID Ciudad" labelPlacement="stacked" type="number" formControlName="cityId" placeholder="ID del municipio"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Activo</ion-label>
+            <ion-toggle formControlName="active" slot="end"></ion-toggle>
+          </ion-item>
+
+          <div class="form-actions">
+            <ion-button fill="outline" type="button" (click)="closeForm()">Cancelar</ion-button>
+            <ion-button expand="block" type="submit" [disabled]="form.invalid">
+              <ion-icon slot="start" name="save-outline"></ion-icon>
+              {{ editingId() ? 'Actualizar' : 'Crear' }}
+            </ion-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
 </ion-content>

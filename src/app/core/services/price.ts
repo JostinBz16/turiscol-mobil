@@ -4,6 +4,16 @@ import { Price } from '../models/Price';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
+export interface PriceListingRequest {
+  name: string;
+  description: string;
+  category: string;
+  minPrice: number;
+  maxPrice: number;
+  cityId: number;
+  active: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,6 +29,15 @@ export class PriceService {
     return this.http.get<any>(this.api, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching prices', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  getById(id: string): Observable<Price> {
+    return this.http.get<Price>(`${this.api}/${id}`).pipe(
+      catchError((err) => {
+        console.error('Error fetching price', err);
         return throwError(() => err);
       }),
     );
@@ -56,6 +75,33 @@ export class PriceService {
     return this.http.get<any>(`${this.api}/range`, { params }).pipe(
       catchError((err) => {
         console.error('Error fetching prices by range', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  create(dto: PriceListingRequest): Observable<Price> {
+    return this.http.post<Price>(this.api, dto).pipe(
+      catchError((err) => {
+        console.error('Error creating price', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  update(id: string, dto: PriceListingRequest): Observable<Price> {
+    return this.http.put<Price>(`${this.api}/${id}`, dto).pipe(
+      catchError((err) => {
+        console.error('Error updating price', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/${id}`).pipe(
+      catchError((err) => {
+        console.error('Error deleting price', err);
         return throwError(() => err);
       }),
     );
