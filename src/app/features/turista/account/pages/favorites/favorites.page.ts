@@ -18,6 +18,7 @@ import {
 import { FavoritesService } from 'src/app/core/services/favorites.services';
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 
 @Component({
   selector: 'app-favorites',
@@ -39,6 +40,7 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
     IonToolbar,
     CommonModule,
     FormsModule,
+    ChatFabComponent,
   ],
 })
 export class FavoritesPage implements OnInit {

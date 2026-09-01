@@ -33,6 +33,7 @@ import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { SelectedCityService } from 'src/app/core/services/selected-city.service';
 import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -55,6 +56,7 @@ import { firstValueFrom } from 'rxjs';
     CitySelectorBarComponent,
     CommonModule,
     FormsModule,
+    ChatFabComponent,
   ],
 })
 export class ExplorePage implements OnInit {

@@ -29,6 +29,7 @@ import { FestivityService } from 'src/app/core/services/festivity.service';
 import { Festivity } from 'src/app/core/models/Festivity';
 import { SelectedCityService } from 'src/app/core/services/selected-city.service';
 import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 import { firstValueFrom } from 'rxjs';
 
 const EVENT_CATEGORY_LABELS: Record<string, string> = {
@@ -62,6 +63,7 @@ const EVENT_CATEGORY_LABELS: Record<string, string> = {
     CitySelectorBarComponent,
     EventListComponent,
     FestivityListComponent,
+    ChatFabComponent,
   ],
 })
 export class EventsPage implements OnInit {

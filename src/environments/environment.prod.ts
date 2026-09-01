@@ -1,6 +1,7 @@
 interface Environment {
   production: boolean;
   apiUrl: string;
+  chatWsUrl: string;
   googleMapsApiKey: string;
   mercadoPagoPublicKey: string;
 }
@@ -8,6 +9,7 @@ interface Environment {
 export const environment: Environment = {
   production: true,
   apiUrl: 'https://api.turiscol.com/api/v1',
+  chatWsUrl: 'https://chat.turiscol.com/ws/chat',
   googleMapsApiKey: 'AIzaSyCkX73molJA_XEREnfAYYrg8TL02Rekv2U',
   mercadoPagoPublicKey: 'APP_USR-0000000000000000-000000-00000000000000000000000000000000-000000000',
 };

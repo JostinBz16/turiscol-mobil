@@ -20,6 +20,7 @@ import {
 import { Router } from '@angular/router';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { UserService } from 'src/app/core/services/User';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 
 @Component({
   selector: 'app-edit',
@@ -43,6 +44,7 @@ import { UserService } from 'src/app/core/services/User';
     IonSelectOption,
     IonTextarea,
     IonLabel,
+    ChatFabComponent,
   ],
 })
 export class EditPage implements OnInit {

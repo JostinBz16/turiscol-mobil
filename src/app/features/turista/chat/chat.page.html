@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+      <div class="title-wrap">
+        <ion-icon name="chatbubble-ellipses"></ion-icon>
+        <span>Asistente Turiscol</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeChat()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content #content class="chat-content">
+  <div class="messages-wrapper">
+    @if (messages().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="sparkles-outline"></ion-icon>
+      <h4>¡Hola! 👋</h4>
+      <p>
+        Soy tu asistente de viaje. Pregúntame sobre destinos, ofertas, precios,
+        festividades o reseñas en Colombia.
+      </p>
+      <div class="suggestions">
+        <ion-chip (click)="quickQuestion('¿Qué hay para hacer en Medellín?')">
+          <ion-label>¿Qué hay en Medellín?</ion-label>
+        </ion-chip>
+        <ion-chip (click)="quickQuestion('¿Cuánto cuesta dormir en Santa Marta?')">
+          <ion-label>Precios en Santa Marta</ion-label>
+        </ion-chip>
+        <ion-chip (click)="quickQuestion('¿Qué festividades hay este mes?')">
+          <ion-label>Festividades</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+    } @else {
+    <div class="message-list">
+      @for (msg of messages(); track $index) {
+      <div class="message-row" [class.user]="msg.role === 'user'">
+        <div class="bubble" [class.user-bubble]="msg.role === 'user'">
+          <span class="message-text">{{ msg.text }}</span>
+        </div>
+      </div>
+      } @if (waiting) {
+      <div class="message-row">
+        <div class="bubble assistant-bubble typing">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</ion-content>
+
+<ion-footer>
+  <div class="input-bar">
+    <ion-textarea
+      #inputArea
+      placeholder="Escribe tu mensaje..."
+      rows="1"
+      auto-grow="true"
+      [value]="input"
+      (ionChange)="input = $any($event).detail.value"
+      (keydown.enter)="onEnter($event)"
+    ></ion-textarea>
+    <ion-button
+      [disabled]="!input.trim() || waiting"
+      (click)="send()"
+      class="send-btn"
+      aria-label="Enviar"
+    >
+      @if (waiting) {
+      <ion-spinner name="crescent" slot="icon-only"></ion-spinner>
+      } @else {
+      <ion-icon slot="icon-only" name="send"></ion-icon>
+      }
+    </ion-button>
+  </div>
+</ion-footer>

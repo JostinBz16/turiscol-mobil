@@ -22,6 +22,7 @@ import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { Browser } from '@capacitor/browser';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 
 @Component({
   selector: 'app-reservations',
@@ -41,6 +42,7 @@ import { Browser } from '@capacitor/browser';
     IonIcon,
     IonButton,
     IonSpinner,
+    ChatFabComponent,
   ],
 })
 export class ReservationsPage implements OnInit {

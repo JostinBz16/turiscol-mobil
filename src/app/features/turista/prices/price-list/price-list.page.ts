@@ -14,6 +14,7 @@ import {
 import { Price } from 'src/app/core/models/Price';
 import { PriceService } from 'src/app/core/services/price';
 import { firstValueFrom } from 'rxjs';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 
 @Component({
   selector: 'app-price-list',
@@ -30,6 +31,7 @@ import { firstValueFrom } from 'rxjs';
     IonContent,
     IonCardContent,
     IonCard,
+    ChatFabComponent,
   ],
 })
 export class PriceListPage implements OnInit {

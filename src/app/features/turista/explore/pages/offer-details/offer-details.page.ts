@@ -33,6 +33,7 @@ import { firstValueFrom } from 'rxjs';
 import { BookingModalComponent } from 'src/app/components/booking-modal/booking-modal.component';
 import { Booking, BookingStatus } from 'src/app/core/models/Reservations';
 import { Browser } from '@capacitor/browser';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 
 @Component({
   selector: 'app-offer-details',
@@ -49,6 +50,7 @@ import { Browser } from '@capacitor/browser';
     FormsModule,
     RouterModule,
     BookingModalComponent,
+    ChatFabComponent,
   ],
 })
 export class OfferDetailsPage implements OnInit {

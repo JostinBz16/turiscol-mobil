@@ -15,6 +15,7 @@ import {
 import { EventService } from 'src/app/core/services/event';
 import { EventOfferAdapter } from 'src/app/core/adapters/OfferDetailAdapter';
 import { EventOffer } from 'src/app/core/models/Offers';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 
 @Component({
   selector: 'app-event-details',
@@ -32,6 +33,7 @@ import { EventOffer } from 'src/app/core/models/Offers';
     IonSpinner,
     IonChip,
     IonLabel,
+    ChatFabComponent,
   ],
 })
 export class EventDetailsPage implements OnInit {

@@ -12,6 +12,7 @@ import {
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { NavigationService } from 'src/app/core/services/navigation.service';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 
 @Component({
   selector: 'app-payment-result',
@@ -28,6 +29,7 @@ import { NavigationService } from 'src/app/core/services/navigation.service';
     IonContent,
     IonIcon,
     IonButton,
+    ChatFabComponent,
   ],
 })
 export class PaymentResultPage implements OnInit {

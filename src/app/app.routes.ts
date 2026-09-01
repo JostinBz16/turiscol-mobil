@@ -42,6 +42,12 @@ export const routes: Routes = [
   },
 
   {
+    path: 'chat',
+    loadComponent: () =>
+      import('./features/turista/chat/chat.page').then((m) => m.ChatPage),
+  },
+
+  {
     path: '**',
     loadComponent: () =>
       import('./features/not-found/not-found.page').then((m) => m.NotFoundPage),

@@ -32,6 +32,7 @@ import {
   walletOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../auth/login/services/auth';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { UserService } from 'src/app/core/services/User';
 import { User } from 'src/app/core/models/User';
@@ -54,6 +55,7 @@ import { firstValueFrom } from 'rxjs';
     IonToolbar,
     CommonModule,
     FormsModule,
+    ChatFabComponent,
   ],
 })
 export class AccountPage implements OnInit {

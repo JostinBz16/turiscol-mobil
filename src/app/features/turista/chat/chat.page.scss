@@ -1,0 +1,155 @@
+.chat-content {
+  --background: #f4f4f4;
+}
+
+.messages-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 12px;
+}
+
+.empty-state {
+  margin: auto;
+  text-align: center;
+  color: #666;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  ion-icon {
+    font-size: 48px;
+    color: var(--ion-color-primary);
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #222;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+    max-width: 300px;
+  }
+
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+}
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.message-row {
+  display: flex;
+
+  &.user {
+    justify-content: flex-end;
+  }
+}
+
+.bubble {
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: #fff;
+  color: #222;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+
+  &.user-bubble {
+    background: var(--ion-color-primary);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  &:not(.user-bubble) {
+    border-bottom-left-radius: 4px;
+  }
+}
+
+.message-text {
+  line-height: 1.45;
+}
+
+.typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #999;
+    animation: typing-bounce 1.2s infinite ease-in-out;
+
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  }
+}
+
+@keyframes typing-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+.input-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+  ion-textarea {
+    flex: 1;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    background: #f4f4f4;
+    border-radius: 20px;
+    --min-height: 40px;
+    max-height: 120px;
+  }
+
+  .send-btn {
+    --padding-start: 0;
+    --padding-end: 0;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    --border-radius: 50%;
+    flex-shrink: 0;
+  }
+}
+
+.title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

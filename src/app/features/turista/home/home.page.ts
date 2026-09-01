@@ -40,6 +40,7 @@ import { OfferService } from 'src/app/core/services/offers';
 import { ProviderDashboardComponent } from '../../provider/dashboard/provider-dashboard.component';
 import { SelectedCityService } from 'src/app/core/services/selected-city.service';
 import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -63,6 +64,7 @@ import { firstValueFrom } from 'rxjs';
     IonButtons,
     ProviderDashboardComponent,
     CitySelectorBarComponent,
+    ChatFabComponent,
   ],
 })
 export class HomePage implements OnInit {

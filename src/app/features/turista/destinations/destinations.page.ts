@@ -31,6 +31,7 @@ import { DestinationService } from 'src/app/core/services/destination.service';
 import { SelectedCityService } from 'src/app/core/services/selected-city.service';
 import { Destination } from 'src/app/core/models/Destination';
 import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 import { DestinationCardComponent } from 'src/app/components/destination-card/destination-card.component';
 import { MapDisplayComponent } from 'src/app/components/map-display/map-display.component';
 
@@ -55,6 +56,7 @@ import { MapDisplayComponent } from 'src/app/components/map-display/map-display.
     CitySelectorBarComponent,
     DestinationCardComponent,
     MapDisplayComponent,
+    ChatFabComponent,
   ],
 })
 export class DestinationsPage {

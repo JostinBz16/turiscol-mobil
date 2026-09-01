@@ -21,6 +21,7 @@ import { OfferService } from 'src/app/core/services/offers';
 import { NavigationService } from 'src/app/core/services/navigation.service';
 import { Browser } from '@capacitor/browser';
 import { firstValueFrom } from 'rxjs';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -40,6 +41,7 @@ import { firstValueFrom } from 'rxjs';
     IonIcon,
     IonSpinner,
     IonChip,
+    ChatFabComponent,
   ],
 })
 export class ReservationDetailPage implements OnInit {

@@ -12,6 +12,7 @@ import {
 } from '@ionic/angular/standalone';
 import { FestivityService } from 'src/app/core/services/festivity.service';
 import { Festivity } from 'src/app/core/models/Festivity';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 
 @Component({
   selector: 'app-festivity-details',
@@ -27,6 +28,7 @@ import { Festivity } from 'src/app/core/models/Festivity';
     IonButtons,
     IonBackButton,
     IonSpinner,
+    ChatFabComponent,
   ],
 })
 export class FestivityDetailsPage implements OnInit {

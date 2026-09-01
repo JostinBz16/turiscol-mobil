@@ -14,6 +14,7 @@ import { addCircleOutline, person, locationOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
 import { SelectedCityService } from 'src/app/core/services/selected-city.service';
 import { CitySelectorBarComponent } from 'src/app/components/city-selector-bar/city-selector-bar.component';
+import { ChatFabComponent } from 'src/app/components/chat-fab/chat-fab.component';
 import { PriceService } from 'src/app/core/services/price';
 import { Price } from 'src/app/core/models/Price';
 import { firstValueFrom } from 'rxjs';
@@ -23,7 +24,7 @@ import { firstValueFrom } from 'rxjs';
   standalone: true,
   templateUrl: './prices.page.html',
   styleUrls: ['./prices.page.scss'],
-  imports: [CommonModule, IonContent, IonIcon, IonHeader, IonToolbar, IonButtons, IonButton, IonSpinner, CitySelectorBarComponent],
+  imports: [CommonModule, IonContent, IonIcon, IonHeader, IonToolbar, IonButtons, IonButton, IonSpinner, CitySelectorBarComponent, ChatFabComponent],
 })
 export class PricesPage {
   private selectedCityService = inject(SelectedCityService);
