@@ -19,14 +19,15 @@ Dos formas de comunicación:
 
 ## 2. Configuración de URLs
 
-| Entorno    | REST (Gateway)          | WebSocket (directo)           |
-| ---------- | ----------------------- | ----------------------------- |
-| **Local**  | `http://localhost:8080` | `ws://localhost:8809/ws/chat` |
-| **Docker** | `http://localhost:8080` | `ws://localhost:8809/ws/chat` |
+| Entorno    | REST (Gateway)                      | WebSocket (recomendado)           | WebSocket (alternativa)        |
+| ---------- | ----------------------------------- | --------------------------------- | ------------------------------ |
+| **Local**  | `http://localhost:8080/api/v1/chat` | `ws://localhost:8809/ws/chat`     | `ws://localhost:8080/ws/chat`  |
+| **Docker** | `http://localhost:8080/api/v1/chat` | `ws://localhost:8809/ws/chat`     | `ws://localhost:8080/ws/chat`  |
 
-> **⚠️ Nota importante sobre WebSocket:** el gateway **no** tiene una ruta configurada para el WebSocket del chatbot (solo para notificaciones en `/ws/**`). Por eso el WebSocket del chat debe conectarse **directamente al chatbot-service** en el puerto `8809`, no al gateway.
-
-> **⚠️ Nota sobre REST:** existe un **bug de routing** pendiente en el gateway (`StripPrefix=1` vs controller `/api/v1/chat`). Si el `POST` falla con 404 por el gateway, conectar directo a `http://localhost:8809/api/v1/chat` como workaround mientras se corrige.
+> **✅ Estado: resuelto.** El gateway ya enruta correctamente el chatbot:
+>
+> - **REST** (`/api/v1/chat/**` → `StripPrefix=0`): antes daba 404 por un `StripPrefix` incorrecto; ya está corregido y verificado.
+> - **WebSocket**: se agregó la ruta `chatbot-websocket` (`/ws/chat/**`) **antes** de la ruta de notificaciones `/ws/**`, por lo que el chat también se puede conectar **vía gateway** (`ws://localhost:8080/ws/chat`). La conexión **directa al puerto `8809`** sigue siendo la opción más simple y probada.
 
 ---
 
@@ -127,7 +128,7 @@ Devuelve una conversación con todo su historial de mensajes. **404** si no exis
 
 | Propiedad              | Valor                       |
 | ---------------------- | --------------------------- |
-| Endpoint de conexión   | `ws://<host>:8809/ws/chat`  |
+| Endpoint de conexión   | `ws://<host>:8809/ws/chat` (directo, recomendado) o `ws://<host>:8080/ws/chat` (vía gateway) |
 | Prefijo de envío (app) | `/app`                      |
 | Destino de envío       | `/app/chat`                 |
 | Destino de suscripción | `/user/{userId}/queue/chat` |
@@ -135,12 +136,12 @@ Devuelve una conversación con todo su historial de mensajes. **404** si no exis
 
 ### 4.2 Flujo
 
-1. **Conectar** al endpoint STOMP `ws://<host>:8809/ws/chat`
+1. **Conectar** al endpoint STOMP (`ws://<host>:8809/ws/chat` directo o `ws://<host>:8080/ws/chat` vía gateway)
 2. **Suscribirse** a `/user/{userId}/queue/chat` (tu cola privada)
 3. **Enviar** `ChatRequest` (misma estructura que REST) a `/app/chat`
 4. **Recibir** la respuesta en la cola suscrita
 
-> El `userId` para la cola lo resuelve el servidor a partir del `Principal` de la sesión STOMP (el gateway no está involucrado aquí).
+> El `userId` para la cola lo resuelve el servidor a partir del `Principal` de la sesión STOMP (derivado del JWT). Conectando directo al `8809` el gateway no está involucrado.
 
 ### 4.3 Ejemplo Angular (Ionic + `@stomp/stompjs`)
 
@@ -288,11 +289,12 @@ export class ChatPage {
 
 ## 7. Manejo de errores
 
-| Código  | Causa                                                       | Acción del front                                             |
-| ------- | ----------------------------------------------------------- | ------------------------------------------------------------ |
-| `404`   | Ruta no encontrada (posible bug de StripPrefix del gateway) | Workaround: usar `http://localhost:8809/api/v1/chat` directo |
-| `500`   | Error del LLM o del microservicio interno                   | Mostrar mensaje genérico de error                            |
-| Timeout | Respuesta tardía del LLM                                    | Mostrar spinner mientras dure la petición                    |
+| Código  | Causa                                             | Acción del front                                                                        |
+| ------- | ------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `404`   | Ruta no encontrada                                | Verificar token y URL `/api/v1/chat/**` (routing del gateway ya corregido)              |
+| `429`   | Rate limit de Groq / LLM sobrecargado             | Reintentar en unos segundos (el backend responde `200` con mensaje amigable)            |
+| `500`   | Error del LLM o del microservicio interno         | Mostrar mensaje genérico de error                                                        |
+| Timeout | Respuesta tardía del LLM                          | Mostrar spinner mientras dure la petición                                                |
 
 ---
 
