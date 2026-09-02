@@ -12,8 +12,6 @@ import {
   IonIcon,
   IonButtons,
   IonSpinner,
-  IonChip,
-  IonLabel,
   IonFooter,
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
@@ -43,8 +41,6 @@ interface ChatMessage {
     IonIcon,
     IonButtons,
     IonSpinner,
-    IonChip,
-    IonLabel,
     IonFooter,
   ],
 })
@@ -60,7 +56,6 @@ export class ChatPage {
   input = '';
   currentConversationId?: string;
   waiting = false;
-  private connected = false;
 
   constructor() {
     addIcons({ close, send, chatbubbleEllipses, sparklesOutline });
@@ -68,18 +63,11 @@ export class ChatPage {
 
   ionViewWillEnter() {
     this.waiting = false;
-    this.connected = false;
-    this.chatWs.connect((resp: ChatResponse) => this.onMessage(resp));
-  }
-
-  ionViewWillLeave() {
-    this.chatWs.disconnect();
   }
 
   quickQuestion(text: string) {
     this.messages.update((m) => [...m, { role: 'user', text }]);
-    this.waiting = true;
-    this.chatWs.sendMessage(text, this.currentConversationId);
+    this.sendMessage(text);
     this.scrollToBottom();
   }
 
@@ -92,14 +80,23 @@ export class ChatPage {
     }
   }
 
+  private sendMessage(text: string) {
+    this.waiting = true;
+    this.chatWs.sendMessage(text, this.currentConversationId).subscribe({
+      next: (resp) => this.onMessage(resp),
+      error: () => {
+        this.waiting = false;
+      },
+    });
+  }
+
   send() {
     const text = this.input.trim();
     if (!text || this.waiting) return;
 
     this.messages.update((m) => [...m, { role: 'user', text }]);
     this.input = '';
-    this.waiting = true;
-    this.chatWs.sendMessage(text, this.currentConversationId);
+    this.sendMessage(text);
     this.scrollToBottom();
   }
 

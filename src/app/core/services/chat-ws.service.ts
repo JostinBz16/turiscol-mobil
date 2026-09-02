@@ -1,8 +1,7 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { Client, IMessage } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { AuthService } from 'src/app/features/auth/login/services/auth';
 
 export interface ToolCall {
   toolName: string;
@@ -21,72 +20,24 @@ export interface ChatResponse {
   toolCalls?: ToolCall[] | null;
 }
 
+/**
+ * Servicio de chat del asistente Turiscol.
+ *
+ * Usa REST (POST /api/v1/chat) en lugar de WebSocket STOMP: es más fiable
+ * (el WS por gateway no devolvía la respuesta de forma consistente) y el
+ * authInterceptor añade automáticamente el `Authorization: Bearer <jwt>`
+ * y maneja el refresh en 401.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class ChatWsService {
-  private authService = inject(AuthService);
+  private http = inject(HttpClient);
 
-  private client: Client | null = null;
+  private readonly api = `${environment.apiUrl}/chat`;
 
-  connected = signal(false);
-  connecting = signal(false);
-
-  connect(onMessage: (resp: ChatResponse) => void): void {
-    if (this.client?.active) return;
-
-    const userId = this.authService.userId();
-    const token = localStorage.getItem('access_token') ?? '';
-    const url = environment.chatWsUrl;
-
-    this.connecting.set(true);
-
-    this.client = new Client({
-      webSocketFactory: () => new SockJS(url),
-      connectHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-      reconnectDelay: 5000,
-      onConnect: () => {
-        this.connected.set(true);
-        this.connecting.set(false);
-        if (userId) {
-          this.client?.subscribe(`/user/${userId}/queue/chat`, (msg: IMessage) => {
-            try {
-              const resp: ChatResponse = JSON.parse(msg.body);
-              onMessage(resp);
-            } catch {
-              onMessage({ conversationId: '', message: msg.body });
-            }
-          });
-        }
-      },
-      onWebSocketClose: () => {
-        this.connected.set(false);
-        this.connecting.set(false);
-      },
-      onStompError: () => {
-        this.connecting.set(false);
-      },
-    });
-
-    this.client.activate();
-  }
-
-  sendMessage(message: string, conversationId?: string): void {
+  sendMessage(message: string, conversationId?: string): Observable<ChatResponse> {
     const payload: ChatRequest = { message, conversationId };
-    this.client?.publish({
-      destination: '/app/chat',
-      body: JSON.stringify(payload),
-    });
-  }
-
-  disconnect(): void {
-    if (this.client?.active) {
-      this.client.deactivate();
-    }
-    this.client = null;
-    this.connected.set(false);
-    this.connecting.set(false);
+    return this.http.post<ChatResponse>(this.api, payload);
   }
 }
