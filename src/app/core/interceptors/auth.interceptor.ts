@@ -33,7 +33,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           const refreshToken = localStorage.getItem('refresh_token');
           if (refreshToken) {
             return http
-              .post(`${environment.apiUrl}/auth/refresh`, refreshToken)
+              .post(`${environment.apiUrl}/auth/refresh`, { refreshToken })
               .pipe(
                 switchMap((res: any) => {
                   isRefreshing = false;

@@ -37,12 +37,15 @@ export class ChatWsService {
 
     const userId = this.authService.userId();
     const token = localStorage.getItem('access_token') ?? '';
-    const url = `${environment.chatWsUrl}?access_token=${encodeURIComponent(token)}`;
+    const url = environment.chatWsUrl;
 
     this.connecting.set(true);
 
     this.client = new Client({
       webSocketFactory: () => new SockJS(url),
+      connectHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
       reconnectDelay: 5000,
       onConnect: () => {
         this.connected.set(true);
