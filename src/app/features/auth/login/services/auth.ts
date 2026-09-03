@@ -95,6 +95,7 @@ export class AuthService {
         userName: res.userName
       };
       localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('role', user.role);
       this.user.set(user);
     }
   }
@@ -119,7 +120,9 @@ export class AuthService {
   loadFromStorage() {
     const rawUser = localStorage.getItem('user');
     if (rawUser) {
-      this.user.set(JSON.parse(rawUser));
+      const user = JSON.parse(rawUser);
+      localStorage.setItem('role', user.role);
+      this.user.set(user);
     }
   }
 
