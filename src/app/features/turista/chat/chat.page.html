@@ -7,6 +7,9 @@
       </div>
     </ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="newChat()" aria-label="Nuevo chat" color="light">
+        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+      </ion-button>
       <ion-button (click)="closeChat()">
         <ion-icon slot="icon-only" name="close"></ion-icon>
       </ion-button>

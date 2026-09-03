@@ -11,7 +11,6 @@ export interface ToolCall {
 
 export interface ChatRequest {
   message: string;
-  conversationId?: string;
 }
 
 export interface ChatResponse {
@@ -36,8 +35,17 @@ export class ChatWsService {
 
   private readonly api = `${environment.apiUrl}/chat`;
 
-  sendMessage(message: string, conversationId?: string): Observable<ChatResponse> {
-    const payload: ChatRequest = { message, conversationId };
+  sendMessage(message: string): Observable<ChatResponse> {
+    const payload: ChatRequest = { message };
     return this.http.post<ChatResponse>(this.api, payload);
+  }
+
+  /**
+   * Reinicia / limpia la conversación: el backend archiva la conversación
+   * ACTIVE y crea una vacía. En el front hay que vaciar la lista local de
+   * mensajes.
+   */
+  resetChat(): Observable<ChatResponse> {
+    return this.http.post<ChatResponse>(`${this.api}/reset`, {});
   }
 }

@@ -8,6 +8,8 @@ Guía para el equipo de la **app móvil (Ionic)**. Documenta cómo conectar la i
 
 El chatbot es un asistente virtual de turismo que responde en lenguaje natural sobre ofertas, destinos, precios, festividades y reseñas. Usa un LLM con **function calling** que consulta el backend automáticamente.
 
+**Modelo de chat único:** cada usuario tiene una **sola conversación activa**. El front envía solo `message` (no `conversationId`) y el backend reutiliza automáticamente el hilo del usuario. Para empezar una conversación nueva se llama a `POST /api/v1/chat/reset` (botón "Nuevo chat"), que archiva la anterior y crea una vacía. **No hay pantalla de historial de conversaciones.**
+
 Dos formas de comunicación:
 
 | Modo                | Cuándo usar                                                                         |
@@ -15,81 +17,48 @@ Dos formas de comunicación:
 | **REST** (POST)     | Enviar un mensaje y recibir la respuesta completa. Simple, recomendado para el MVP. |
 | **WebSocket STOMP** | Chat en tiempo real con conexión persistente. Mejor UX pero más complejo.           |
 
-> **✅ Estado actual:** la app implementa **WebSocket STOMP** (`ChatWsService`) como vía principal. El gateway enruta correctamente REST (`/api/v1/chat/**`) y WebSocket (`/ws/chat/**`). WebSocket directo al puerto `8809` sigue siendo la opción más simple y probada.
-
 ---
 
 ## 2. Configuración de URLs
 
-Las URLs se configuran en los archivos de environment:
+| Entorno    | REST (Gateway)                      | WebSocket (recomendado)       | WebSocket (alternativa)       |
+| ---------- | ----------------------------------- | ----------------------------- | ----------------------------- |
+| **Local**  | `http://localhost:8080/api/v1/chat` | `ws://localhost:8809/ws/chat` | `ws://localhost:8080/ws/chat` |
+| **Docker** | `http://localhost:8080/api/v1/chat` | `ws://localhost:8809/ws/chat` | `ws://localhost:8080/ws/chat` |
 
-```typescript
-// src/environments/environment.ts (desarrollo)
-export const environment = {
-  apiUrl: 'http://192.168.0.103:8080/api/v1',       // REST (gateway)
-  chatWsUrl: 'http://192.168.0.103:8809/ws/chat',   // WebSocket (directo al microservicio)
-};
+> **⚠️ WebSocket vía gateway (8080): NO recomendado.** Concretar al Puerto **8809 directo** es lo más fiable. Vía gateway el `chatbot-service` recibe el mensaje y envía la respuesta (log `Enviando respuesta WS al usuario ...`), pero con frecuencia la respuesta no llega de vuelta al front porque el proxy/STOMP no preserva la sesión `{sub}` y el header `Authorization` (además, los tokens vencen y el `StompAuthInterceptor` los rechaza con `Jwt expired`). **Para el chat usa REST (§4.4/§5), no WebSocket.**
 
-// src/environments/environment.prod.ts (producción)
-export const environment = {
-  apiUrl: 'https://api.turiscol.com/api/v1',
-  chatWsUrl: 'https://chat.turiscol.com/ws/chat',    // SockJS con HTTPS → upgrade a WSS
-};
-```
-
-| Entorno    | REST (vía gateway)                    | WebSocket (directo, recomendado)         | WebSocket (vía gateway)                 |
-| ---------- | ------------------------------------- | ---------------------------------------- | --------------------------------------- |
-| **Local**  | `${environment.apiUrl}/chat`          | `${environment.chatWsUrl}`               | `http://localhost:8080/ws/chat`         |
-| **Docker** | `${environment.apiUrl}/chat`          | `${environment.chatWsUrl}`               | `http://localhost:8080/ws/chat`         |
-| **Prod**   | `https://api.turiscol.com/api/v1/chat`| `https://chat.turiscol.com/ws/chat`      | `https://api.turiscol.com/ws/chat`      |
-
-> **⚠️ SockJS usa `http://` / `https://`, no `ws://`.** SockJS negocia la conexión internamente y hace upgrade a WebSocket. En el código se pasa siempre una URL HTTP/HTTPS, no `ws://`.
-
-> **⚠️ WebSocket vía gateway (8080): NO recomendado.** Vía gateway el `chatbot-service` recibe el mensaje y envía la respuesta, pero con frecuencia la respuesta no llega de vuelta al front porque el proxy/STOMP no preserva la sesión `{sub}` y el header `Authorization` (tokens vencen → `Jwt expired`). **Usa la conexión directa al puerto `8809`** (`environment.chatWsUrl`).
-
-> **✅ Gateway ya enruta correctamente:**
+> **✅ Estado: resuelto.** El gateway ya enruta correctamente el chatbot:
 >
-> - **REST** (`/api/v1/chat/**` → `StripPrefix=0`): corregido y verificado.
-> - **WebSocket** (`/ws/chat/**`): ruta `chatbot-websocket` agregada antes de `/ws/**`. Conexión directa al `8809` sigue siendo la más simple.
+> - **REST** (`/api/v1/chat/**` → `StripPrefix=0`): antes daba 404 por un `StripPrefix` incorrecto; ya está corregido y verificado.
+> - **WebSocket**: se agregó la ruta `chatbot-websocket` (`/ws/chat/**`) **antes** de la ruta de notificaciones `/ws/**`, por lo que el chat también se puede conectar **vía gateway** (`ws://localhost:8080/ws/chat`). La conexión **directa al puerto `8809`** sigue siendo la opción más simple y probada.
+>
+> > **⚠️ Autenticación en WebSocket:** desde que se aplicó el fix de la NPE (`NullPointerException` por `principal` nulo), el endpoint STOMP **requiere autenticación**. El cliente debe enviar el header `Authorization: Bearer <jwt>` en el frame `CONNECT` (igual que en el `notification-service`). El `userId` se deriva del JWT; una conexión sin token cae a `anonymous`.
 
 ---
 
-## 3. Autenticación
+## 3. Endpoints REST
 
-> **El `authInterceptor` (Angular) ya adjunta automáticamente el header `Authorization: Bearer <jwt>` a todas las peticiones HTTP hacia `environment.apiUrl`.** No es necesario enviar el token manualmente en cada llamada REST. El interceptor también maneja el refresh automático del token ante un `401`.
+Base (gateway): `http://localhost:8080/api/v1/chat`
 
-Para **WebSocket**, el token se envía en el frame `CONNECT` a través de `connectHeaders`:
-
-```typescript
-connectHeaders: {
-  Authorization: `Bearer ${token}`,  // token de localStorage('access_token')
-}
-```
-
-El `userId` (sujeto de la cola privada) se deriva del `sub` del JWT, no se envía desde el cliente.
-
----
-
-## 4. Endpoints REST
-
-Base (gateway): `${environment.apiUrl}/chat`
-
-### 4.1 POST `/` — Enviar mensaje
+### 3.1 POST `/` — Enviar mensaje
 
 **Request:**
+
 ```json
 {
-  "message": "¿Qué hay para hacer en Medellín este fin de semana?",
-  "conversationId": "conv_abc123"
+  "message": "¿Qué hay para hacer en Medellín este fin de semana?"
 }
 ```
 
-| Campo            | Tipo   | Obligatorio | Descripción                                                                                                          |
-| ---------------- | ------ | ----------- | -------------------------------------------------------------------------------------------------------------------- |
-| `message`        | String | ✅          | Texto del usuario                                                                                                    |
-| `conversationId` | String | ❌          | Si se omite o es `null`, crea una conversación nueva. Si se envía y pertenece al usuario, continúa esa conversación. |
+| Campo     | Tipo   | Obligatorio | Descripción       |
+| --------- | ------ | ----------- | ----------------- |
+| `message` | String | ✅          | Texto del usuario |
+
+> **`conversationId` ya no se envía:** el campo sigue existiendo en el DTO por retrocompatibilidad, pero el backend lo **ignora**. El front **no** necesita guardar ni reenviar un id para continuar el hilo: cada usuario tiene una **única conversación activa (ACTIVE)** y el backend la reutiliza automáticamente en cada `POST`.
 
 **Response (200 OK):**
+
 ```json
 {
   "conversationId": "conv_abc123",
@@ -106,84 +75,115 @@ Base (gateway): `${environment.apiUrl}/chat`
 
 | Campo            | Tipo             | Descripción                                                                      |
 | ---------------- | ---------------- | -------------------------------------------------------------------------------- |
-| `conversationId` | String           | ID de la conversación (nueva o existente)                                        |
+| `conversationId` | String           | ID de la conversación activa (el mismo para todos los mensajes del chat actual)  |
 | `message`        | String           | Respuesta del asistente                                                          |
 | `toolCalls`      | Array (nullable) | Tools que ejecutó el LLM internamente. **No es necesario mostrarlo al usuario.** |
 
-**Headers requeridos (REST):** el `authInterceptor` agrega `Authorization: Bearer <jwt>` automáticamente. Sin token el gateway responde `401`. El `userId` se deriva del `sub` del JWT.
+**Headers requeridos (REST):** el **gateway protege la ruta** y la app debe enviar `Authorization: Bearer <jwt>` (el mismo del login). Sin token el gateway responde `401`. El `userId` se deriva del `sub` del JWT.
 
-### 4.2 GET `/conversations` — Listar conversaciones
+### 3.2 POST `/reset` — Reiniciar / limpiar chat (NUEVO)
 
-**Response (200 OK):** Array de conversaciones del usuario, ordenadas por `updatedAt` descendente.
+Crea una conversación nueva vacía. La conversación ACTIVE anterior se **archiva automáticamente** en el backend (se conserva en BD para auditoría pero no se usa).
 
-```json
-[
-  {
-    "id": "conv_abc123",
-    "userId": "uuid-del-usuario",
-    "title": "Buscando hotel en Santa Marta",
-    "messages": [ ... ],
-    "createdAt": "2026-08-01T10:30:00Z",
-    "updatedAt": "2026-08-01T10:45:00Z",
-    "expiresAt": "2026-08-31T10:30:00Z",
-    "metadata": null
-  }
-]
-```
+**Request:** sin body (solo header `Authorization`).
 
-**Uso típico:** pantalla de historial de chats — mostrar `title` y `updatedAt`.
-
-### 4.3 GET `/conversations/{id}` — Detalle de conversación
-
-Devuelve una conversación con todo su historial de mensajes. **404** si no existe o no pertenece al usuario.
-
-**Estructura de `messages[]`:**
+**Response (200 OK):**
 
 ```json
-"messages": [
-  { "role": "user", "content": "Hola, busco hotel en Santa Marta", "timestamp": "..." },
-  { "role": "assistant", "content": "¡Claro! Encontré 3 opciones...", "timestamp": "...", "toolCalls": null }
-]
+{
+  "conversationId": "conv_xyz999",
+  "message": "Chat reiniciado"
+}
 ```
 
-| Campo       | Tipo             | Descripción                                       |
-| ----------- | ---------------- | ------------------------------------------------- |
-| `role`      | String           | `user` \| `assistant` \| `tool`                   |
-| `content`   | String           | Texto del mensaje                                 |
-| `timestamp` | String (ISO)     | Fecha del mensaje                                 |
-| `toolCalls` | Array (nullable) | Solo en respuestas del asistente que usaron tools |
+**Uso típico:** botón "Nuevo chat" / "Limpiar conversación". El front debe:
 
-### 4.4 DELETE `/conversations/{id}` — Eliminar conversación
+1. Llamar a `POST /reset` (con `Authorization`).
+2. Vaciar la lista local de mensajes.
+3. Guardar el nuevo `conversationId` devuelto (para futuras referencias).
 
-**Response:** `204 No Content`. Solo elimina si la conversación pertenece al usuario.
+> **Importante:** al reset no hace falta borrar nada en el front; el backend archiva la conversación anterior y entrega una nueva vacía.
 
 ---
 
-## 5. WebSocket STOMP (Chat en tiempo real) — NO recomendado
+## 3.5 Cambios requeridos en el front (migración al chat único)
 
-> **⚠️ Aviso importante:** para el chat usa la conexión **directa al puerto `8809`** (la más fiable) o **REST (§7)**.
+> **⚠️ LEE ESTO PRIMERO.** El backend dejó el modelo de **una sola conversación activa (ACTIVE)** por usuario. Si tu app aún usa el modelo viejo de "múltiples conversaciones", debes aplicar estas correcciones o el chat dejará de funcionar (los endpoints viejos dan 404).
+
+### Qué hacer, paso a paso
+
+| #   | Corrección en el front                                                                   | Antes (modelo viejo)                                         | Ahora (chat único)                                                                                           |
+| --- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| 1   | **Dejar de enviar `conversationId`** en `POST /api/v1/chat`                              | Se enviaba el id para continuar el hilo                      | Enviar solo `{ "message": "..." }`. El backend reutiliza automáticamente la conversación ACTIVE del usuario. |
+| 2   | **Eliminar la pantalla/lógica de historial** que usaba `GET /api/v1/chat/conversations`  | Listaba las conversaciones del usuario                       | **El endpoint ya NO existe** (404). Quitar esa pantalla o esa llamada.                                       |
+| 3   | **Eliminar el cargue de conversaciones** que usaba `GET /api/v1/chat/conversations/{id}` | Recuperaba un hilo anterior                                  | **El endpoint ya NO existe** (404). Quitar esa llamada y cualquier `history.state.conversationId`.           |
+| 4   | **Reemplazar "eliminar conversación" por "nuevo chat"**                                  | Botón que llamaba a `DELETE /api/v1/chat/conversations/{id}` | Botón **"Nuevo chat"** que llama a `POST /api/v1/chat/reset` (archiva la ACTIVE y crea una vacía).           |
+| 5   | **No guardar ni gestionar `conversationId`** en el componente de chat                    | Se almacenaba el id y se reenviaba en cada mensaje           | `sendMessage(jwt, text)` sin id. El id de la respuesta es solo informativo.                                  |
+| 6   | **Vaciar la lista local de mensajes** al resetear                                        | —                                                            | Tras `POST /reset` con éxito, hacer `messages = []`.                                                         |
+
+### Cambios en el servicio (`chat-rest.service.ts`)
+
+```typescript
+// ❌ ELIMINAR estos métodos (ya no existen en el backend):
+//   getConversations(jwt)                 → GET /conversations  (404)
+//   getConversation(jwt, id)              → GET /conversations/{id} (404)
+//   deleteConversation(jwt, id)           → borrado puntual interno (no para el usuario)
+
+// ✅ MANTENER / AJUSTAR:
+sendMessage(jwt: string, message: string): Observable<ChatResponse> {
+  const headers = new HttpHeaders({ Authorization: `Bearer ${jwt}` });
+  return this.http.post<ChatResponse>(`${API_URL}`, { message }, { headers }); // sin conversationId
+}
+
+// ✅ AGREGAR: nuevo chat
+resetChat(jwt: string): Observable<ChatResponse> {
+  const headers = new HttpHeaders({ Authorization: `Bearer ${jwt}` });
+  return this.http.post<ChatResponse>(`${API_URL}/reset`, {}, { headers });
+}
+```
+
+### Botón "Nuevo chat" en el componente
+
+```typescript
+async newChat() {
+  const jwt = await this.auth.token();
+  if (!jwt) return;
+  this.chatRest.resetChat(jwt).subscribe({
+    next: () => { this.messages = []; },   // vaciar el historial local
+    error: () => {},                        // opcional: mensaje de error
+  });
+}
+```
+
+> **Nota:** el `conversationId` que devuelve el backend es **solo informativo** (por si quieres guardarlo para debug). No es necesario para que el chat continúe: el backend siempre usa la conversación ACTIVE del usuario.
+
+---
+
+## 4. WebSocket STOMP (Chat en tiempo real) — NO recomendado
+
+> **⚠️ Aviso importante:** para el chat usa **REST (§4.4/§5)**, no WebSocket.
 >
 > - **REST** devuelve la respuesta directamente en el `POST` (simple, fiable, recomendado).
 > - **WebSocket vía gateway (8080)** no es confiable: el `chatbot-service` recibe el mensaje y envía la respuesta (log `Enviando respuesta WS al usuario ...`) pero con frecuencia la respuesta **no llega de vuelta al front** (el proxy/STOMP no preserva la sesión `{sub}` ni el `Authorization`, y los tokens vencen → `Jwt expired`).
-> - **WebSocket directo al 8809** funciona mejor, pero exige que la suscripción apunte exactamente a `/user/{sub}/queue/chat` y que `@stomp/stompjs` reciba la ruta **completa** (no la sustituye automáticamente).
+> - **WebSocket directo al 8809** funciona mejor, pero aun así exige que la suscripción apunte exactamente a `/user/{sub}/queue/chat` y que `@stomp/stompjs` reciba la ruta **completa** (no la sustituye automáticamente).
 
 Solo se documenta WebSocket a continuación por completitud/historial.
 
-### 5.1 Configuración
+### 4.1 Configuración
 
 | Propiedad              | Valor                                                                                        |
 | ---------------------- | -------------------------------------------------------------------------------------------- |
-| Endpoint de conexión   | `environment.chatWsUrl` (directo, recomendado) o `http://<gateway>:8080/ws/chat` (vía gateway) |
+| Endpoint de conexión   | `ws://<host>:8809/ws/chat` (directo, recomendado) o `ws://<host>:8080/ws/chat` (vía gateway) |
 | Header en `CONNECT`    | `Authorization: Bearer <jwt>` (obligatorio)                                                  |
 | Prefijo de envío (app) | `/app`                                                                                       |
 | Destino de envío       | `/app/chat`                                                                                  |
 | Destino de suscripción | `/user/{userId}/queue/chat`                                                                  |
 | Prefijo broker         | `/topic`, `/queue`                                                                           |
 
-### 5.2 Flujo
+### 4.2 Flujo
 
-1. **Conectar** al endpoint STOMP (`environment.chatWsUrl` directo o vía gateway), enviando `Authorization: Bearer <jwt>` en el frame `CONNECT`. Sin token la conexión se rechaza o se mapea a `anonymous`.
-2. **Suscribirse** a `/user/{userId}/queue/chat` (tu cola privada). El `userId` es el `sub` del JWT.
+1. **Conectar** al endpoint STOMP (`ws://<host>:8809/ws/chat` directo o `ws://<host>:8080/ws/chat` vía gateway), enviando `Authorization: Bearer <jwt>` en el frame `CONNECT`. Sin token la conexión se rechaza o se mapea a `anonymous`.
+2. **Suscribirse** a `/user/{userId}/queue/chat` (tu cola privada). El `userId` es el `subject` del JWT.
 3. **Enviar** `ChatRequest` (misma estructura que REST) a `/app/chat`
 4. **Recibir** la respuesta en la cola suscrita
 
@@ -191,17 +191,16 @@ Solo se documenta WebSocket a continuación por completitud/historial.
 >
 > **⚠️ Suscripción (causa #1 de que "el WS no llega"):** `@stomp/stompjs` **NO sustituye** `/user/` automáticamente. Hay que suscribirse a la ruta **completa** `/user/{userId}/queue/chat`, donde `{userId}` = `sub` del JWT. Si el front se suscribe a `/user/queue/chat` literal (sin id) o usa un id distinto del `sub`, el backend envía a `/user/{sub}/queue/chat` y nadie lo escucha.
 
-### 5.3 Ejemplo WebSocket ( Ionic + `@stomp/stompjs`)
-
-> Este ejemplo refleja la implementación actual en `chat-ws.service.ts`.
+### 4.3 Ejemplo Angular (Ionic + `@stomp/stompjs`)
 
 ```typescript
-// chat-ws.service.ts
-import { Injectable, inject, signal } from '@angular/core';
-import { Client, IMessage } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';               // default import, NO import * as SockJS
-import { environment } from 'src/environments/environment';
-import { AuthService } from 'src/app/features/auth/login/services/auth';
+// chat.service.ts
+import { Client, Message } from "@stomp/stompjs";
+import * as SockJS from "sockjs-client";
+
+export interface ChatRequest {
+  message: string;
+}
 
 export interface ToolCall {
   toolName: string;
@@ -209,244 +208,136 @@ export interface ToolCall {
   result: string;
 }
 
-export interface ChatRequest {
-  message: string;
-  conversationId?: string;
-}
-
 export interface ChatResponse {
   conversationId: string;
   message: string;
-  toolCalls?: ToolCall[] | null;                  // nullable
+  toolCalls?: ToolCall[];
 }
 
-@Injectable({ providedIn: 'root' })
-export class ChatWsService {
-  private authService = inject(AuthService);
-  private client: Client | null = null;
+@Injectable({ providedIn: "root" })
+export class ChatService {
+  private client: Client;
+  private WS_URL = "ws://localhost:8809/ws/chat";
 
-  connected = signal(false);
-  connecting = signal(false);
-
-  connect(onMessage: (resp: ChatResponse) => void): void {
-    if (this.client?.active) return;
-
-    const token = localStorage.getItem('access_token') ?? '';
-    const url = environment.chatWsUrl;            // SockJS usa http://, NO ws://
-
-    this.connecting.set(true);
-
+  connect(jwtToken: string, onMessage: (resp: ChatResponse) => void): void {
     this.client = new Client({
-      webSocketFactory: () => new SockJS(url),
-      connectHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
+      webSocketFactory: () => new SockJS("http://localhost:8809/ws/chat"),
       reconnectDelay: 5000,
-      onConnect: () => {
-        this.connected.set(true);
-        this.connecting.set(false);
-        // Resolver el userId en el momento de conectar (el sub del JWT),
-        // no antes, para no suscribirnos con un id vacío.
-        const userId = this.authService.userId();
-        if (userId) {
-          this.client?.subscribe(`/user/${userId}/queue/chat`, (msg: IMessage) => {
-            try {
-              const resp: ChatResponse = JSON.parse(msg.body);
-              onMessage(resp);
-            } catch {
-              onMessage({ conversationId: '', message: msg.body });
-            }
-          });
-        } else {
-          console.warn('Chat WS conectado pero sin userId (sub) para suscribirse');
-        }
-      },
-      onWebSocketClose: () => {
-        this.connected.set(false);
-        this.connecting.set(false);
-      },
-      onStompError: () => {
-        this.connecting.set(false);
+      connectHeaders: {
+        Authorization: `Bearer ${jwtToken}`,
       },
     });
+
+    this.client.onConnect = () => {
+      // El userId sale del JWT; puedes leerlo del payload del token.
+      const userId = decodeUserId(jwtToken);
+      this.client.subscribe(`/user/${userId}/queue/chat`, (msg: Message) => {
+        const resp: ChatResponse = JSON.parse(msg.body);
+        onMessage(resp);
+      });
+      console.log("Conectado al chat WebSocket");
+    };
 
     this.client.activate();
   }
 
-  sendMessage(message: string, conversationId?: string): void {
-    const payload: ChatRequest = { message, conversationId };
-    this.client?.publish({
-      destination: '/app/chat',
-      body: JSON.stringify(payload),
-    });
+  sendMessage(message: string): void {
+    const payload: ChatRequest = { message };
+    this.client.publish({ destination: "/app/chat", body: JSON.stringify(payload) });
   }
 
   disconnect(): void {
-    if (this.client?.active) {
-      this.client.deactivate();
-    }
-    this.client = null;
-    this.connected.set(false);
-    this.connecting.set(false);
+    this.client?.deactivate();
   }
 }
 ```
 
----
+### 4.4 Ejemplo REST (más simple, **RECOMENDADO**)
 
-## 6. Servicio REST (alternativa, más simple)
-
-> **Vía alternativa al WebSocket.** El `authInterceptor` ya adjunta `Authorization: Bearer <jwt>` automáticamente a todas las peticiones hacia `environment.apiUrl`. No es necesario enviar el token manualmente.
+> **Vía recomendada para el chat.** El gateway protege la ruta y **exige `Authorization: Bearer <jwt>`**; sin el header responde `401`. El `userId` se deriva del `sub` del JWT (el front **no** envía `X-User-Id`).
 
 ```typescript
 // chat-rest.service.ts
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { ChatResponse } from './chat-ws.service';   // reutiliza la interfaz
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
 
-export interface Conversation {
-  id: string;
-  userId: string;
-  title: string;
-  messages: { role: string; content: string; timestamp: string; toolCalls?: any }[];
-  createdAt: string;
-  updatedAt: string;
-  expiresAt: string;
-  metadata: any;
-}
+const API_URL = "http://localhost:8080/api/v1/chat";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class ChatRestService {
-  private http = inject(HttpClient);
-  private API_URL = `${environment.apiUrl}/chat`;
+  constructor(private http: HttpClient) {}
 
-  // No necesita jwt: el authInterceptor lo adjunta automáticamente
-  sendMessage(message: string, conversationId?: string): Observable<ChatResponse> {
-    return this.http.post<ChatResponse>(this.API_URL, { message, conversationId });
+  private headers(jwt: string): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${jwt}` });
   }
 
-  getConversations(): Observable<Conversation[]> {
-    return this.http.get<Conversation[]>(`${this.API_URL}/conversations`);
+  // jwt = el mismo token del login (idToken/accessToken)
+  sendMessage(jwt: string, message: string): Observable<ChatResponse> {
+    return this.http.post<ChatResponse>(`${API_URL}`, { message }, { headers: this.headers(jwt) });
   }
 
-  getConversation(id: string): Observable<Conversation> {
-    return this.http.get<Conversation>(`${this.API_URL}/conversations/${id}`);
-  }
-
-  deleteConversation(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/conversations/${id}`);
+  // Nuevo chat: archiva la conversación ACTIVE y crea una vacía
+  resetChat(jwt: string): Observable<ChatResponse> {
+    return this.http.post<ChatResponse>(`${API_URL}/reset`, {}, { headers: this.headers(jwt) });
   }
 }
 ```
 
 ---
 
-## 7. Componente de UI (Ionic — implementación actual)
-
-> Este ejemplo refleja la implementación real en `chat.page.ts`. Usa **WebSocket** (`ChatWsService`) con signals de Angular.
+## 5. Componente de UI sugerido (Ionic)
 
 ```typescript
-// chat.page.ts
-import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea,
-  IonButton, IonIcon, IonButtons, IonSpinner, IonChip, IonLabel, IonFooter,
-} from '@ionic/angular/standalone';
-import { NavController } from '@ionic/angular';
-import { addIcons } from 'ionicons';
-import { close, send, chatbubbleEllipses, sparklesOutline } from 'ionicons/icons';
-import { ChatResponse, ChatWsService } from 'src/app/core/services/chat-ws.service';
-
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  text: string;
-}
-
-@Component({
-  selector: 'app-chat',
-  standalone: true,
-  templateUrl: './chat.page.html',
-  styleUrls: ['./chat.page.scss'],
-  imports: [
-    CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, IonContent,
-    IonTextarea, IonButton, IonIcon, IonButtons, IonSpinner, IonChip, IonLabel, IonFooter,
-  ],
-})
+// chat.page.ts (ejemplo de flujo completo — REST con jwt)
 export class ChatPage {
-  @ViewChild('content', { static: false }) content!: ElementRef;
+  messages: { role: "user" | "assistant"; text: string }[] = [];
+  input = "";
 
-  private chatWs = inject(ChatWsService);
-  private navCtrl = inject(NavController);
+  constructor(
+    private chatRest: ChatRestService,
+    private auth: AuthService,
+  ) {}
 
-  messages = signal<ChatMessage[]>([]);
-  input = '';
-  currentConversationId?: string;
-  waiting = false;
-
-  constructor() {
-    addIcons({ close, send, chatbubbleEllipses, sparklesOutline });
-  }
-
-  ionViewWillEnter() {
-    this.waiting = false;
-    this.chatWs.connect((resp: ChatResponse) => this.onMessage(resp));
-  }
-
-  ionViewWillLeave() {
-    this.chatWs.disconnect();
-  }
-
-  quickQuestion(text: string) {
-    this.messages.update((m) => [...m, { role: 'user', text }]);
-    this.waiting = true;
-    this.chatWs.sendMessage(text, this.currentConversationId);
-    this.scrollToBottom();
-  }
-
-  private onMessage(resp: ChatResponse) {
-    this.waiting = false;
-    this.currentConversationId = resp.conversationId;
-    if (resp.message) {
-      this.messages.update((m) => [...m, { role: 'assistant', text: resp.message }]);
-      this.scrollToBottom();
-    }
-  }
-
-  send() {
+  async send() {
     const text = this.input.trim();
-    if (!text || this.waiting) return;
-    this.messages.update((m) => [...m, { role: 'user', text }]);
-    this.input = '';
-    this.waiting = true;
-    this.chatWs.sendMessage(text, this.currentConversationId);
-    this.scrollToBottom();
+    if (!text) return;
+
+    const jwt = await this.auth.token(); // mismo token del login (obligatorio: 401 sin él)
+    if (!jwt) return;
+
+    this.messages.push({ role: "user", text });
+    this.input = "";
+
+    // No se envía conversationId: el backend reutiliza la conversación ACTIVE del usuario
+    this.chatRest.sendMessage(jwt, text).subscribe({
+      next: (resp) => {
+        this.messages.push({ role: "assistant", text: resp.message });
+      },
+      error: () => {
+        this.messages.push({ role: "assistant", text: "Lo siento, no pude procesar tu consulta. Intenta de nuevo." });
+      },
+    });
   }
 
-  onEnter(event: Event) {
-    const ev = event as CustomEvent;
-    if (ev.detail?.key === 'Enter') this.send();
-  }
+  // Botón "Nuevo chat" / "Limpiar conversación"
+  async newChat() {
+    const jwt = await this.auth.token();
+    if (!jwt) return;
 
-  private scrollToBottom() {
-    setTimeout(() => {
-      try { this.content?.nativeElement?.scrollToBottom(300); } catch { /* noop */ }
-    }, 50);
-  }
-
-  closeChat() {
-    this.navCtrl.back();
+    this.chatRest.resetChat(jwt).subscribe({
+      next: () => {
+        this.messages = []; // vaciar el historial local
+      },
+      error: () => {},
+    });
   }
 }
 ```
 
 ---
 
-## 8. Casos de uso soportados (lo que el chatbot puede responder)
+## 6. Casos de uso soportados (lo que el chatbot puede responder)
 
 | Pregunta del usuario                      | Tool usada internamente                            |
 | ----------------------------------------- | -------------------------------------------------- |
@@ -461,58 +352,72 @@ export class ChatPage {
 
 ---
 
-## 9. Manejo de errores
+## 7. Manejo de errores
 
-| Código  | Causa                                     | Acción del front                                                             |
-| ------- | ----------------------------------------- | ---------------------------------------------------------------------------- |
-| `404`   | Ruta no encontrada                        | Verificar token y URL `${environment.apiUrl}/chat/**` (routing ya corregido) |
-| `429`   | Rate limit de Groq / LLM sobrecargado     | Reintentar en unos segundos (el backend responde `200` con mensaje amigable) |
-| `500`   | Error del LLM o del microservicio interno | Mostrar mensaje genérico de error                                            |
-| Timeout | Respuesta tardía del LLM                  | Mostrar spinner mientras dure la petición                                    |
+| Código  | Causa                                     | Acción del front                                                           |
+| ------- | ----------------------------------------- | -------------------------------------------------------------------------- |
+| `404`   | Ruta no encontrada                        | Verificar token y URL `/api/v1/chat/**` (routing del gateway ya corregido) |
+| `500`   | Error del LLM o del microservicio interno | Mostrar mensaje genérico de error                                          |
+| Timeout | Respuesta tardía del LLM                  | Mostrar spinner mientras dure la petición                                  |
 
 ---
 
-## 10. Checklist de implementación
+## 8. Checklist de implementación
 
-- [x] Pantalla de chat con lista de mensajes (user/assistant) — `chat.page.html`
-- [x] Campo de entrada de texto + botón enviar — `chat.page.html`
-- [x] WebSocket STOMP para enviar/recibir mensajes — `chat-ws.service.ts`
-- [x] Guardar `conversationId` de la respuesta para continuar el hilo — `chat.page.ts`
-- [x] Indicador de "escribiendo…" mientras carga — `waiting` signal
-- [ ] Pantalla de historial (`GET /api/v1/chat/conversations`)
-- [ ] Cargar conversación existente (`GET /api/v1/chat/conversations/{id}`)
-- [ ] Opción de eliminar conversación (`DELETE /api/v1/chat/conversations/{id}`)
-- [ ] (Opcional) REST para chat como alternativa a WebSocket
+- [ ] Pantalla de chat con lista de mensajes (user/assistant)
+- [ ] Campo de entrada de texto + botón enviar
+- [ ] `POST /api/v1/chat` para enviar mensajes (sin `conversationId` — el backend gestiona el chat ACTIVE)
+- [ ] Botón "Nuevo chat / limpiar" que llama a `POST /api/v1/chat/reset` y vacía la lista local de mensajes
+- [ ] (Opcional) WebSocket STOMP para tiempo real
+- [ ] Indicador de "escribiendo…" mientras carga
 - [ ] Manejo de errores y off-line
 
 ---
 
-## 11. Troubleshooting — "queda en 'escribiendo…'"
+## 9. Troubleshooting — "queda en 'escribiendo…'"
 
 **Síntoma:** se envía el mensaje, el bubble del usuario y el spinner aparecen, pero la respuesta del bot nunca llega.
 
-### 11.1 Si usas WebSocket (implementación actual)
-
-1. **Verifica que la suscripción ocurra.** En `chat-ws.service.ts`, la suscripción se hace **dentro** de `onConnect`. El `userId` se resuelve con `this.authService.userId()` al momento de conectar. Si `AuthService.userId()` (= `decoded.sub`) es `null`/`undefined` (el login aún no ha cargado o el token no tiene `sub`), **nunca se suscribirá** y el bot nunca responderá.
-
-2. **Verifica que coincida el `userId`.**
-   - **Frontend** suscribe a `/user/{sub}/queue/chat` donde `sub = payload.sub` del JWT.
-   - **Backend** envía a `convertAndSendToUser(...)` usando `jwt.getSubject()` (= el mismo `sub`).
-   - Si `auth.user()` se llena desde otra fuente (p.ej. un `id` distinto), la suscripción puede apuntar a un canal donde el backend no envía.
-
-3. **Revisa los logs de `chatbot-service`:**
-   - `INFO Enviando respuesta WS al usuario <id> (conv <id>): <respuesta>` → el backend **sí** envió. El problema está en la suscripción del front (revisa 11.1.1/11.1.2) **o** en que la conexión es **vía gateway (8080)** → **cambia a conexión directa (`environment.chatWsUrl`)**.
-   - Si **no** aparece esa línea pero sí `ERROR Error procesando mensaje WebSocket...` → es un error del backend/LLM.
-
-4. **Revisa el network tab / consola:**
-   - Confirmar que la conexión STOMP se establece (`onConnect` dispara, `connected` = `true`).
-   - Confirmar que `publish({ destination: '/app/chat' })` se ejecuta (debe haber un frame enviado).
-   - Cualquier error CORS o de handshake se ve en consola.
-
-### 11.2 Si usas REST
+### 9.0 Si usas REST (recomendado)
 
 El flujo REST devuelve la respuesta en el `POST`; si no llega, es casi siempre uno de estos:
 
-1. **`401` (falta/venció el token).** Verifica en el network tab que la petición manda el header `Authorization: Bearer` y que el token no está caducado. El `authInterceptor` maneja el refresh automáticamente; si falla, redirige a login.
-2. **No estás procesando la respuesta.** Confirma que el `subscribe(...)` de `sendMessage` sí ejecuta `next` y hace `push` de `resp.message`.
-3. **El backend devolvió un mensaje de error amigable (no un 500).** Ante `429` (rate limit de Groq) o error del LLM, el backend responde `200` con texto tipo "Lo siento, el proveedor..." — el front **sí** lo recibe, solo que el contenido es de error. Reintentar en unos segundos.
+1. **`401` (falta/venció el token).** El gateway exige `Authorization: Bearer <jwt>`. Verifica en el network tab que la petición manda el header y que el token no está caducado. Renovar (re-login) si expiró.
+2. **No estás suscrito / no procesando la respuesta.** Confirma que el `subscribe(...)` de `sendMessage` sí ejecuta `next` y hace `push` de `resp.message`.
+3. **El backend devolvió un mensaje de error amigable (no un 500).** Si el modelo local no está disponible o falla, el backend responde `200` con un mensaje amigable en español — el front **sí** lo recibe, solo que el contenido es de error. Reintentar en un momento.
+
+> Revisa también §7 (códigos de error). El modelo local se configura con `OLLAMA_MODEL` (por defecto `qwen2.5:7b`); ver DOCUMENTACION_CHATBOT.md §5.
+
+### 9.1 (Solo WebSocket) Verifica que la suscripción ocurra
+
+En `chat-ws.service.ts`, la suscripción se hace **dentro** de `onConnect`:
+
+```typescript
+onConnect: () => {
+  if (userId) {
+    this.client?.subscribe(`/user/${userId}/queue/chat`, ...);
+  }
+}
+```
+
+> **Ojo:** el `userId` se captura como `const` **antes** de conectar (`const userId = this.authService.userId()`). Si el login aún no ha cargado el usuario (o el token no tiene `sub`), `userId` será `null`/`undefined` y **nunca se suscribirá** → el bot nunca responderá. Asegúrate de que `AuthService.userId()` (`= decoded.sub`) esté poblado antes de llamar a `connect()`.
+
+### 9.2 (Solo WebSocket) Verifica que coincida el `userId`
+
+- **Frontend** suscribe a `/user/{sub}/queue/chat` donde `sub = payload.sub` del JWT.
+- **Backend** envía a `convertAndSendToUser(...)` usando `jwt.getSubject()` (= el mismo `sub`).
+
+Si ambos usan el `sub`, coinciden. Si el `auth.user()` se llena desde otra fuente (p.ej. una respuesta de login con un `id` distinto), la suscripción puede apuntar a un canal donde el backend no envía.
+
+### 9.3 (Solo WebSocket) ¿Envió el backend la respuesta?
+
+Mira los logs de `chatbot-service`:
+
+- `INFO Enviando respuesta WS al usuario <id> (conv <id>): <respuesta>` → el backend **sí** envió. El problema está en la suscripción del front (revisa 9.1/9.2) **o** en que la conexión es **vía gateway (8080)**, que no devuelve de forma fiable la respuesta por-usuario → **cambia a REST (§4.4)**.
+- Si **no** aparece esa línea pero sí `ERROR Error procesando mensaje WebSocket...` → es un error del backend/LLM (revisa DOCUMENTACION_CHATBOT.md §15.7).
+
+### 9.4 (Solo WebSocket) Revisa el network tab / consola
+
+- Confirmar que la conexión STOMP se establece (`onConnect` dispara, `connected` = `true`).
+- Confirmar que `publish({ destination: '/app/chat' })` se ejecuta (debe haber un frame enviado).
+- Cualquier error CORS o de handshake se ve en consola.

@@ -16,7 +16,7 @@ import {
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { close, send, chatbubbleEllipses, sparklesOutline } from 'ionicons/icons';
+import { close, send, chatbubbleEllipses, sparklesOutline, addCircleOutline } from 'ionicons/icons';
 import { ChatResponse, ChatWsService } from 'src/app/core/services/chat-ws.service';
 
 interface ChatMessage {
@@ -58,7 +58,7 @@ export class ChatPage {
   waiting = false;
 
   constructor() {
-    addIcons({ close, send, chatbubbleEllipses, sparklesOutline });
+    addIcons({ close, send, chatbubbleEllipses, sparklesOutline, addCircleOutline });
   }
 
   ionViewWillEnter() {
@@ -82,10 +82,29 @@ export class ChatPage {
 
   private sendMessage(text: string) {
     this.waiting = true;
-    this.chatWs.sendMessage(text, this.currentConversationId).subscribe({
+    this.chatWs.sendMessage(text).subscribe({
       next: (resp) => this.onMessage(resp),
       error: () => {
         this.waiting = false;
+        this.messages.update((m) => [
+          ...m,
+          {
+            role: 'assistant',
+            text: 'Lo siento, no pude procesar tu consulta. Intenta de nuevo.',
+          },
+        ]);
+      },
+    });
+  }
+
+  newChat() {
+    this.chatWs.resetChat().subscribe({
+      next: (resp) => {
+        this.messages.set([]);
+        this.currentConversationId = resp.conversationId;
+      },
+      error: () => {
+        /* el errorInterceptor global ya muestra un toast */
       },
     });
   }
