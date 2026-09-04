@@ -27,7 +27,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           message = error.error?.message ?? 'Solicitud inválida';
           break;
         case 401:
-          message = 'Sesión expirada. Inicia sesión nuevamente.';
+          message = req.url.includes('/auth/login')
+            ? 'Credenciales incorrectas'
+            : 'Sesión expirada. Inicia sesión nuevamente.';
           break;
         case 403:
           message = 'No tienes permiso para realizar esta acción.';
