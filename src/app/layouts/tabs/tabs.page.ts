@@ -53,12 +53,26 @@ export class TabsPage {
   currenTab = signal<string>('home');
   private navCtrl = inject(NavController);
 
+  private readonly providerTabs = new Set(['manage-offers', 'provider-sales']);
+
   getCurrentTab(event: any) {
     this.currenTab.set(event.tab);
   }
 
-  handleTabClick(tab: string) {
+  onTabButtonClick(event: Event) {
+    const detail = (event as CustomEvent<{ tab?: string }>).detail;
+    const tab = detail?.tab;
+    if (!tab) return;
+
+    if (this.providerTabs.has(tab)) {
+      event.stopPropagation();
+      this.currenTab.set(tab);
+      this.navCtrl.navigateRoot(`/tabs/${tab}`);
+      return;
+    }
+
     if (this.currenTab() === tab) {
+      event.stopPropagation();
       this.navCtrl.navigateRoot(`/tabs/${tab}`);
     }
   }

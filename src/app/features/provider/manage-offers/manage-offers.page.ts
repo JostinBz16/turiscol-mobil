@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
+  IonContent, IonHeader, IonToolbar, IonTitle,
     IonIcon, IonButton, IonImg, IonFab, IonFabButton,
   IonToggle, IonSpinner, IonRefresher, IonRefresherContent,
 } from '@ionic/angular/standalone';
@@ -30,7 +30,7 @@ interface OfferItem {
   standalone: true,
   imports: [
     CommonModule, RouterModule,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
+    IonContent, IonHeader, IonToolbar, IonTitle,
   IonIcon, IonButton, IonImg, IonFab, IonFabButton,
     IonToggle, IonSpinner, IonRefresher, IonRefresherContent,
   ],
