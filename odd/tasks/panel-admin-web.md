@@ -43,7 +43,7 @@ end-to-end descrita en el plan.
 - [x] T4 — Ampliar `UserService` (`getById`, `getByRole`, `activate`, `deactivate`, según
   `api-documentation.md:223-343`) + páginas `admin-users` (lista + detalle). Ruta: delegado.
 
-- [ ] T5 — `provider-admin.service.ts` nuevo (sobre `UserService.getByRole('PROVIDER')` +
+- [x] T5 — `provider-admin.service.ts` nuevo (sobre `UserService.getByRole('PROVIDER')` +
   `activate`/`deactivate`) + páginas `admin-providers` (lista + detalle), con TODO explícito
   sobre falta de endpoint de aprobación diferenciado. Ruta: delegado.
 
@@ -112,5 +112,37 @@ en Conventional Commits sobre `dev`. Push y PR quedan a decisión del usuario.
   advertencia preexistente de presupuesto en `reservation-detail.page.scss`, ajena a esta
   tarea). Sin commit aún (pendiente de confirmación del usuario, igual que T1-T3).
 
+- T5: creado `core/services/provider-admin.service.ts` (`ProviderAdminService`), construido
+  enteramente sobre `UserService` sin HTTP propio: `listProviders(params?)` delega en
+  `UserService.getByRole('PROVIDER', params)`, `getById(id)` delega en `UserService.getById`
+  (tipado como `ProviderApi`, que extiende `UserApi` con `onboardingCompleted?: boolean`
+  opcional), y `approve(id)`/`suspend(id)` son alias literales de
+  `UserService.activate`/`deactivate`. Se confirmó leyendo `api-documentation.md:346-389`
+  (`ProviderController`) que solo existen `POST /user/providers`, `PUT /user/providers/{id}`
+  (ambos "interno, sin Gateway") y `GET /user/providers/by-username/{username}` — ningún
+  endpoint de aprobación diferenciado. También se confirmó en `api-documentation.md:192-219`
+  que `onboardingCompleted` está documentado solo en `ProviderResponseDTO` (devuelto por
+  registro/actualización de provider), no necesariamente en el `UserResponseDTO` que devuelven
+  `GET /users/{id}` y `GET /users/role/{role}` (que es lo que este servicio realmente usa); por
+  eso el campo quedó opcional y la UI lo oculta si viene `undefined` en lugar de asumir `false`.
+  Se dejó un TODO explícito y extenso en el servicio (comentario de clase) indicando que
+  `approve`/`suspend` son hoy literalmente el activar/desactivar genérico de usuario, que no
+  hay lógica de negocio de aprobación real, y que hay que confirmar con backend si se necesita
+  un estado `PENDING_APPROVAL` o un endpoint propio antes de tratar esto como un flujo de
+  aprobación formal. Se crearon `features/admin/providers/admin-providers.page.ts|html|scss`
+  (listado, mismo patrón que `admin-users`: `ion-toggle` inline con `stopPropagation`, badge de
+  estado activo/inactivo, línea de onboarding condicional) y
+  `features/admin/providers/provider-detail/admin-provider-detail.page.ts|html|scss` (detalle
+  por `:id`, mismo mecanismo de alternar activar/desactivar que `admin-user-detail`, con una nota
+  visible en la UI —no alarmante— aclarando que el botón activa/suspende la cuenta y no es una
+  aprobación formal distinta). Se activó el bloque `providers` en
+  `features/admin/admin.routes.ts` (se quitaron los comentarios TODO T5) con `canActivate:
+  [roleGuard]` + `data: { role: 'admin' }` en el nivel `providers`, mismo patrón que
+  `prices`/`users`. No se tocó el bloque comentado de `festivities` (T6). `npx ng build` —
+  éxito, sin errores nuevos (solo la misma advertencia preexistente de presupuesto en
+  `reservation-detail.page.scss`, ajena a esta tarea: "Budget 6.00 kB was not met by 300 bytes
+  with a total of 6.30 kB"). Sin commit aún (pendiente de confirmación del usuario, igual que
+  T1-T4).
+
 ## Próximo paso
-Empezar T5 (`provider-admin.service.ts` + páginas `admin-providers`).
+Empezar T6 (`FestivityService` + páginas `admin-festivities`).

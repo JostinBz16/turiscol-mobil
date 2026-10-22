@@ -35,24 +35,25 @@ export const adminRoutes: Routes = [
     ],
   },
 
-  // TODO T5: habilitar gestión de proveedores
-  // {
-  //   path: 'providers',
-  //   children: [
-  //     {
-  //       path: '',
-  //       loadComponent: () =>
-  //         import('./providers/admin-providers.page').then((m) => m.AdminProvidersPage),
-  //     },
-  //     {
-  //       path: ':id',
-  //       loadComponent: () =>
-  //         import('./providers/provider-detail/admin-provider-detail.page').then(
-  //           (m) => m.AdminProviderDetailPage,
-  //         ),
-  //     },
-  //   ],
-  // },
+  {
+    path: 'providers',
+    canActivate: [roleGuard],
+    data: { role: 'admin' },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./providers/admin-providers.page').then((m) => m.AdminProvidersPage),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./providers/provider-detail/admin-provider-detail.page').then(
+            (m) => m.AdminProviderDetailPage,
+          ),
+      },
+    ],
+  },
 
   // TODO T6: habilitar gestión de festividades
   // {

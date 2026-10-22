@@ -1,0 +1,54 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gestión de Proveedores</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading()) {
+    <div class="loading-center">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else {
+    @if (providers().length === 0) {
+      <div class="empty-state">
+        <p>No hay proveedores registrados</p>
+      </div>
+    } @else {
+      <ion-list>
+        @for (provider of providers(); track provider.id) {
+          <ion-item class="provider-item" [routerLink]="[provider.id]">
+            <ion-icon name="business-outline" slot="start"></ion-icon>
+            <ion-label>
+              <h2>{{ provider.userName }}</h2>
+              <p>{{ provider.email }}</p>
+              @if (provider.onboardingCompleted !== undefined) {
+                <p>
+                  Onboarding:
+                  {{ provider.onboardingCompleted ? 'Completo' : 'Pendiente' }}
+                </p>
+              }
+            </ion-label>
+            <ion-badge [color]="provider.active ? 'success' : 'medium'" slot="end">
+              {{ provider.active ? 'Activo' : 'Inactivo' }}
+            </ion-badge>
+            <ion-toggle
+              slot="end"
+              [checked]="provider.active"
+              (click)="$event.stopPropagation()"
+              (ionChange)="toggleActive(provider, $event)"
+            ></ion-toggle>
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  }
+</ion-content>

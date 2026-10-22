@@ -1,0 +1,79 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard/providers" (click)="goBack()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Proveedor</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="loading-center">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else if (error() || !provider()) {
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <p>No se pudo cargar el proveedor</p>
+    </div>
+  } @else {
+    <div class="detail-header">
+      <ion-icon name="business-outline" class="avatar"></ion-icon>
+      <h1>{{ provider()!.userName }}</h1>
+      <ion-badge [color]="provider()!.active ? 'success' : 'medium'">
+        {{ provider()!.active ? 'Activo' : 'Inactivo' }}
+      </ion-badge>
+    </div>
+
+    <ion-list>
+      <ion-item>
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-label>
+          <p>Email</p>
+          <h3>{{ provider()!.email }}</h3>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="call-outline" slot="start"></ion-icon>
+        <ion-label>
+          <p>Teléfono</p>
+          <h3>{{ provider()!.phoneNumber || 'No registrado' }}</h3>
+        </ion-label>
+      </ion-item>
+
+      @if (provider()!.onboardingCompleted !== undefined) {
+        <ion-item>
+          <ion-icon name="business-outline" slot="start"></ion-icon>
+          <ion-label>
+            <p>Onboarding</p>
+            <h3>{{ provider()!.onboardingCompleted ? 'Completo' : 'Pendiente' }}</h3>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+
+    <div class="info-note">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <p>
+        Esta acción activa o suspende la cuenta de usuario del proveedor.
+        No es una aprobación formal distinta: el sistema completa el
+        onboarding del proveedor automáticamente cuando registra sus datos
+        bancarios.
+      </p>
+    </div>
+
+    <div class="actions">
+      <ion-button
+        expand="block"
+        [color]="provider()!.active ? 'danger' : 'success'"
+        [disabled]="updating()"
+        (click)="toggleActive()"
+      >
+        <ion-icon slot="start" name="power-outline"></ion-icon>
+        {{ provider()!.active ? 'Suspender proveedor' : 'Activar proveedor' }}
+      </ion-button>
+    </div>
+  }
+</ion-content>
