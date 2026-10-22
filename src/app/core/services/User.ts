@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
-import { User } from '../models/User';
+import { User, UserApi } from '../models/User';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
@@ -62,6 +62,50 @@ export class UserService {
     return this.http.get<any>(this.API, { params: httpParams }).pipe(
       catchError((err) => {
         console.error('Error fetching users', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  getById(id: string): Observable<UserApi> {
+    return this.http.get<UserApi>(`${this.API}/${id}`).pipe(
+      catchError((err) => {
+        console.error('Error fetching user', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  getByRole(
+    role: UserApi['role'],
+    params?: { page?: number; size?: number },
+  ): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http
+      .get<any>(`${this.API}/role/${role}`, { params: httpParams })
+      .pipe(
+        catchError((err) => {
+          console.error('Error fetching users by role', err);
+          return throwError(() => err);
+        }),
+      );
+  }
+
+  activate(id: string): Observable<void> {
+    return this.http.put<void>(`${this.API}/${id}/activate`, {}).pipe(
+      catchError((err) => {
+        console.error('Error activating user', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  deactivate(id: string): Observable<void> {
+    return this.http.put<void>(`${this.API}/${id}/deactivate`, {}).pipe(
+      catchError((err) => {
+        console.error('Error deactivating user', err);
         return throwError(() => err);
       }),
     );

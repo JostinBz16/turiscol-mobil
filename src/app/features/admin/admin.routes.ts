@@ -15,24 +15,25 @@ export const adminRoutes: Routes = [
       import('./prices/admin-prices.page').then((m) => m.AdminPricesPage),
   },
 
-  // TODO T4: habilitar gestión de usuarios
-  // {
-  //   path: 'users',
-  //   children: [
-  //     {
-  //       path: '',
-  //       loadComponent: () =>
-  //         import('./users/admin-users.page').then((m) => m.AdminUsersPage),
-  //     },
-  //     {
-  //       path: ':id',
-  //       loadComponent: () =>
-  //         import('./users/user-detail/admin-user-detail.page').then(
-  //           (m) => m.AdminUserDetailPage,
-  //         ),
-  //     },
-  //   ],
-  // },
+  {
+    path: 'users',
+    canActivate: [roleGuard],
+    data: { role: 'admin' },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./users/admin-users.page').then((m) => m.AdminUsersPage),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./users/user-detail/admin-user-detail.page').then(
+            (m) => m.AdminUserDetailPage,
+          ),
+      },
+    ],
+  },
 
   // TODO T5: habilitar gestión de proveedores
   // {

@@ -1,0 +1,28 @@
+.loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40vh;
+  color: var(--ion-color-medium);
+}
+
+.user-item {
+  --min-height: 72px;
+
+  h2 {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  p {
+    font-size: 0.85rem;
+    color: var(--ion-color-medium);
+  }
+}
