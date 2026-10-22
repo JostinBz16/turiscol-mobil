@@ -16,6 +16,18 @@ y ajustar el layout para pantallas grandes.
 Panel admin con 4 áreas: gestión de precios (migrar lo existente), gestión de usuarios,
 aprobación/gestión de proveedores, gestión de festividades/eventos del sistema.
 
+## Ampliación de alcance (post-auditoría de API)
+Tras completar T1-T7, se auditó `api-documentation.md` completo contra lo implementado.
+Cero discrepancias en lo ya hecho (precios/usuarios/proveedores/festividades coinciden
+exactamente con la doc). Se encontraron 3 huecos que el usuario confirmó agregar:
+- Gestión de rol de usuario (`PUT /users/{id}/role`, api-documentation.md:210,243-257 —
+  la doc dice explícitamente "pensado para el dashboard de admin").
+- Dashboard/resumen como landing de `/admin-dashboard` (`GET /users/stats` + `GET /users/roles`,
+  api-documentation.md:285-300,369).
+- Nueva 5ª área: gestión de ciudades/departamentos/destinos (`CityController`,
+  `DepartmentController`, `DestinationController`, api-documentation.md:883-973) — datos
+  maestros del sistema, sin servicio Angular ni pantalla admin todavía.
+
 ## Plan de referencia
 `C:\Users\Usuario\.claude\plans\analiza-mi-codigo-y-zippy-comet.md` (plan aprobado en esta sesión).
 
@@ -180,6 +192,63 @@ en Conventional Commits sobre `dev`. Push y PR quedan a decisión del usuario.
   creado en `auth-layout.component.scss` (estaba vacío). `npx ng build` — éxito, sin errores
   nuevos (misma advertencia preexistente de presupuesto). Hecho inline por el orquestador
   (CSS mecánico, 2 archivos, ya especificado en el plan).
+
+- T8: leí `api-documentation.md:203-277` y `:365-369` para confirmar la forma exacta de
+  `PUT /users/{id}/role` (body `RoleChangeRequestDTO` con un único campo `role: String`
+  `@NotBlank`, valores de realm `USER`/`PROVIDER`/`ADMIN`, respuesta `204 No Content`,
+  reemplaza todos los roles de realm, no es aditivo) y `GET /users/roles` (`RoleController`,
+  "Listar roles de Keycloak (interno)", respuesta `List<String>`). Hallazgo relevante: el
+  dominio de valores de este endpoint (`USER`/`PROVIDER`/`ADMIN`, roles de *realm*) es distinto
+  del dominio de `UserApi.role` (`ADMIN`/`PROVIDER`/`CONSUMER`, el rol de negocio que devuelve
+  `UserResponseDTO`) — la doc usa `USER` donde el DTO usa `CONSUMER`. Por eso no se reutilizó
+  `UserApi['role']` para el nuevo endpoint: se agregó un tipo nuevo `RealmRole` en
+  `src/app/core/models/User.ts` (`'USER' | 'PROVIDER' | 'ADMIN'`), con comentario explicando la
+  diferencia, en vez de forzar un tipo existente que no coincide con lo documentado. En
+  `src/app/core/services/User.ts` se agregaron `getRoles()` (`GET /users/roles`, tipado
+  `Observable<string[]>`) y `updateRole(id, role: RealmRole)` (`PUT /users/{id}/role`, body
+  `{ role }`, `Observable<void>`), mismo estilo `catchError`/`throwError` que el resto del
+  archivo. En la UI (`features/admin/users/user-detail/admin-user-detail.page.ts|html`) se
+  agregó un `ion-select` (mismo patrón `[value]`/`(ionChange)` que ya usa `admin-users.page.html`,
+  no `ngModel`, para no depender de `FormsModule`) con las 3 opciones de rol y un botón
+  "Confirmar cambio de rol" separado del botón existente de activar/desactivar. Se decidió NO
+  poblar el select con el resultado de `getRoles()`: la doc marca ese endpoint como "interno" y
+  devuelve la lista cruda de roles de Keycloak, que puede incluir roles técnicos no asignables
+  (`offline_access`, `default-roles-*`, etc.) — se usan los 3 roles de negocio documentados en la
+  tabla de `RoleChangeRequestDTO` en su lugar (fallback explícitamente permitido por la tarea). El
+  valor inicial del select se calcula mapeando `user.role` (dominio `CONSUMER`/`PROVIDER`/`ADMIN`)
+  a `RealmRole` (`CONSUMER` → `USER`) vía `toRealmRole()`; el botón de confirmar queda
+  deshabilitado si el rol seleccionado coincide con el actual (`isRoleUnchanged()`). Tras un
+  cambio exitoso se vuelve a llamar `loadUser()` para refrescar el usuario desde el backend (el
+  endpoint responde `204 No Content`, sin body, así que no hay estado intermedio confiable para
+  actualizar localmente). `npx ng build` — éxito, sin errores nuevos (misma advertencia
+  preexistente de presupuesto en `reservation-detail.page.scss`: "Budget 6.00 kB was not met by
+  300 bytes with a total of 6.30 kB"). Sin commit (a pedido explícito del encargo).
+
+## Tareas de ampliación (post-auditoría)
+
+- [x] T8 — Gestión de rol de usuario: agregar `getRoles()` y `updateRole(id, role)` a
+  `UserService` (`GET /users/roles`, `PUT /users/{id}/role`), y una acción de cambio de rol
+  (select + confirmación) dentro de `admin-user-detail.page` ya existente. No requiere pantalla
+  nueva ni cambios de rutas. Ruta: delegado (2+ archivos no triviales).
+
+- [ ] T9 — Dashboard/resumen como landing de `/admin-dashboard`: agregar `getStats()` a
+  `UserService` (`GET /users/stats`), nueva página `admin-dashboard-overview.page.ts|html|scss`,
+  cambiar el redirect por defecto de `admin.routes.ts` (hoy `'' -> 'prices'`) para que apunte a
+  esta nueva vista, y agregar el link "Resumen" al sidebar de `admin-layout.page.html`. Ruta:
+  delegado (rutas + layout compartido + página nueva).
+
+- [ ] T10 — Nueva área de ubicaciones: `location.service.ts` nuevo cubriendo
+  `CityController`/`DepartmentController`/`DestinationController` (api-documentation.md:883-973,
+  leer antes de implementar — confirmar verbos/paths/campos exactos, incluye manejo de imágenes
+  en destinos). Páginas bajo `features/admin/locations/` (ciudades, departamentos, destinos,
+  siguiendo el patrón ya usado en festivities: listado + editor crear/editar). Activar rama
+  `locations` en `admin.routes.ts` con `canActivate: [roleGuard]` + `data: { role: 'admin' }`, y
+  agregar el link al sidebar de `admin-layout.page.html`. Ruta: delegado (servicio nuevo + varias
+  páginas + rutas + sidebar).
+
+Nota de secuenciación: T9 y T10 tocan los mismos archivos compartidos (`admin.routes.ts`,
+`admin-layout.page.html`) — se ejecutan en secuencia (T8 → T9 → T10), nunca en paralelo, para
+evitar conflictos de edición.
 
 ## Feature completa
 Las 7 tareas están cerradas. El panel admin-dashboard cubre las 4 áreas confirmadas

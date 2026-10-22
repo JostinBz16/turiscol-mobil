@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
-import { User, UserApi } from '../models/User';
+import { User, UserApi, RealmRole } from '../models/User';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
@@ -106,6 +106,24 @@ export class UserService {
     return this.http.put<void>(`${this.API}/${id}/deactivate`, {}).pipe(
       catchError((err) => {
         console.error('Error deactivating user', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  getRoles(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.API}/roles`).pipe(
+      catchError((err) => {
+        console.error('Error fetching roles', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  updateRole(id: string, role: RealmRole): Observable<void> {
+    return this.http.put<void>(`${this.API}/${id}/role`, { role }).pipe(
+      catchError((err) => {
+        console.error('Error updating user role', err);
         return throwError(() => err);
       }),
     );

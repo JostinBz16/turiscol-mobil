@@ -50,6 +50,21 @@
           <h3>{{ roleLabel(user()!.role) }}</h3>
         </ion-label>
       </ion-item>
+
+      <ion-item>
+        <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+        <ion-label>Cambiar rol</ion-label>
+        <ion-select
+          [value]="selectedRole()"
+          interface="popover"
+          [disabled]="updatingRole()"
+          (ionChange)="onRoleSelectChange($event)"
+        >
+          @for (role of roleOptions; track role) {
+            <ion-select-option [value]="role">{{ roleLabel(role) }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
     </ion-list>
 
     <div class="actions">
@@ -61,6 +76,16 @@
       >
         <ion-icon slot="start" name="power-outline"></ion-icon>
         {{ user()!.active ? 'Desactivar usuario' : 'Activar usuario' }}
+      </ion-button>
+
+      <ion-button
+        expand="block"
+        fill="outline"
+        [disabled]="updatingRole() || isRoleUnchanged()"
+        (click)="confirmRoleChange()"
+      >
+        <ion-icon slot="start" name="shield-checkmark-outline"></ion-icon>
+        Confirmar cambio de rol
       </ion-button>
     </div>
   }

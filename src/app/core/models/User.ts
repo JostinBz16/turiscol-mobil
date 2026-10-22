@@ -29,3 +29,8 @@ export interface UserApi {
 }
 
 export type Role = 'turista' | 'proveedor' | 'admin';
+
+// Rol de realm de Keycloak (api-documentation.md:253) — distinto del campo
+// `role` de UserApi ('ADMIN'/'PROVIDER'/'CONSUMER'), que es el rol de negocio
+// devuelto por UserResponseDTO. El realm usa 'USER' en vez de 'CONSUMER'.
+export type RealmRole = 'USER' | 'PROVIDER' | 'ADMIN';
