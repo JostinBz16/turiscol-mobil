@@ -9,3 +9,15 @@
 .profile-tab-btn ion-icon {
   font-size: 1.5rem;
 }
+
+@media (min-width: 768px) {
+  :host {
+    display: block;
+    position: relative;
+    max-width: 480px;
+    height: 100vh;
+    margin-inline: auto;
+    overflow: hidden;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.15);
+  }
+}

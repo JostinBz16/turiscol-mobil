@@ -50,8 +50,9 @@ end-to-end descrita en el plan.
 - [x] T6 — Ampliar `FestivityService` (`create`, `update`, `delete`, según
   `api-documentation.md:2452-2538`) + páginas `admin-festivities` (lista + editor). Ruta: delegado.
 
-- [ ] T7 — "Mobile frame" responsive: media query `@media (min-width: 768px)` en
-  `tabs.page.scss` y `auth-layout.component.scss`. Ruta: delegado directo (CSS, 2 archivos).
+- [x] T7 — "Mobile frame" responsive: media query `@media (min-width: 768px)` en
+  `tabs.page.scss` y `auth-layout.component.scss`. Ruta: directo inline (CSS mecánico, ya
+  especificado en el plan aprobado; hecho por el orquestador, no delegado).
 
 ## Estrategia de entrega
 `ask-on-risk` (default). La rama actual (`dev`) no es la rama por defecto del repo (`main`),
@@ -110,7 +111,7 @@ en Conventional Commits sobre `dev`. Push y PR quedan a decisión del usuario.
   `''` → `AdminUsersPage` y `:id` → `AdminUserDetailPage`). No se tocaron los bloques comentados
   de `providers`/`festivities`. `npx ng build` — éxito, sin errores nuevos (solo la misma
   advertencia preexistente de presupuesto en `reservation-detail.page.scss`, ajena a esta
-  tarea). Sin commit aún (pendiente de confirmación del usuario, igual que T1-T3).
+  tarea). Commit `779aa72`.
 
 - T5: creado `core/services/provider-admin.service.ts` (`ProviderAdminService`), construido
   enteramente sobre `UserService` sin HTTP propio: `listProviders(params?)` delega en
@@ -141,8 +142,7 @@ en Conventional Commits sobre `dev`. Push y PR quedan a decisión del usuario.
   `prices`/`users`. No se tocó el bloque comentado de `festivities` (T6). `npx ng build` —
   éxito, sin errores nuevos (solo la misma advertencia preexistente de presupuesto en
   `reservation-detail.page.scss`, ajena a esta tarea: "Budget 6.00 kB was not met by 300 bytes
-  with a total of 6.30 kB"). Sin commit aún (pendiente de confirmación del usuario, igual que
-  T1-T4).
+  with a total of 6.30 kB"). Commit `6b0cbb7`.
 
 - T6: en `core/services/festivity.service.ts` se agregó la interfaz `FestivityRequest`
   (`name`, `description`, `startDate`, `endDate`, `cityId`, `image`, `active`, exactamente los
@@ -168,8 +168,26 @@ en Conventional Commits sobre `dev`. Push y PR quedan a decisión del usuario.
   tenía `''` y `':id'` (sin ruta `new` separada), una forma distinta a la pedida explícitamente
   para esta tarea. `npx ng build` — éxito, sin errores nuevos (solo la misma advertencia
   preexistente de presupuesto en `reservation-detail.page.scss`: "Budget 6.00 kB was not met by
-  300 bytes with a total of 6.30 kB"). Sin commit aún (pendiente de confirmación del usuario,
-  igual que T1-T5).
+  300 bytes with a total of 6.30 kB"). Commit `0661a18`.
+
+- T7: leí `tabs.page.html` y `auth-layout.component.html` antes de escribir el CSS — ambos
+  anidan componentes Ionic (`ion-tabs`, y un `ion-app`/`ion-router-outlet` interno dentro de
+  `auth-layout`) que Ionic posiciona con `position: absolute; inset: 0` relativo al ancestro
+  posicionado más cercano. Por eso la media query no alcanza con `max-width`/`margin-inline`
+  solos: hace falta `position: relative` en `:host` para que ese `:host` pase a ser el ancestro
+  posicionado y los hijos absolutos de Ionic queden contenidos dentro del "marco", en vez de
+  seguir llenando el viewport completo. Agregado en `tabs.page.scss` (que ya tenía estilos) y
+  creado en `auth-layout.component.scss` (estaba vacío). `npx ng build` — éxito, sin errores
+  nuevos (misma advertencia preexistente de presupuesto). Hecho inline por el orquestador
+  (CSS mecánico, 2 archivos, ya especificado en el plan).
+
+## Feature completa
+Las 7 tareas están cerradas. El panel admin-dashboard cubre las 4 áreas confirmadas
+(precios/usuarios/proveedores/festividades), está restringido a web, y el resto de la app
+(turista/proveedor) queda enmarcado en pantallas grandes. Pendiente de decisión del usuario:
+push/PR, y qué hacer con `package-lock.json`/`src/environments/environment.ts` (cambios ajenos
+a esta feature, nunca commiteados a propósito).
 
 ## Próximo paso
-T7 (mobile frame responsive).
+Ninguno pendiente del scope planeado. A decisión del usuario: push, PR, o pruebas manuales
+end-to-end descritas en el plan.
