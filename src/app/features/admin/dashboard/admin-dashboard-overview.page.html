@@ -1,0 +1,91 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Resumen</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading()) {
+    <div class="loading-center">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else {
+    <p class="scope-note">
+      Cálculo client-side sobre la página de usuarios cargada (no escala si el
+      volumen crece; ver comentario en el componente).
+    </p>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="3">
+          <ion-card class="stat-card">
+            <ion-card-header>
+              <ion-icon name="people-outline" color="primary"></ion-icon>
+              <ion-card-subtitle>Usuarios totales</ion-card-subtitle>
+              <ion-card-title>{{ total() }}</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-md="6" size-lg="3">
+          <ion-card class="stat-card">
+            <ion-card-header>
+              <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+              <ion-card-subtitle>Activos</ion-card-subtitle>
+              <ion-card-title>{{ activeCount() }}</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-md="6" size-lg="3">
+          <ion-card class="stat-card">
+            <ion-card-header>
+              <ion-icon name="close-circle-outline" color="medium"></ion-icon>
+              <ion-card-subtitle>Inactivos</ion-card-subtitle>
+              <ion-card-title>{{ inactiveCount() }}</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" size-md="4">
+          <ion-card class="stat-card">
+            <ion-card-header>
+              <ion-icon name="person-outline" color="tertiary"></ion-icon>
+              <ion-card-subtitle>Turistas</ion-card-subtitle>
+              <ion-card-title>{{ consumerCount() }}</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-md="4">
+          <ion-card class="stat-card">
+            <ion-card-header>
+              <ion-icon name="storefront-outline" color="warning"></ion-icon>
+              <ion-card-subtitle>Proveedores</ion-card-subtitle>
+              <ion-card-title>{{ providerCount() }}</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-md="4">
+          <ion-card class="stat-card">
+            <ion-card-header>
+              <ion-icon name="shield-checkmark-outline" color="danger"></ion-icon>
+              <ion-card-subtitle>Admins</ion-card-subtitle>
+              <ion-card-title>{{ adminCount() }}</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  }
+</ion-content>

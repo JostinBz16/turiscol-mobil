@@ -2,6 +2,11 @@
   <ion-menu contentId="admin-main">
     <ion-content>
       <ion-list>
+        <ion-item routerLink="dashboard" routerLinkActive="selected" lines="none" button>
+          <ion-icon slot="start" name="home-outline"></ion-icon>
+          <ion-label>Resumen</ion-label>
+        </ion-item>
+
         <ion-item routerLink="prices" routerLinkActive="selected" lines="none" button>
           <ion-icon slot="start" name="cash-outline"></ion-icon>
           <ion-label>Precios</ion-label>

@@ -4,9 +4,19 @@ import { roleGuard } from '../auth/login/guards/role.guard';
 export const adminRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'prices',
+    redirectTo: 'dashboard',
     pathMatch: 'full',
   },
+  {
+    path: 'dashboard',
+    canActivate: [roleGuard],
+    data: { role: 'admin' },
+    loadComponent: () =>
+      import('./dashboard/admin-dashboard-overview.page').then(
+        (m) => m.AdminDashboardOverviewPage,
+      ),
+  },
+
   {
     path: 'prices',
     canActivate: [roleGuard],

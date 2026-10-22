@@ -224,6 +224,37 @@ en Conventional Commits sobre `dev`. Push y PR quedan a decisión del usuario.
   preexistente de presupuesto en `reservation-detail.page.scss`: "Budget 6.00 kB was not met by
   300 bytes with a total of 6.30 kB"). Sin commit (a pedido explícito del encargo).
 
+- T9: confirmé primero la firma real de `UserService.getAll`/`getByRole`
+  (`core/services/User.ts:58-94`): ambos devuelven `Observable<any>` sin tipar la forma de
+  respuesta (ni paginado con `content`/`totalElements` garantizado ni array plano garantizado
+  por tipos — el código existente ya maneja ambos casos con `res?.content ?? res ?? []`, patrón
+  que reutilicé). Decisión de diseño: en vez de llamar `getAll` + 3x `getByRole` (uno por rol),
+  usé una sola llamada a `getAll({ size: 100 })` — igual que `admin-festivities.page.ts` — porque
+  cada `UserApi` ya trae su propio campo `role`, así que el desglose por rol se calcula
+  client-side sobre esa misma respuesta sin llamadas adicionales; evita 3 round-trips
+  innecesarios. Creé `features/admin/dashboard/admin-dashboard-overview.page.ts|html|scss`
+  (standalone, `signal`/`computed`): `total`, `activeCount`, `inactiveCount`,
+  `adminCount`/`providerCount`/`consumerCount` como `computed()` sobre el array de usuarios
+  cargado, mostrados en `ion-card` dentro de un `ion-grid` responsive (`size-md`/`size-lg`). El
+  componente lleva un comentario explícito (JSDoc de clase) aclarando que el cálculo es
+  client-side sobre la página cargada, que no escala si crece el volumen real de usuarios, y que
+  la solución correcta a futuro sería un endpoint agregador en el servidor — no es un bug
+  oculto, es la limitación aceptada explícitamente por el usuario al descartar `GET
+  /users/stats` (que no existe). En `features/admin/admin.routes.ts` cambié `'' -> redirectTo:
+  'prices'` a `'' -> redirectTo: 'dashboard'` y agregué la ruta `dashboard` con el mismo patrón
+  `canActivate: [roleGuard]` + `data: { role: 'admin' }` que `prices`/`users`/`providers`/
+  `festivities`. En `layouts/admin-layout/admin-layout.page.html` agregué el primer link
+  "Resumen" (ícono `home-outline`) antes de "Precios"; registré el ícono en
+  `admin-layout.page.ts`. Primer `npx ng build` generó una advertencia nueva
+  (`NG8113: IonCardContent is not used`) por un import Ionic no usado en el componente — la
+  quité del `imports` del componente y de la lista de standalone imports, y el build quedó
+  limpio. `npx ng build` final — éxito, sin errores ni advertencias nuevas (solo la misma
+  advertencia preexistente de presupuesto en `reservation-detail.page.scss`: "Budget 6.00 kB was
+  not met by 300 bytes with a total de 6.30 kB"). Confirmé con `git diff --stat
+  api-documentation.md` que el archivo sigue intacto (sin diff) y con `git status --porcelain`
+  que los únicos cambios de esta tarea son `admin.routes.ts`, `admin-layout.page.html/.ts` y el
+  directorio nuevo `features/admin/dashboard/`. Sin commit (a pedido explícito del encargo).
+
 ## Tareas de ampliación (post-auditoría)
 
 - [x] T8 — Gestión de rol de usuario: agregar `getRoles()` y `updateRole(id, role)` a
@@ -231,11 +262,15 @@ en Conventional Commits sobre `dev`. Push y PR quedan a decisión del usuario.
   (select + confirmación) dentro de `admin-user-detail.page` ya existente. No requiere pantalla
   nueva ni cambios de rutas. Ruta: delegado (2+ archivos no triviales).
 
-- [ ] T9 — Dashboard/resumen como landing de `/admin-dashboard`: agregar `getStats()` a
-  `UserService` (`GET /users/stats`), nueva página `admin-dashboard-overview.page.ts|html|scss`,
-  cambiar el redirect por defecto de `admin.routes.ts` (hoy `'' -> 'prices'`) para que apunte a
-  esta nueva vista, y agregar el link "Resumen" al sidebar de `admin-layout.page.html`. Ruta:
-  delegado (rutas + layout compartido + página nueva).
+- [x] T9 — Dashboard/resumen como landing de `/admin-dashboard`. **Premisa original corregida**:
+  la auditoría previa citó `GET /users/stats` como existente, pero no existe (verificado dos
+  veces por grep sobre el archivo intacto; `UserController` real solo tiene 8 endpoints, ninguno
+  de stats). El usuario confirmó seguir con un dashboard **calculado en el cliente**: usar
+  `UserService.getAll`/`getByRole` ya existentes, contar total/activos/inactivos/por rol en
+  Angular, sin inventar ni pedir un endpoint nuevo. Trade-off aceptado explícitamente: no
+  escala si hay miles de usuarios (sin paginación agregada del lado backend). Nueva página
+  `admin-dashboard-overview.page.ts|html|scss`, cambiar redirect default de `admin.routes.ts`
+  (`'' -> 'prices'` → `'' -> 'dashboard'`), agregar link "Resumen" al sidebar. Ruta: delegado.
 
 - [ ] T10 — Nueva área de ubicaciones: `location.service.ts` nuevo cubriendo
   `CityController`/`DepartmentController`/`DestinationController` (api-documentation.md:883-973,
@@ -258,5 +293,7 @@ push/PR, y qué hacer con `package-lock.json`/`src/environments/environment.ts` 
 a esta feature, nunca commiteados a propósito).
 
 ## Próximo paso
-Ninguno pendiente del scope planeado. A decisión del usuario: push, PR, o pruebas manuales
-end-to-end descritas en el plan.
+T10 — Nueva área de ubicaciones (`location.service.ts` + páginas `features/admin/locations/` +
+ruta `locations` + link en sidebar). Ver nota de secuenciación arriba: T10 toca los mismos
+archivos compartidos que T9 (`admin.routes.ts`, `admin-layout.page.html`), así que debe hacerse
+después de T9, nunca en paralelo.
