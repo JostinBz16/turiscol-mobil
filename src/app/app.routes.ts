@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { Router, Routes } from '@angular/router';
 import { welcomeGuard } from './core/guards/welcome.guard';
+import { webOnlyGuard } from './core/guards/web-only.guard';
 
 export const routes: Routes = [
   {
@@ -45,6 +46,22 @@ export const routes: Routes = [
     path: 'chat',
     loadComponent: () =>
       import('./features/turista/chat/chat.page').then((m) => m.ChatPage),
+  },
+
+  {
+    path: 'admin-dashboard',
+    canMatch: [webOnlyGuard],
+    loadComponent: () =>
+      import('./layouts/admin-layout/admin-layout.page').then(
+        (m) => m.AdminLayoutPage,
+      ),
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/admin/admin.routes').then((m) => m.adminRoutes),
+      },
+    ],
   },
 
   {

@@ -134,22 +134,6 @@ export const routes: Routes = [
         ],
       },
 
-      /* =============== ADMIN PRICES ============ */
-      {
-        path: 'admin',
-        canActivate: [roleGuard],
-        data: { role: 'admin' },
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('../../features/admin/prices/admin-prices.page').then(
-                (m) => m.AdminPricesPage,
-              ),
-          },
-        ],
-      },
-
       /* =============== PROVIDER SALES (PROVEEDOR) ============ */
       {
         path: 'provider-sales',

@@ -1,0 +1,9 @@
+ion-menu {
+  --width: 240px;
+  --max-width: 280px;
+}
+
+ion-item.selected {
+  --background: var(--ion-color-light, #f4f5f8);
+  font-weight: 600;
+}
