@@ -55,24 +55,32 @@ export const adminRoutes: Routes = [
     ],
   },
 
-  // TODO T6: habilitar gestión de festividades
-  // {
-  //   path: 'festivities',
-  //   children: [
-  //     {
-  //       path: '',
-  //       loadComponent: () =>
-  //         import('./festivities/admin-festivities.page').then(
-  //           (m) => m.AdminFestivitiesPage,
-  //         ),
-  //     },
-  //     {
-  //       path: ':id',
-  //       loadComponent: () =>
-  //         import('./festivities/festivity-editor/admin-festivity-editor.page').then(
-  //           (m) => m.AdminFestivityEditorPage,
-  //         ),
-  //     },
-  //   ],
-  // },
+  {
+    path: 'festivities',
+    canActivate: [roleGuard],
+    data: { role: 'admin' },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./festivities/admin-festivities.page').then(
+            (m) => m.AdminFestivitiesPage,
+          ),
+      },
+      {
+        path: 'new',
+        loadComponent: () =>
+          import('./festivities/festivity-editor/admin-festivity-editor.page').then(
+            (m) => m.AdminFestivityEditorPage,
+          ),
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () =>
+          import('./festivities/festivity-editor/admin-festivity-editor.page').then(
+            (m) => m.AdminFestivityEditorPage,
+          ),
+      },
+    ],
+  },
 ];

@@ -1,0 +1,57 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gestión de Festividades</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading()) {
+    <div class="loading-center">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else {
+    @if (festivities().length === 0) {
+      <div class="empty-state">
+        <p>No hay festividades registradas</p>
+      </div>
+    } @else {
+      <ion-list>
+        @for (festivity of festivities(); track festivity.id) {
+          <ion-item class="festivity-item" [routerLink]="[festivity.id, 'edit']">
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            <ion-label>
+              <h2>{{ festivity.name }}</h2>
+              <p>{{ festivity.startDate }} — {{ festivity.endDate }}</p>
+              <p>Ciudad #{{ festivity.cityId }}</p>
+            </ion-label>
+            <ion-badge [color]="festivity.active ? 'success' : 'medium'" slot="end">
+              {{ festivity.active ? 'Activa' : 'Inactiva' }}
+            </ion-badge>
+            <ion-button
+              fill="clear"
+              color="danger"
+              slot="end"
+              (click)="$event.stopPropagation(); confirmDelete(festivity)"
+            >
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button [routerLink]="['new']">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
+</ion-content>

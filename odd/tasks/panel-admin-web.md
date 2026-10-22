@@ -47,7 +47,7 @@ end-to-end descrita en el plan.
   `activate`/`deactivate`) + páginas `admin-providers` (lista + detalle), con TODO explícito
   sobre falta de endpoint de aprobación diferenciado. Ruta: delegado.
 
-- [ ] T6 — Ampliar `FestivityService` (`create`, `update`, `delete`, según
+- [x] T6 — Ampliar `FestivityService` (`create`, `update`, `delete`, según
   `api-documentation.md:2452-2538`) + páginas `admin-festivities` (lista + editor). Ruta: delegado.
 
 - [ ] T7 — "Mobile frame" responsive: media query `@media (min-width: 768px)` en
@@ -144,5 +144,32 @@ en Conventional Commits sobre `dev`. Push y PR quedan a decisión del usuario.
   with a total of 6.30 kB"). Sin commit aún (pendiente de confirmación del usuario, igual que
   T1-T4).
 
+- T6: en `core/services/festivity.service.ts` se agregó la interfaz `FestivityRequest`
+  (`name`, `description`, `startDate`, `endDate`, `cityId`, `image`, `active`, exactamente los
+  campos documentados en `api-documentation.md:2462-2487` para `FestivityRequest`/
+  `FestivityResponse`, sin inventar campos nuevos — el modelo `Festivity` ya los cubría todos)
+  y los métodos `create(dto)` (`POST /festivities`), `update(id, dto)` (`PUT /festivities/{id}`)
+  y `delete(id)` (`DELETE /festivities/{id}`, `204 No Content`), mismo estilo
+  `catchError`/`throwError` que el resto del archivo y análogo a `PriceService.create`/
+  `update`/`delete`. Se crearon `features/admin/festivities/admin-festivities.page.ts|html|scss`
+  (listado standalone con `getAll({ size: 100 })`, mismo patrón que `admin-users`: cada
+  `ion-item` con `routerLink` a `[festivity.id, 'edit']`, botón de borrar inline con
+  `stopPropagation` + `ion-alert` de confirmación vía `AlertController`, FAB `routerLink`
+  a `['new']`) y `features/admin/festivities/festivity-editor/admin-festivity-editor.page.ts|
+  html|scss` (formulario reactivo único dual crear/editar, mismo patrón que
+  `offer-editor.page.ts`: lee `:id` de `ActivatedRoute` — presente solo en la ruta `:id/edit` —,
+  si existe precarga vía `getById` y llama `update`, si no llama `create`; inputs `type="date"`
+  para `startDate`/`endDate`, toggle para `active`). Se activó el bloque `festivities` en
+  `features/admin/admin.routes.ts` con `canActivate: [roleGuard]` + `data: { role: 'admin' }` en
+  el nivel `festivities` (mismo patrón que `prices`/`users`/`providers`) y children `''` (lista),
+  `'new'` y `':id/edit'` (ambas al editor) — se siguió el patrón real ya existente en el
+  proyecto para crear/editar (`tabs.routes.ts:113-133`, `manage-offers/offer-editor` con exactamente
+  esa forma `new` + `:id/edit`), ya que el bloque comentado original en `admin.routes.ts` solo
+  tenía `''` y `':id'` (sin ruta `new` separada), una forma distinta a la pedida explícitamente
+  para esta tarea. `npx ng build` — éxito, sin errores nuevos (solo la misma advertencia
+  preexistente de presupuesto en `reservation-detail.page.scss`: "Budget 6.00 kB was not met by
+  300 bytes with a total of 6.30 kB"). Sin commit aún (pendiente de confirmación del usuario,
+  igual que T1-T5).
+
 ## Próximo paso
-Empezar T6 (`FestivityService` + páginas `admin-festivities`).
+T7 (mobile frame responsive).

@@ -1,0 +1,88 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard/festivities"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isNew ? 'Nueva Festividad' : 'Editar Festividad' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="loading-center">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-body">
+      <ion-item>
+        <ion-input
+          label="Nombre"
+          labelPlacement="stacked"
+          formControlName="name"
+          placeholder="Ej: Carnaval de Barranquilla"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-textarea
+          label="Descripción"
+          labelPlacement="stacked"
+          formControlName="description"
+          placeholder="Descripción opcional"
+          [autoGrow]="true"
+        ></ion-textarea>
+      </ion-item>
+
+      <div class="date-row">
+        <ion-item>
+          <ion-input
+            label="Fecha inicio"
+            labelPlacement="stacked"
+            type="date"
+            formControlName="startDate"
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="Fecha fin"
+            labelPlacement="stacked"
+            type="date"
+            formControlName="endDate"
+          ></ion-input>
+        </ion-item>
+      </div>
+
+      <ion-item>
+        <ion-input
+          label="ID Ciudad"
+          labelPlacement="stacked"
+          type="number"
+          formControlName="cityId"
+          placeholder="ID del municipio"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="URL de imagen"
+          labelPlacement="stacked"
+          formControlName="image"
+          placeholder="https://..."
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Activa</ion-label>
+        <ion-toggle formControlName="active" slot="end"></ion-toggle>
+      </ion-item>
+
+      <div class="form-actions">
+        <ion-button fill="outline" type="button" (click)="cancel()">Cancelar</ion-button>
+        <ion-button expand="block" type="submit" [disabled]="form.invalid || saving()">
+          <ion-icon slot="start" name="save-outline"></ion-icon>
+          {{ isNew ? 'Crear' : 'Actualizar' }}
+        </ion-button>
+      </div>
+    </form>
+  }
+</ion-content>
