@@ -1,0 +1,39 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Ubicaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item routerLink="departments" lines="none" button detail="false">
+      <ion-icon slot="start" name="business-outline"></ion-icon>
+      <ion-label>
+        <h2>Departamentos</h2>
+        <p>Gestionar departamentos del sistema</p>
+      </ion-label>
+      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+
+    <ion-item routerLink="cities" lines="none" button detail="false">
+      <ion-icon slot="start" name="map-outline"></ion-icon>
+      <ion-label>
+        <h2>Ciudades</h2>
+        <p>Gestionar ciudades/municipios</p>
+      </ion-label>
+      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+
+    <ion-item routerLink="destinations" lines="none" button detail="false">
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label>
+        <h2>Destinos</h2>
+        <p>Gestionar destinos turísticos</p>
+      </ion-label>
+      <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>

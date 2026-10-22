@@ -1,0 +1,62 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard/locations/cities"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isNew ? 'Nueva Ciudad' : 'Editar Ciudad' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="loading-center">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-body">
+      <ion-item>
+        <ion-input
+          label="Nombre"
+          labelPlacement="stacked"
+          formControlName="name"
+          placeholder="Ej: Medellín"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="URL de imagen"
+          labelPlacement="stacked"
+          formControlName="imageUrl"
+          placeholder="https://..."
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-select
+          label="Departamento"
+          labelPlacement="stacked"
+          formControlName="departmentId"
+          placeholder="Selecciona un departamento"
+        >
+          @for (department of departments(); track department.id) {
+            <ion-select-option [value]="department.id">{{ department.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Destacada</ion-label>
+        <ion-toggle formControlName="featured" slot="end"></ion-toggle>
+      </ion-item>
+
+      <div class="form-actions">
+        <ion-button fill="outline" type="button" (click)="cancel()">Cancelar</ion-button>
+        <ion-button expand="block" type="submit" [disabled]="form.invalid || saving()">
+          <ion-icon slot="start" name="save-outline"></ion-icon>
+          {{ isNew ? 'Crear' : 'Actualizar' }}
+        </ion-button>
+      </div>
+    </form>
+  }
+</ion-content>

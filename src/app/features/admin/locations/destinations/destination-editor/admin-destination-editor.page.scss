@@ -1,0 +1,43 @@
+.loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+
+  ion-item {
+    --background: var(--ion-color-light);
+    --border-radius: 10px;
+    margin-bottom: 8px;
+  }
+}
+
+.coords-row {
+  display: flex;
+  gap: 8px;
+
+  ion-item {
+    flex: 1;
+  }
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding-bottom: 16px;
+
+  ion-button[expand="block"] {
+    --background: #0d3b66;
+    --color: #fff;
+    --border-radius: 10px;
+    font-weight: 600;
+  }
+}

@@ -93,4 +93,97 @@ export const adminRoutes: Routes = [
       },
     ],
   },
+
+  {
+    path: 'locations',
+    canActivate: [roleGuard],
+    data: { role: 'admin' },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./locations/admin-locations.page').then(
+            (m) => m.AdminLocationsPage,
+          ),
+      },
+      {
+        path: 'cities',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./locations/cities/admin-cities.page').then(
+                (m) => m.AdminCitiesPage,
+              ),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('./locations/cities/city-editor/admin-city-editor.page').then(
+                (m) => m.AdminCityEditorPage,
+              ),
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import('./locations/cities/city-editor/admin-city-editor.page').then(
+                (m) => m.AdminCityEditorPage,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'departments',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./locations/departments/admin-departments.page').then(
+                (m) => m.AdminDepartmentsPage,
+              ),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import(
+                './locations/departments/department-editor/admin-department-editor.page'
+              ).then((m) => m.AdminDepartmentEditorPage),
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import(
+                './locations/departments/department-editor/admin-department-editor.page'
+              ).then((m) => m.AdminDepartmentEditorPage),
+          },
+        ],
+      },
+      {
+        path: 'destinations',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./locations/destinations/admin-destinations.page').then(
+                (m) => m.AdminDestinationsPage,
+              ),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import(
+                './locations/destinations/destination-editor/admin-destination-editor.page'
+              ).then((m) => m.AdminDestinationEditorPage),
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import(
+                './locations/destinations/destination-editor/admin-destination-editor.page'
+              ).then((m) => m.AdminDestinationEditorPage),
+          },
+        ],
+      },
+    ],
+  },
 ];

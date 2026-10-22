@@ -272,18 +272,80 @@ en Conventional Commits sobre `dev`. Push y PR quedan a decisión del usuario.
   `admin-dashboard-overview.page.ts|html|scss`, cambiar redirect default de `admin.routes.ts`
   (`'' -> 'prices'` → `'' -> 'dashboard'`), agregar link "Resumen" al sidebar. Ruta: delegado.
 
-- [ ] T10 — Nueva área de ubicaciones: `location.service.ts` nuevo cubriendo
-  `CityController`/`DepartmentController`/`DestinationController` (api-documentation.md:883-973,
-  leer antes de implementar — confirmar verbos/paths/campos exactos, incluye manejo de imágenes
-  en destinos). Páginas bajo `features/admin/locations/` (ciudades, departamentos, destinos,
-  siguiendo el patrón ya usado en festivities: listado + editor crear/editar). Activar rama
-  `locations` en `admin.routes.ts` con `canActivate: [roleGuard]` + `data: { role: 'admin' }`, y
-  agregar el link al sidebar de `admin-layout.page.html`. Ruta: delegado (servicio nuevo + varias
-  páginas + rutas + sidebar).
+- [x] T10 — Nueva área de ubicaciones: `location.service.ts` nuevo cubriendo
+  `CityController`/`DepartmentController`/`DestinationController` (api-documentation.md:1794,
+  1984, 2083 respectivamente — **línea corregida por el orquestador, verificada con grep
+  directo sobre el archivo intacto**; la cita original de la auditoría ["883-973"] era
+  incorrecta, igual que el endpoint de stats de T9 — leer la doc de nuevo antes de codear, no
+  confiar en citas previas sin reverificar). Incluye manejo de imágenes en destinos
+  (`ImageDestinationController`, línea 2249). Páginas bajo `features/admin/locations/`
+  (ciudades, departamentos, destinos, siguiendo el patrón ya usado en festivities: listado +
+  editor crear/editar). Activar rama `locations` en `admin.routes.ts` con `canActivate:
+  [roleGuard]` + `data: { role: 'admin' }`, y agregar el link al sidebar de
+  `admin-layout.page.html`. Ruta: delegado (servicio nuevo + varias páginas + rutas + sidebar).
 
 Nota de secuenciación: T9 y T10 tocan los mismos archivos compartidos (`admin.routes.ts`,
 `admin-layout.page.html`) — se ejecutan en secuencia (T8 → T9 → T10), nunca en paralelo, para
 evitar conflictos de edición.
+
+- T10: continué el trabajo dejado a mitad de camino por un worker anterior (interrumpido por un
+  cambio de modo del harness, no por un problema de la tarea). Ya estaban en disco (sin tocar):
+  `core/services/location.service.ts` completo (CRUD ciudades/departamentos/destinos + imágenes
+  JSON simple, con TODO explícito de upload multipart fuera de alcance,
+  `api-documentation.md:1794-2362`) y `features/admin/locations/admin-locations.page.ts|html|scss`
+  (hub con 3 links), `locations/departments/admin-departments.page.ts|html|scss` (lista),
+  `locations/departments/department-editor/admin-department-editor.page.ts|html|scss` (editor
+  solo `name`) y `locations/cities/admin-cities.page.ts|html|scss` (lista de ciudades). Verifiqué
+  leyendo esos 5 archivos que el patrón citado por el worker anterior (mismo estilo que
+  `admin-departments`/`admin-festivities`: `signal`, `firstValueFrom`, `AlertController` +
+  `ToastController`, `ion-refresher`, FAB `routerLink="['new']"`, borrado inline con
+  `stopPropagation`) coincidía exactamente con lo que había en disco — sin discrepancias.
+  Confirmé también contra `api-documentation.md:2083-2232` (`DestinationController`) que
+  `DestinationResponseDTO` reamente NO incluye `destinationType` ni un `imageUrl` plano (solo
+  `imageUrls: string[]` y `municipality` anidado), un hueco real de la API documentado tal cual
+  en `location.service.ts`; lo dejé explícito también en el nuevo editor de destinos.
+
+  Creé: `locations/cities/city-editor/admin-city-editor.page.ts|html|scss` (editor dual
+  crear/editar: `name` requerido, `imageUrl`, `departmentId` requerido vía `ion-select` poblado
+  con `LocationService.getDepartments()`, `featured` con `ion-toggle`, precarga en edición vía
+  `city.department?.id`); `locations/destinations/admin-destinations.page.ts|html|scss` (listado:
+  nombre, `municipality?.name`, badges destacado/activo, borrar inline con confirmación, FAB
+  nuevo, mismo patrón que `admin-cities`); `locations/destinations/destination-editor/
+  admin-destination-editor.page.ts|html|scss` (editor dual: `name`, `description`, `imageUrl`,
+  `latitude`/`longitude` numéricos, `destinationType` vía `ion-select` con los 7 tipos y labels en
+  español, `municipalityId` vía `ion-select` poblado con `LocationService.getCities()`, `active` y
+  `featured` con `ion-toggle`). Al editar, como `DestinationResponseDTO` no trae `destinationType`
+  ni `imageUrl` plano, dejé un comentario JSDoc explícito en `loadDestination()`: `municipalityId`
+  se precarga desde `destination.municipality.id` (sí disponible), `imageUrl` se aproxima con
+  `destination.imageUrls?.[0] ?? ''` (mejor esfuerzo, no garantizado), y `destinationType` queda
+  sin precargar — el usuario debe volver a elegirlo antes de guardar (sigue siendo requerido) —
+  porque el backend simplemente no lo devuelve, no es un bug de esta UI.
+
+  Activé la rama `locations` en `features/admin/admin.routes.ts` con `canActivate: [roleGuard]` +
+  `data: { role: 'admin' }` en el nivel `locations` (mismo patrón que `prices`/`users`/
+  `providers`/`festivities`), con hijos `''` → `AdminLocationsPage`, y sub-ramas `cities`,
+  `departments`, `destinations`, cada una con `''`/`'new'`/`':id/edit'` (mismo patrón `new` +
+  `:id/edit` que `festivities`). Agregué el link "Ubicaciones" (ícono `map-outline`) al sidebar de
+  `layouts/admin-layout/admin-layout.page.html`, después de "Festividades", y registré el ícono en
+  `admin-layout.page.ts`.
+
+  `npx ng build` — éxito, sin errores (21.2s). Dos advertencias nuevas `NG8107` ("optional chain
+  operator puede ser '.' en vez de '?.'") en `admin-destinations.page.html:31`
+  (`destination.municipality?.name`) y en el ya existente `admin-cities.page.html:31`
+  (`city.department?.name`, archivo que no toqué): ambas porque `MunicipalityResponse.department`
+  y `DestinationResponse.municipality` son no-opcionales en el tipo TS. Las dejé igual a propósito
+  — usar `?.` es defensivo contra una respuesta real del backend que no cumpla el contrato
+  documentado, y mantiene exactamente el mismo estilo que el archivo de referencia
+  `admin-cities.page.html` (que ya tenía esa advertencia antes de esta tarea, solo que no se
+  compilaba porque la ruta `locations` todavía no estaba activa). Sigue presente solo la
+  advertencia preexistente de presupuesto en `reservation-detail.page.scss` ("Budget 6.00 kB was
+  not met by 300 bytes with a total of 6.30 kB"), ajena a esta tarea. Confirmé con
+  `git diff --stat api-documentation.md` que el archivo sigue intacto (sin diff, archivo de solo
+  lectura respetado) y con `git status --porcelain` que los únicos cambios de esta tarea son
+  `admin.routes.ts`, `admin-layout.page.html/.ts` y los archivos nuevos bajo
+  `features/admin/locations/cities/city-editor/` y `features/admin/locations/destinations/`
+  (más `location.service.ts` y el resto de `features/admin/locations/`, ya en disco de antes). Sin
+  commit (a pedido explícito del encargo).
 
 ## Feature completa
 Las 7 tareas están cerradas. El panel admin-dashboard cubre las 4 áreas confirmadas
@@ -293,7 +355,7 @@ push/PR, y qué hacer con `package-lock.json`/`src/environments/environment.ts` 
 a esta feature, nunca commiteados a propósito).
 
 ## Próximo paso
-T10 — Nueva área de ubicaciones (`location.service.ts` + páginas `features/admin/locations/` +
-ruta `locations` + link en sidebar). Ver nota de secuenciación arriba: T10 toca los mismos
-archivos compartidos que T9 (`admin.routes.ts`, `admin-layout.page.html`), así que debe hacerse
-después de T9, nunca en paralelo.
+Ninguno pendiente, a decisión del usuario. Las 10 tareas (T1-T10) están cerradas y verificadas
+con `npx ng build`. Queda a decisión del usuario: commit de T10, push/PR, y qué hacer con
+`package-lock.json`/`src/environments/environment.ts` (cambios ajenos a esta feature, nunca
+commiteados a propósito).
