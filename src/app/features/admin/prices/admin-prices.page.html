@@ -16,19 +16,17 @@
 <ion-content>
   <div class="admin-container">
     <div class="admin-toolbar">
-      <ion-select
-        label="Ciudad"
-        labelPlacement="stacked"
-        fill="outline"
-        interface="popover"
-        [value]="cityFilter()"
-        (ionChange)="onCityFilterChange($event)"
-      >
-        <ion-select-option [value]="all">Todas las ciudades</ion-select-option>
-        @for (city of cities(); track city.id) {
-          <ion-select-option [value]="city.id">{{ city.name }}</ion-select-option>
-        }
-      </ion-select>
+      <div class="picker-field">
+        <span class="picker-label">Ciudad</span>
+        <button
+          type="button"
+          class="picker-trigger"
+          (click)="openCityPicker('filter')"
+        >
+          <span>{{ selectedCityLabel() }}</span>
+          <ion-icon name="chevron-down-outline"></ion-icon>
+        </button>
+      </div>
 
       <ion-select
         label="Categoría"
@@ -38,9 +36,13 @@
         [value]="categoryFilter()"
         (ionChange)="onCategoryFilterChange($event)"
       >
-        <ion-select-option [value]="all">Todas las categorías</ion-select-option>
+        <ion-select-option [value]="all"
+          >Todas las categorías</ion-select-option
+        >
         @for (cat of categories; track cat) {
-          <ion-select-option [value]="cat">{{ categoryLabel(cat) }}</ion-select-option>
+        <ion-select-option [value]="cat"
+          >{{ categoryLabel(cat) }}</ion-select-option
+        >
         }
       </ion-select>
 
@@ -63,156 +65,208 @@
       (pageChange)="onPageChange($event)"
     >
       <ng-template #cell let-price let-column="column">
-        @switch (column.key) {
-          @case ('name') {
-            <span class="price-name" [title]="price.name">{{ price.name }}</span>
-          }
-          @case ('category') {
-            {{ categoryLabel(price.category) }}
-          }
-          @case ('city') {
-            {{ cityName(price) }}
-          }
-          @case ('range') {
-            <span class="price-range">
-              {{ price.minPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
-              &mdash;
-              {{ price.maxPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
-            </span>
-          }
-          @case ('active') {
-            <span
-              class="status-chip"
-              [class.is-active]="price.active"
-              [class.is-inactive]="!price.active"
-            >
-              {{ price.active ? 'Activo' : 'Inactivo' }}
-            </span>
-          }
-        }
+        @switch (column.key) { @case ('name') {
+        <span class="price-name" [title]="price.name">{{ price.name }}</span>
+        } @case ('category') { {{ categoryLabel(price.category) }} } @case
+        ('city') { {{ cityName(price) }} } @case ('range') {
+        <span class="price-range">
+          {{ price.minPrice | currency:'COP':'symbol-narrow':'1.0-0' }} &mdash;
+          {{ price.maxPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
+        </span>
+        } @case ('active') {
+        <span
+          class="status-chip"
+          [class.is-active]="price.active"
+          [class.is-inactive]="!price.active"
+        >
+          {{ price.active ? 'Activo' : 'Inactivo' }}
+        </span>
+        } }
       </ng-template>
 
       <ng-template #actions let-price>
-        <button type="button" class="link-button" (click)="openEdit(price)">Editar</button>
-        <button type="button" class="link-button danger-link" (click)="confirmDelete(price)">
+        <button type="button" class="link-button" (click)="openEdit(price)">
+          Editar
+        </button>
+        <button
+          type="button"
+          class="link-button danger-link"
+          (click)="confirmDelete(price)"
+        >
           Eliminar
         </button>
       </ng-template>
     </app-admin-data-table>
   </div>
 
+  <!-- Searchable city picker (shared by the toolbar filter and the form) -->
+  <ion-modal [isOpen]="cityPickerOpen()" (didDismiss)="closeCityPicker()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>
+            {{cityPickerTarget() === 'form' ? 'Seleccionar ciudad' : 'Filtrar
+            por ciudad'}}
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeCityPicker()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="city-picker-content">
+        <ion-searchbar
+          [value]="citySearch()"
+          (ionInput)="onCitySearch($event)"
+          placeholder="Buscar ciudad..."
+          [debounce]="150"
+        ></ion-searchbar>
+
+        <ion-list>
+          @if (cityPickerTarget() === 'filter') {
+          <ion-item button (click)="clearCityFilter()">
+            <ion-label>Todas las ciudades</ion-label>
+          </ion-item>
+          } @for (city of pickerCities(); track city.id) {
+          <ion-item button (click)="selectPickerCity(city)">
+            <ion-label>{{ city.name }}</ion-label>
+          </ion-item>
+          }
+        </ion-list>
+
+        @if (pickerCities().length === 0) {
+        <p class="picker-empty">No se encontraron ciudades</p>
+        } @if (!citySearch() && cities().length > pickerCities().length) {
+        <p class="picker-hint">
+          Escribe para buscar entre las {{ cities().length }} ciudades.
+        </p>
+        }
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
   <!-- Create / edit dialog -->
   @if (showForm()) {
-    <div class="dialog-backdrop" (click)="onBackdropClick($event)">
-      <form
-        class="admin-form-card price-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="price-dialog-title"
-        [formGroup]="form"
-        (ngSubmit)="save()"
-      >
-        <div class="dialog-header">
-          <h2 id="price-dialog-title">{{ editingId() ? 'Editar precio' : 'Nuevo precio' }}</h2>
-          <ion-button fill="clear" size="small" type="button" aria-label="Cerrar" (click)="closeForm()">
-            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-          </ion-button>
-        </div>
+  <div class="dialog-backdrop" (click)="onBackdropClick($event)">
+    <form
+      class="admin-form-card price-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="price-dialog-title"
+      [formGroup]="form"
+      (ngSubmit)="save()"
+    >
+      <div class="dialog-header">
+        <h3 id="price-dialog-title">
+          {{ editingId() ? 'Editar precio' : 'Nuevo precio' }}
+        </h3>
+        <ion-button
+          fill="clear"
+          size="small"
+          type="button"
+          aria-label="Cerrar"
+          (click)="closeForm()"
+        >
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      </div>
 
-        <section class="form-section">
-          <h3 class="form-section-title">Información general</h3>
-          <div class="form-grid">
-            <ion-input
-              class="full-width"
-              label="Nombre"
-              labelPlacement="stacked"
-              fill="outline"
-              formControlName="name"
-              placeholder="Ej: Precio guía"
-            ></ion-input>
+      <section class="form-section">
+        <h4 class="form-section-title">Información general</h4>
+        <div class="form-grid">
+          <ion-input
+            class="full-width"
+            label="Nombre"
+            labelPlacement="stacked"
+            fill="outline"
+            formControlName="name"
+            placeholder="Ej: Precio guía"
+          ></ion-input>
 
-            <ion-select
-              label="Categoría"
-              labelPlacement="stacked"
-              fill="outline"
-              interface="popover"
-              formControlName="category"
-              placeholder="Seleccionar categoría"
+          <ion-select
+            label="Categoría"
+            labelPlacement="stacked"
+            fill="outline"
+            interface="popover"
+            formControlName="category"
+            placeholder="Seleccionar categoría"
+          >
+            @for (cat of categories; track cat) {
+            <ion-select-option [value]="cat"
+              >{{ categoryLabel(cat) }}</ion-select-option
             >
-              @for (cat of categories; track cat) {
-                <ion-select-option [value]="cat">{{ categoryLabel(cat) }}</ion-select-option>
-              }
-            </ion-select>
+            }
+          </ion-select>
 
-            <ion-select
-              label="Ciudad"
-              labelPlacement="stacked"
-              fill="outline"
-              interface="popover"
-              formControlName="cityId"
-              placeholder="Seleccionar ciudad"
+          <div class="picker-field">
+            <span class="picker-label">Ciudad</span>
+            <button
+              type="button"
+              class="picker-trigger"
+              (click)="openCityPicker('form')"
             >
-              @for (city of cities(); track city.id) {
-                <ion-select-option [value]="city.id">{{ city.name }}</ion-select-option>
-              }
-            </ion-select>
-
-            <ion-textarea
-              class="full-width"
-              label="Descripción"
-              labelPlacement="stacked"
-              fill="outline"
-              formControlName="description"
-              placeholder="Descripción opcional"
-              [autoGrow]="true"
-              [rows]="3"
-            ></ion-textarea>
+              <span>{{ formCityLabel() }}</span>
+              <ion-icon name="chevron-down-outline"></ion-icon>
+            </button>
           </div>
-        </section>
 
-        <section class="form-section">
-          <h3 class="form-section-title">Rango de precio (COP)</h3>
-          <div class="form-grid">
-            <ion-input
-              label="Precio mínimo"
-              labelPlacement="stacked"
-              fill="outline"
-              type="number"
-              formControlName="minPrice"
-              placeholder="0"
-            ></ion-input>
-
-            <ion-input
-              label="Precio máximo"
-              labelPlacement="stacked"
-              fill="outline"
-              type="number"
-              formControlName="maxPrice"
-              placeholder="0"
-            ></ion-input>
-          </div>
-          @if (showRangeError()) {
-            <p class="form-error" role="alert">
-              El precio mínimo no puede ser mayor que el precio máximo.
-            </p>
-          }
-        </section>
-
-        <section class="form-section">
-          <h3 class="form-section-title">Visibilidad</h3>
-          <div class="toggle-row">
-            <ion-toggle formControlName="active">Activo</ion-toggle>
-          </div>
-        </section>
-
-        <div class="form-actions">
-          <ion-button fill="outline" type="button" (click)="closeForm()">Cancelar</ion-button>
-          <ion-button type="submit" [disabled]="form.invalid || saving()">
-            <ion-icon slot="start" name="save-outline"></ion-icon>
-            {{ editingId() ? 'Actualizar' : 'Crear' }}
-          </ion-button>
+          <ion-textarea
+            class="full-width"
+            label="Descripción"
+            labelPlacement="stacked"
+            fill="outline"
+            formControlName="description"
+            placeholder="Descripción opcional"
+            [autoGrow]="true"
+            [rows]="2"
+          ></ion-textarea>
         </div>
-      </form>
-    </div>
+      </section>
+
+      <section class="form-section">
+        <h4 class="form-section-title">Rango de precio (COP)</h4>
+        <div class="form-grid">
+          <ion-input
+            label="Precio mínimo"
+            labelPlacement="stacked"
+            fill="outline"
+            type="number"
+            formControlName="minPrice"
+            placeholder="0"
+          ></ion-input>
+
+          <ion-input
+            label="Precio máximo"
+            labelPlacement="stacked"
+            fill="outline"
+            type="number"
+            formControlName="maxPrice"
+            placeholder="0"
+          ></ion-input>
+        </div>
+        @if (showRangeError()) {
+        <p class="form-error" role="alert">
+          El precio mínimo no puede ser mayor que el precio máximo.
+        </p>
+        }
+      </section>
+
+      <section class="form-section">
+        <h4 class="form-section-title">Visibilidad</h4>
+        <div class="toggle-row">
+          <ion-toggle formControlName="active">Activo</ion-toggle>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <ion-button fill="outline" type="button" (click)="closeForm()"
+          >Cancelar</ion-button
+        >
+        <ion-button type="submit" [disabled]="form.invalid || saving()">
+          <ion-icon slot="start" name="save-outline"></ion-icon>
+          {{ editingId() ? 'Actualizar' : 'Crear' }}
+        </ion-button>
+      </div>
+    </form>
+  </div>
   }
 </ion-content>

@@ -2,27 +2,63 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-  IonIcon, IonButton, IonFab, IonFabButton, IonSpinner, IonRefresher,
-  IonRefresherContent, IonList, IonItem, IonLabel,
-  AlertController, ToastController,
+  IonContent,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonBackButton,
+  IonIcon,
+  IonButton,
+  IonFab,
+  IonFabButton,
+  IonSpinner,
+  IonRefresher,
+  IonRefresherContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  AlertController,
+  ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addOutline, trashOutline, chevronForwardOutline, businessOutline } from 'ionicons/icons';
+import {
+  addOutline,
+  trashOutline,
+  chevronForwardOutline,
+  businessOutline,
+  refreshOutline,
+} from 'ionicons/icons';
 import {
   LocationService,
   DepartmentResponse,
 } from 'src/app/core/services/location.service';
 import { firstValueFrom } from 'rxjs';
+import { AdminPageHeaderComponent } from '../../shared/admin-page-header/admin-page-header.component';
 
 @Component({
   selector: 'app-admin-departments',
   standalone: true,
   imports: [
-    CommonModule, RouterModule,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-    IonIcon, IonButton, IonFab, IonFabButton, IonSpinner, IonRefresher,
-    IonRefresherContent, IonList, IonItem, IonLabel,
+    CommonModule,
+    RouterModule,
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonBackButton,
+    IonIcon,
+    IonButton,
+    IonFab,
+    IonFabButton,
+    IonSpinner,
+    IonRefresher,
+    IonRefresherContent,
+    IonList,
+    IonItem,
+    IonLabel,
+    AdminPageHeaderComponent,
   ],
   templateUrl: './admin-departments.page.html',
   styleUrls: ['./admin-departments.page.scss'],
@@ -36,7 +72,13 @@ export class AdminDepartmentsPage {
   loading = signal(true);
 
   constructor() {
-    addIcons({ addOutline, trashOutline, chevronForwardOutline, businessOutline });
+    addIcons({
+      refreshOutline,
+      addOutline,
+      businessOutline,
+      trashOutline,
+      chevronForwardOutline,
+    });
   }
 
   // True after the first entry; later entries reload silently (Ionic caches the view).
@@ -50,7 +92,9 @@ export class AdminDepartmentsPage {
   async loadDepartments(silent = false) {
     if (!silent) this.loading.set(true);
     try {
-      const res = await firstValueFrom(this.locationService.getDepartments({ size: 100 }));
+      const res = await firstValueFrom(
+        this.locationService.getDepartments({ size: 100 }),
+      );
       this.departments.set(res?.content ?? res ?? []);
     } catch (err) {
       console.error('Error loading departments', err);
@@ -77,8 +121,12 @@ export class AdminDepartmentsPage {
 
   private async deleteDepartment(department: DepartmentResponse) {
     try {
-      await firstValueFrom(this.locationService.deleteDepartment(department.id));
-      this.departments.set(this.departments().filter((d) => d.id !== department.id));
+      await firstValueFrom(
+        this.locationService.deleteDepartment(department.id),
+      );
+      this.departments.set(
+        this.departments().filter((d) => d.id !== department.id),
+      );
       this.showToast('Departamento eliminado');
     } catch (err) {
       console.error('Error deleting department', err);

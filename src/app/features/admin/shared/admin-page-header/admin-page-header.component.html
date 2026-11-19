@@ -2,7 +2,7 @@
 <ion-header class="admin-narrow-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-menu-button color="light"></ion-menu-button>
     </ion-buttons>
     <ion-title>Panel de administración</ion-title>
   </ion-toolbar>
@@ -11,7 +11,12 @@
 <div class="admin-page-title">
   <div class="admin-container">
     @if (backLink(); as link) {
-      <ion-button class="back-button" fill="outline" color="primary" [routerLink]="link">
+      <ion-button
+        class="back-button"
+        fill="outline"
+        color="primary"
+        [routerLink]="link"
+      >
         <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
         {{ backLabel() }}
       </ion-button>
@@ -23,7 +28,9 @@
           @if (crumb.link && !last) {
             <a [routerLink]="crumb.link">{{ crumb.label }}</a>
           } @else {
-            <span [attr.aria-current]="last ? 'page' : null">{{ crumb.label }}</span>
+            <span [attr.aria-current]="last ? 'page' : null">{{
+              crumb.label
+            }}</span>
           }
           @if (!last) {
             <span class="separator" aria-hidden="true">&rsaquo;</span>

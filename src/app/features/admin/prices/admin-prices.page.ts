@@ -1,5 +1,10 @@
 import {
-  Component, HostListener, OnInit, computed, inject, signal,
+  Component,
+  HostListener,
+  OnInit,
+  computed,
+  inject,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -11,13 +16,33 @@ import {
   Validators,
 } from '@angular/forms';
 import {
-  IonContent, IonIcon, IonButton, IonSearchbar, IonInput, IonTextarea,
-  IonSelect, IonSelectOption, IonToggle,
-  AlertController, ToastController,
+  IonContent,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonIcon,
+  IonButton,
+  IonSearchbar,
+  IonInput,
+  IonTextarea,
+  IonSelect,
+  IonSelectOption,
+  IonToggle,
+  IonModal,
+  IonList,
+  IonItem,
+  IonLabel,
+  AlertController,
+  ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  addOutline, closeOutline, refreshOutline, saveOutline,
+  addOutline,
+  chevronDownOutline,
+  closeOutline,
+  refreshOutline,
+  saveOutline,
 } from 'ionicons/icons';
 import { Observable, firstValueFrom } from 'rxjs';
 import { PriceService, PriceListingRequest } from 'src/app/core/services/price';
@@ -42,6 +67,9 @@ const MAX_FETCH_PAGES = 20;
 /** Rows shown per page in the table (pagination is done on the client). */
 const PAGE_SIZE = 15;
 
+/** Max city options rendered at once in the searchable picker. */
+const CITY_PICKER_LIMIT = 50;
+
 /** The minimum price must not be greater than the maximum price. */
 const priceRangeValidator: ValidatorFn = (group): ValidationErrors | null => {
   const min = group.get('minPrice')?.value;
@@ -55,10 +83,27 @@ const priceRangeValidator: ValidatorFn = (group): ValidationErrors | null => {
   selector: 'app-admin-prices',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    IonContent, IonIcon, IonButton, IonSearchbar, IonInput, IonTextarea,
-    IonSelect, IonSelectOption, IonToggle,
-    AdminPageHeaderComponent, AdminDataTableComponent,
+    CommonModule,
+    ReactiveFormsModule,
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonIcon,
+    IonButton,
+    IonSearchbar,
+    IonInput,
+    IonTextarea,
+    IonSelect,
+    IonSelectOption,
+    IonToggle,
+    IonModal,
+    IonList,
+    IonItem,
+    IonLabel,
+    AdminPageHeaderComponent,
+    AdminDataTableComponent,
   ],
   templateUrl: './admin-prices.page.html',
   styleUrls: ['./admin-prices.page.scss'],
@@ -81,8 +126,17 @@ export class AdminPricesPage implements OnInit {
   ];
 
   readonly categories = [
-    'HOSPEDAJE', 'PASADIA', 'GASTRONOMIA', 'TOUR', 'ARTESANIA',
-    'TRANSPORTE', 'GUIA', 'SERVICIO_TECNICO', 'TEXTIL', 'BEBIDA', 'OTRO',
+    'HOSPEDAJE',
+    'PASADIA',
+    'GASTRONOMIA',
+    'TOUR',
+    'ARTESANIA',
+    'TRANSPORTE',
+    'GUIA',
+    'SERVICIO_TECNICO',
+    'TEXTIL',
+    'BEBIDA',
+    'OTRO',
   ];
 
   prices = signal<Price[]>([]);
@@ -98,10 +152,34 @@ export class AdminPricesPage implements OnInit {
   categoryFilter = signal<string>(ALL);
   page = signal(0);
 
+  cityPickerOpen = signal(false);
+  cityPickerTarget = signal<'filter' | 'form'>('filter');
+  citySearch = signal('');
+
   /** id -> name; keys are strings because `Price.municipalityId` is a string. */
   private cityNames = computed(
     () => new Map(this.cities().map((c) => [String(c.id), c.name])),
   );
+
+  /** Only a small slice is rendered in the picker, even with ~1.100 cities. */
+  pickerCities = computed(() => {
+    const query = this.normalizeText(this.citySearch().trim());
+    const matches = query
+      ? this.cities().filter((c) =>
+          this.normalizeText(c.name ?? '').includes(query),
+        )
+      : this.cities();
+    return matches.slice(0, CITY_PICKER_LIMIT);
+  });
+
+  selectedCityLabel = computed(() => {
+    const current = this.cityFilter();
+    if (current === ALL) return 'Todas las ciudades';
+    return (
+      this.cities().find((c) => c.id === Number(current))?.name ??
+      'Todas las ciudades'
+    );
+  });
 
   filteredPrices = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
@@ -115,15 +193,25 @@ export class AdminPricesPage implements OnInit {
     );
   });
 
-  totalPages = computed(() => Math.ceil(this.filteredPrices().length / PAGE_SIZE));
-  currentPage = computed(() => Math.min(this.page(), Math.max(this.totalPages() - 1, 0)));
+  totalPages = computed(() =>
+    Math.ceil(this.filteredPrices().length / PAGE_SIZE),
+  );
+  currentPage = computed(() =>
+    Math.min(this.page(), Math.max(this.totalPages() - 1, 0)),
+  );
   pagedPrices = computed(() => {
     const start = this.currentPage() * PAGE_SIZE;
     return this.filteredPrices().slice(start, start + PAGE_SIZE);
   });
 
   constructor() {
-    addIcons({ addOutline, closeOutline, refreshOutline, saveOutline });
+    addIcons({
+      addOutline,
+      chevronDownOutline,
+      closeOutline,
+      refreshOutline,
+      saveOutline,
+    });
     this.initForm();
   }
 
@@ -155,7 +243,9 @@ export class AdminPricesPage implements OnInit {
   }
 
   /** Requests consecutive pages until the whole collection is covered (bounded). */
-  private async fetchAllPages<T>(load: (page: number) => Observable<any>): Promise<T[]> {
+  private async fetchAllPages<T>(
+    load: (page: number) => Observable<any>,
+  ): Promise<T[]> {
     const items: T[] = [];
     for (let page = 0; page < MAX_FETCH_PAGES; page++) {
       const res = await firstValueFrom(load(page));
@@ -170,11 +260,11 @@ export class AdminPricesPage implements OnInit {
 
   async loadCities() {
     try {
-      const cities = await this.fetchAllPages<MunicipalityResponse>((page) =>
-        this.locationService.getCities({ page, size: FETCH_SIZE }),
-      );
+      const cities = await firstValueFrom(this.locationService.getAllCities());
       this.cities.set(
-        [...cities].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '', 'es')),
+        [...cities].sort((a, b) =>
+          (a.name ?? '').localeCompare(b.name ?? '', 'es'),
+        ),
       );
     } catch (err) {
       console.error('Error loading cities', err);
@@ -204,8 +294,12 @@ export class AdminPricesPage implements OnInit {
   }
 
   cityName(price: Price): string {
-    if (price.municipalityId === null || price.municipalityId === undefined) return '-';
-    return this.cityNames().get(String(price.municipalityId)) ?? `Ciudad #${price.municipalityId}`;
+    if (price.municipalityId === null || price.municipalityId === undefined)
+      return '-';
+    return (
+      this.cityNames().get(String(price.municipalityId)) ??
+      `Ciudad #${price.municipalityId}`
+    );
   }
 
   onSearch(event: any) {
@@ -213,9 +307,51 @@ export class AdminPricesPage implements OnInit {
     this.page.set(0);
   }
 
-  onCityFilterChange(event: any) {
-    this.cityFilter.set(event.detail.value ?? ALL);
+  private normalizeText(value: string): string {
+    return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
+
+  openCityPicker(target: 'filter' | 'form') {
+    this.cityPickerTarget.set(target);
+    this.citySearch.set('');
+    this.cityPickerOpen.set(true);
+  }
+
+  closeCityPicker() {
+    this.cityPickerOpen.set(false);
+    this.citySearch.set('');
+  }
+
+  onCitySearch(event: any) {
+    this.citySearch.set(event.detail?.value ?? '');
+  }
+
+  clearCityFilter() {
+    this.cityFilter.set(ALL);
     this.page.set(0);
+    this.closeCityPicker();
+  }
+
+  selectPickerCity(city: MunicipalityResponse) {
+    if (this.cityPickerTarget() === 'form') {
+      const control = this.form.get('cityId');
+      control?.setValue(city.id);
+      control?.markAsDirty();
+      control?.markAsTouched();
+    } else {
+      this.cityFilter.set(city.id);
+      this.page.set(0);
+    }
+    this.closeCityPicker();
+  }
+
+  formCityLabel(): string {
+    const id = this.form.get('cityId')?.value;
+    if (id === null || id === undefined) return 'Seleccionar ciudad';
+    return (
+      this.cities().find((c) => c.id === Number(id))?.name ??
+      'Seleccionar ciudad'
+    );
   }
 
   onCategoryFilterChange(event: any) {
@@ -242,8 +378,9 @@ export class AdminPricesPage implements OnInit {
       category: price.category,
       minPrice: price.minPrice,
       maxPrice: price.maxPrice,
-      // The API returns the id as a string; the select options and the request use numbers.
-      cityId: price.municipalityId == null ? null : Number(price.municipalityId),
+      // The API returns the id as a string; the picker values and the request use numbers.
+      cityId:
+        price.municipalityId == null ? null : Number(price.municipalityId),
       active: price.active,
     });
     this.showForm.set(true);
@@ -261,6 +398,7 @@ export class AdminPricesPage implements OnInit {
 
   @HostListener('document:keydown.escape')
   onEscape() {
+    if (this.cityPickerOpen()) return;
     if (this.showForm() && !this.saving()) this.closeForm();
   }
 
@@ -349,10 +487,17 @@ export class AdminPricesPage implements OnInit {
 
   categoryLabel(cat: string): string {
     const map: Record<string, string> = {
-      HOSPEDAJE: 'Hospedaje', PASADIA: 'Pasadía', GASTRONOMIA: 'Gastronomía',
-      TOUR: 'Tour', ARTESANIA: 'Artesanía', TRANSPORTE: 'Transporte',
-      GUIA: 'Guía', SERVICIO_TECNICO: 'Servicio Técnico', TEXTIL: 'Textil',
-      BEBIDA: 'Bebida', OTRO: 'Otro',
+      HOSPEDAJE: 'Hospedaje',
+      PASADIA: 'Pasadía',
+      GASTRONOMIA: 'Gastronomía',
+      TOUR: 'Tour',
+      ARTESANIA: 'Artesanía',
+      TRANSPORTE: 'Transporte',
+      GUIA: 'Guía',
+      SERVICIO_TECNICO: 'Servicio Técnico',
+      TEXTIL: 'Textil',
+      BEBIDA: 'Bebida',
+      OTRO: 'Otro',
     };
     return map[cat] ?? cat;
   }

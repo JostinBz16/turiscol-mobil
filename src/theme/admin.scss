@@ -23,7 +23,7 @@ ion-content:has(> .admin-container) {
 /* ---- Buttons (admin pages only; small pagination buttons keep their own look) ---- */
 .admin-page-title,
 .admin-container {
-  ion-button:not([size='small']) {
+  ion-button:not([size="small"]) {
     --border-radius: 8px;
     --box-shadow: none;
     height: 40px;
@@ -32,7 +32,7 @@ ion-content:has(> .admin-container) {
     letter-spacing: normal;
     text-transform: none;
 
-    &[fill='outline'] {
+    &[fill="outline"] {
       --border-width: 1.5px;
     }
   }
@@ -40,9 +40,9 @@ ion-content:has(> .admin-container) {
 
 /* ---- Outline inputs / selects / textareas (admin pages only) ---- */
 .admin-container {
-  ion-input[fill='outline'],
-  ion-select[fill='outline'],
-  ion-textarea[fill='outline'] {
+  ion-input[fill="outline"],
+  ion-select[fill="outline"],
+  ion-textarea[fill="outline"] {
     --border-radius: 8px;
     --border-color: var(--ion-border-color);
     --highlight-color-focused: var(--ion-color-primary);
@@ -292,7 +292,9 @@ ion-content:has(> .admin-container) {
     font-size: 1.25rem;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
 
     &:hover:not(:disabled) {
       background: color-mix(in srgb, currentColor 12%, transparent);
@@ -352,7 +354,7 @@ ion-content:has(> .admin-container) {
   white-space: nowrap;
 
   &::before {
-    content: '';
+    content: "";
     width: 8px;
     height: 8px;
     border-radius: 50%;

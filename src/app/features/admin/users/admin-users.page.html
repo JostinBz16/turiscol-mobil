@@ -1,6 +1,7 @@
 <app-admin-page-header
   title="Usuarios"
   subtitle="Consulta, filtra y administra las cuentas de la plataforma"
+  [breadcrumbs]="[{ label: 'Panel' }, { label: 'Usuarios' }]"
 >
   <ion-button actions fill="outline" (click)="refresh()">
     <ion-icon slot="start" name="refresh-outline"></ion-icon>
@@ -11,33 +12,33 @@
 <ion-content>
   <div class="admin-container">
     @if (stats(); as s) {
-      <div class="admin-stats">
-        <div class="admin-stat">
-          <span class="stat-label">Total</span>
-          <span class="stat-value">{{ s.total }}</span>
-        </div>
-        <div class="admin-stat is-success">
-          <span class="stat-label">Activos</span>
-          <span class="stat-value">{{ s.active }}</span>
-        </div>
-        <div class="admin-stat is-warning">
-          <span class="stat-label">Inactivos</span>
-          <span class="stat-value">{{ s.inactive }}</span>
-        </div>
-        @if (roleStats().length) {
-          <div class="admin-stat">
-            <span class="stat-label">Por rol</span>
-            <ul class="stat-breakdown">
-              @for (item of roleStats(); track item.label) {
-                <li>
-                  <span>{{ item.label }}</span>
-                  <strong>{{ item.count }}</strong>
-                </li>
-              }
-            </ul>
-          </div>
-        }
+    <div class="admin-stats">
+      <div class="admin-stat">
+        <span class="stat-label">Total</span>
+        <span class="stat-value">{{ s.total }}</span>
       </div>
+      <div class="admin-stat is-success">
+        <span class="stat-label">Activos</span>
+        <span class="stat-value">{{ s.active }}</span>
+      </div>
+      <div class="admin-stat is-warning">
+        <span class="stat-label">Inactivos</span>
+        <span class="stat-value">{{ s.inactive }}</span>
+      </div>
+      @if (roleStats().length) {
+      <div class="admin-stat">
+        <span class="stat-label">Por rol</span>
+        <ul class="stat-breakdown">
+          @for (item of roleStats(); track item.label) {
+          <li>
+            <span>{{ item.label }}</span>
+            <strong>{{ item.count }}</strong>
+          </li>
+          }
+        </ul>
+      </div>
+      }
+    </div>
     }
 
     <div class="admin-toolbar">
@@ -50,7 +51,9 @@
         (ionChange)="onRoleFilterChange($event)"
       >
         @for (role of roles; track role) {
-          <ion-select-option [value]="role">{{ roleLabel(role) }}</ion-select-option>
+        <ion-select-option [value]="role"
+          >{{ roleLabel(role) }}</ion-select-option
+        >
         }
       </ion-select>
 
@@ -78,27 +81,25 @@
       (pageChange)="onPageChange($event)"
     >
       <ng-template #cell let-user let-column="column">
-        @switch (column.key) {
-          @case ('role') {
-            {{ roleLabel(user.role) }}
-          }
-          @case ('active') {
-            <span
-              class="status-chip"
-              [class.is-active]="user.active"
-              [class.is-inactive]="!user.active"
-            >
-              {{ user.active ? 'Activo' : 'Inactivo' }}
-            </span>
-          }
-          @default {
-            {{ user[column.key] }}
-          }
-        }
+        @switch (column.key) { @case ('role') { {{ roleLabel(user.role) }} }
+        @case ('active') {
+        <span
+          class="status-chip"
+          [class.is-active]="user.active"
+          [class.is-inactive]="!user.active"
+        >
+          {{ user.active ? 'Activo' : 'Inactivo' }}
+        </span>
+        } @default { {{ user[column.key] }} } }
       </ng-template>
 
       <ng-template #actions let-user>
-        <a class="icon-action" [routerLink]="[user.id]" title="Ver detalle" aria-label="Ver detalle">
+        <a
+          class="icon-action"
+          [routerLink]="[user.id]"
+          title="Ver detalle"
+          aria-label="Ver detalle"
+        >
           <ion-icon name="eye-outline"></ion-icon>
         </a>
       </ng-template>

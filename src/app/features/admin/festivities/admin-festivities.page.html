@@ -1,57 +1,160 @@
-<ion-header class="page-header">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Gestión de Festividades</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-admin-page-header
+  title="Festividades"
+  subtitle="Administra las festividades"
+  [breadcrumbs]="[{ label: 'Panel', link: '/admin-dashboard/users' }, { label: 'Festividades' }]"
+>
+  <ion-button actions fill="outline" (click)="refresh(undefined)">
+    <ion-icon slot="start" name="refresh-outline"></ion-icon>
+    Actualizar
+  </ion-button>
+  <ion-button actions (click)="openEditor()">
+    <ion-icon slot="start" name="add-outline"></ion-icon>
+    Nueva festividad
+  </ion-button>
+</app-admin-page-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+  <div class="admin-container">
+    <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
-  @if (loading()) {
+    @if (loading()) {
     <div class="loading-center">
       <ion-spinner name="crescent"></ion-spinner>
     </div>
-  } @else {
-    @if (festivities().length === 0) {
-      <div class="empty-state">
-        <p>No hay festividades registradas</p>
-      </div>
+    } @else { @if (festivities().length === 0) {
+    <div class="empty-state">
+      <p>No hay festividades registradas</p>
+    </div>
     } @else {
-      <ion-list>
-        @for (festivity of festivities(); track festivity.id) {
-          <ion-item class="festivity-item" [routerLink]="[festivity.id, 'edit']">
-            <ion-icon name="calendar-outline" slot="start"></ion-icon>
-            <ion-label>
-              <h2>{{ festivity.name }}</h2>
-              <p>{{ festivity.startDate }} — {{ festivity.endDate }}</p>
-              <p>Ciudad #{{ festivity.cityId }}</p>
-            </ion-label>
-            <ion-badge [color]="festivity.active ? 'success' : 'medium'" slot="end">
-              {{ festivity.active ? 'Activa' : 'Inactiva' }}
-            </ion-badge>
-            <ion-button
-              fill="clear"
-              color="danger"
-              slot="end"
-              (click)="$event.stopPropagation(); confirmDelete(festivity)"
-            >
-              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-          </ion-item>
-        }
-      </ion-list>
-    }
+    <ion-list>
+      @for (festivity of festivities(); track festivity.id) {
+      <ion-item class="festivity-item" button (click)="openEditor(festivity)">
+        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>{{ festivity.name }}</h2>
+          <p>{{ festivity.startDate }} — {{ festivity.endDate }}</p>
+          <p>Ciudad #{{ festivity.cityId }}</p>
+        </ion-label>
+        <ion-badge [color]="festivity.active ? 'success' : 'medium'" slot="end">
+          {{ festivity.active ? 'Activa' : 'Inactiva' }}
+        </ion-badge>
+        <ion-button
+          fill="clear"
+          color="danger"
+          slot="end"
+          (click)="$event.stopPropagation(); confirmDelete(festivity)"
+        >
+          <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-item>
+      }
+    </ion-list>
+    } }
 
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button [routerLink]="['new']">
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-  }
+    <!-- Shared create / edit editor -->
+    <ion-modal [isOpen]="editorOpen()" (didDismiss)="closeEditor()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>
+              {{ editingId() ? 'Editar Festividad' : 'Nueva Festividad' }}
+            </ion-title>
+            <ion-buttons slot="end">
+              <ion-button
+                fill="clear"
+                aria-label="Cerrar"
+                (click)="closeEditor()"
+              >
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content>
+          @if (editorLoading()) {
+          <div class="loading-center">
+            <ion-spinner name="crescent"></ion-spinner>
+          </div>
+          } @else {
+          <form [formGroup]="form" (ngSubmit)="save()" class="festivity-form">
+            <ion-item>
+              <ion-input
+                label="Nombre"
+                labelPlacement="stacked"
+                formControlName="name"
+                placeholder="Ej: Carnaval de Barranquilla"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea
+                label="Descripción"
+                labelPlacement="stacked"
+                formControlName="description"
+                placeholder="Descripción opcional"
+                [autoGrow]="true"
+              ></ion-textarea>
+            </ion-item>
+
+            <div class="date-row">
+              <ion-item>
+                <ion-input
+                  label="Fecha inicio"
+                  labelPlacement="stacked"
+                  type="date"
+                  formControlName="startDate"
+                ></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-input
+                  label="Fecha fin"
+                  labelPlacement="stacked"
+                  type="date"
+                  formControlName="endDate"
+                ></ion-input>
+              </ion-item>
+            </div>
+
+            <ion-item>
+              <ion-input
+                label="ID Ciudad"
+                labelPlacement="stacked"
+                type="number"
+                formControlName="cityId"
+                placeholder="ID del municipio"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input
+                label="URL de imagen"
+                labelPlacement="stacked"
+                formControlName="image"
+                placeholder="https://..."
+              ></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-label>Activa</ion-label>
+              <ion-toggle formControlName="active" slot="end"></ion-toggle>
+            </ion-item>
+
+            <div class="form-actions">
+              <ion-button fill="outline" type="button" (click)="closeEditor()">
+                Cancelar
+              </ion-button>
+              <ion-button type="submit" [disabled]="form.invalid || saving()">
+                <ion-icon slot="start" name="save-outline"></ion-icon>
+                {{ editingId() ? 'Actualizar' : 'Crear' }}
+              </ion-button>
+            </div>
+          </form>
+          }
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  </div>
 </ion-content>

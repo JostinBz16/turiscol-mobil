@@ -2,27 +2,65 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-  IonIcon, IonButton, IonFab, IonFabButton, IonSpinner, IonRefresher,
-  IonRefresherContent, IonList, IonItem, IonLabel, IonBadge,
-  AlertController, ToastController,
+  IonContent,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonBackButton,
+  IonIcon,
+  IonButton,
+  IonFab,
+  IonFabButton,
+  IonSpinner,
+  IonRefresher,
+  IonRefresherContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonBadge,
+  AlertController,
+  ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addOutline, trashOutline, chevronForwardOutline, mapOutline } from 'ionicons/icons';
+import {
+  addOutline,
+  trashOutline,
+  chevronForwardOutline,
+  mapOutline,
+  refreshOutline,
+} from 'ionicons/icons';
 import {
   LocationService,
   MunicipalityResponse,
 } from 'src/app/core/services/location.service';
 import { firstValueFrom } from 'rxjs';
+import { AdminPageHeaderComponent } from '../../shared/admin-page-header/admin-page-header.component';
 
 @Component({
   selector: 'app-admin-cities',
   standalone: true,
   imports: [
-    CommonModule, RouterModule,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-    IonIcon, IonButton, IonFab, IonFabButton, IonSpinner, IonRefresher,
-    IonRefresherContent, IonList, IonItem, IonLabel, IonBadge,
+    CommonModule,
+    RouterModule,
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonBackButton,
+    IonIcon,
+    IonButton,
+    IonFab,
+    IonFabButton,
+    IonSpinner,
+    IonRefresher,
+    IonRefresherContent,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonBadge,
+    AdminPageHeaderComponent,
   ],
   templateUrl: './admin-cities.page.html',
   styleUrls: ['./admin-cities.page.scss'],
@@ -36,7 +74,13 @@ export class AdminCitiesPage {
   loading = signal(true);
 
   constructor() {
-    addIcons({ addOutline, trashOutline, chevronForwardOutline, mapOutline });
+    addIcons({
+      refreshOutline,
+      addOutline,
+      mapOutline,
+      trashOutline,
+      chevronForwardOutline,
+    });
   }
 
   // True after the first entry; later entries reload silently (Ionic caches the view).
@@ -50,7 +94,9 @@ export class AdminCitiesPage {
   async loadCities(silent = false) {
     if (!silent) this.loading.set(true);
     try {
-      const res = await firstValueFrom(this.locationService.getCities({ size: 100 }));
+      const res = await firstValueFrom(
+        this.locationService.getCities({ size: 100 }),
+      );
       this.cities.set(res?.content ?? res ?? []);
     } catch (err) {
       console.error('Error loading cities', err);

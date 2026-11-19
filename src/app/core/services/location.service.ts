@@ -111,6 +111,15 @@ export class LocationService {
     );
   }
 
+  getAllCities(): Observable<MunicipalityResponse[]> {
+    return this.http.get<MunicipalityResponse[]>(`${this.citiesApi}/all`).pipe(
+      catchError((err) => {
+        console.error('Error fetching all cities', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
   getCityById(id: string | number): Observable<MunicipalityResponse> {
     return this.http.get<MunicipalityResponse>(`${this.citiesApi}/${id}`).pipe(
       catchError((err) => {
@@ -129,13 +138,18 @@ export class LocationService {
     );
   }
 
-  updateCity(id: string | number, dto: MunicipalityRequest): Observable<MunicipalityResponse> {
-    return this.http.put<MunicipalityResponse>(`${this.citiesApi}/${id}`, dto).pipe(
-      catchError((err) => {
-        console.error('Error updating city', err);
-        return throwError(() => err);
-      }),
-    );
+  updateCity(
+    id: string | number,
+    dto: MunicipalityRequest,
+  ): Observable<MunicipalityResponse> {
+    return this.http
+      .put<MunicipalityResponse>(`${this.citiesApi}/${id}`, dto)
+      .pipe(
+        catchError((err) => {
+          console.error('Error updating city', err);
+          return throwError(() => err);
+        }),
+      );
   }
 
   deleteCity(id: string | number): Observable<void> {
@@ -164,12 +178,14 @@ export class LocationService {
   }
 
   getDepartmentById(id: string | number): Observable<DepartmentResponse> {
-    return this.http.get<DepartmentResponse>(`${this.departmentsApi}/${id}`).pipe(
-      catchError((err) => {
-        console.error('Error fetching department', err);
-        return throwError(() => err);
-      }),
-    );
+    return this.http
+      .get<DepartmentResponse>(`${this.departmentsApi}/${id}`)
+      .pipe(
+        catchError((err) => {
+          console.error('Error fetching department', err);
+          return throwError(() => err);
+        }),
+      );
   }
 
   createDepartment(dto: DepartmentRequest): Observable<DepartmentResponse> {
@@ -185,12 +201,14 @@ export class LocationService {
     id: string | number,
     dto: DepartmentRequest,
   ): Observable<DepartmentResponse> {
-    return this.http.put<DepartmentResponse>(`${this.departmentsApi}/${id}`, dto).pipe(
-      catchError((err) => {
-        console.error('Error updating department', err);
-        return throwError(() => err);
-      }),
-    );
+    return this.http
+      .put<DepartmentResponse>(`${this.departmentsApi}/${id}`, dto)
+      .pipe(
+        catchError((err) => {
+          console.error('Error updating department', err);
+          return throwError(() => err);
+        }),
+      );
   }
 
   deleteDepartment(id: string | number): Observable<void> {
@@ -210,12 +228,14 @@ export class LocationService {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);
-    return this.http.get<any>(this.destinationsApi, { params: httpParams }).pipe(
-      catchError((err) => {
-        console.error('Error fetching destinations', err);
-        return throwError(() => err);
-      }),
-    );
+    return this.http
+      .get<any>(this.destinationsApi, { params: httpParams })
+      .pipe(
+        catchError((err) => {
+          console.error('Error fetching destinations', err);
+          return throwError(() => err);
+        }),
+      );
   }
 
   /**
@@ -231,7 +251,9 @@ export class LocationService {
     if (params?.page) httpParams = httpParams.set('page', params.page);
     if (params?.size) httpParams = httpParams.set('size', params.size);
     return this.http
-      .get<any>(`${this.destinationsApi}/by-city/${cityId}`, { params: httpParams })
+      .get<any>(`${this.destinationsApi}/by-city/${cityId}`, {
+        params: httpParams,
+      })
       .pipe(
         catchError((err) => {
           console.error('Error fetching destinations by city', err);
@@ -241,12 +263,14 @@ export class LocationService {
   }
 
   getDestinationById(id: string | number): Observable<DestinationResponse> {
-    return this.http.get<DestinationResponse>(`${this.destinationsApi}/${id}`).pipe(
-      catchError((err) => {
-        console.error('Error fetching destination', err);
-        return throwError(() => err);
-      }),
-    );
+    return this.http
+      .get<DestinationResponse>(`${this.destinationsApi}/${id}`)
+      .pipe(
+        catchError((err) => {
+          console.error('Error fetching destination', err);
+          return throwError(() => err);
+        }),
+      );
   }
 
   createDestination(dto: DestinationRequest): Observable<DestinationResponse> {
@@ -262,12 +286,14 @@ export class LocationService {
     id: string | number,
     dto: DestinationRequest,
   ): Observable<DestinationResponse> {
-    return this.http.put<DestinationResponse>(`${this.destinationsApi}/${id}`, dto).pipe(
-      catchError((err) => {
-        console.error('Error updating destination', err);
-        return throwError(() => err);
-      }),
-    );
+    return this.http
+      .put<DestinationResponse>(`${this.destinationsApi}/${id}`, dto)
+      .pipe(
+        catchError((err) => {
+          console.error('Error updating destination', err);
+          return throwError(() => err);
+        }),
+      );
   }
 
   deleteDestination(id: string | number): Observable<void> {
@@ -291,9 +317,13 @@ export class LocationService {
   // nuevos usando `FormData` antes de exponerlos en la UI.
   // ---------------------------------------------------------------------
 
-  getDestinationImages(destinationId: string | number): Observable<ImageDestinationDto[]> {
+  getDestinationImages(
+    destinationId: string | number,
+  ): Observable<ImageDestinationDto[]> {
     return this.http
-      .get<ImageDestinationDto[]>(`${this.imagesApi}/by-destination/${destinationId}`)
+      .get<
+        ImageDestinationDto[]
+      >(`${this.imagesApi}/by-destination/${destinationId}`)
       .pipe(
         catchError((err) => {
           console.error('Error fetching destination images', err);
@@ -307,7 +337,10 @@ export class LocationService {
     dto: Pick<ImageDestinationDto, 'url' | 'publicId'>,
   ): Observable<ImageDestinationDto> {
     return this.http
-      .post<ImageDestinationDto>(`${this.imagesApi}/by-destination/${destinationId}`, dto)
+      .post<ImageDestinationDto>(
+        `${this.imagesApi}/by-destination/${destinationId}`,
+        dto,
+      )
       .pipe(
         catchError((err) => {
           console.error('Error creating destination image', err);
@@ -320,12 +353,14 @@ export class LocationService {
     imageId: string | number,
     dto: Pick<ImageDestinationDto, 'url' | 'publicId'>,
   ): Observable<ImageDestinationDto> {
-    return this.http.put<ImageDestinationDto>(`${this.imagesApi}/${imageId}`, dto).pipe(
-      catchError((err) => {
-        console.error('Error updating destination image', err);
-        return throwError(() => err);
-      }),
-    );
+    return this.http
+      .put<ImageDestinationDto>(`${this.imagesApi}/${imageId}`, dto)
+      .pipe(
+        catchError((err) => {
+          console.error('Error updating destination image', err);
+          return throwError(() => err);
+        }),
+      );
   }
 
   deleteDestinationImage(imageId: string | number): Observable<void> {
