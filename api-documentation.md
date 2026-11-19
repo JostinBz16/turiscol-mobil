@@ -2,77 +2,61 @@
 
 ## 1. Resumen del Proyecto
 
-**Turiscol** es una plataforma de turismo colombiana compuesta por 6 microservicios. El frontend es una app móvil en **Ionic** que consume la API a través del Gateway.
+**Turiscol** es una plataforma de turismo colombiana compuesta por 6 microservicios. El frontend es una app móvil en **Ionic** que consume la API a través del Gateway en `http://localhost:8080`.
 
 ### 1.1 Microservicios
 
-A los servicios se puede acceder mediante el Gateway en `http://localhost:8080` y las rutas se redirigen de la siguiente manera:
-| Ruta Gateway | Destino |
-|---|---|---|
-| `/api/v1/locations/**` | experience-service |
-| `/api/v1/offers/**` | experience-service |
-| `/api/v1/reviews/**` | experience-service |
-| `/api/v1/prices/**` | experience-service |
-| `/api/v1/categories/**` | experience-service |
-| `/api/v1/offers/favorites/**` | experience-service |
-| `/api/v1/festivities/**` | experience-service |
-| `/api/v1/booking/**` | booking-service |
-| `/api/v1/payments/**` | booking-service |
-| `/api/v1/webhooks/**` | booking-service |
-| `/api/v1/providers/**` | booking-service |
-| `/api/v1/notifications/**` | notification-service |
-| `/ws/**` | notification-service (WebSocket) |
-| `/api/v1/users/**` | user-service |
-| `/api/v1/auth/**` | user-service |
-| `/api/v1/user/**` | user-service (rutas internas de provider) |
+| Ruta Gateway                  | Destino                                | Puerto |
+| ----------------------------- | -------------------------------------- | ------ |
+| `/api/v1/locations/**`        | experience-service                     | 8803   |
+| `/api/v1/offers/**`           | experience-service                     | 8803   |
+| `/api/v1/reviews/**`          | experience-service                     | 8803   |
+| `/api/v1/prices/**`           | experience-service                     | 8803   |
+| `/api/v1/categories/**`       | experience-service                     | 8803   |
+| `/api/v1/offers/favorites/**` | experience-service                     | 8803   |
+| `/api/v1/festivities/**`      | experience-service                     | 8803   |
+| `/api/v1/booking/**`          | booking-service                        | 8804   |
+| `/api/v1/payments/**`         | booking-service                        | 8804   |
+| `/api/v1/webhooks/**`         | booking-service                        | 8804   |
+| `/api/v1/providers/**`        | booking-service                        | 8804   |
+| `/api/v1/notifications/**`    | notification-service                   | 8808   |
+| `/api/v1/chat/**`             | chatbot-service                        | 8809   |
+| `/ws/**`                      | notification-service (WebSocket)       | 8808   |
+| `/api/v1/users/**`            | user-service                           | 8802   |
+| `/api/v1/auth/**`             | user-service                           | 8802   |
+| `/api/v1/user/**`             | user-service (rutas internas provider) | 8802   |
 
-### 1.1.1 User Service (8802)
+| Servicio                        | Descripción                                                                                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **User Service (8802)**         | Usuarios, autenticación y roles. Integra con Keycloak.                                                                                                        |
+| **Experience Service (8803)**   | Catálogo: ubicaciones, ofertas, reseñas, imágenes, precios y festividades culturales.                                                                         |
+| **Booking Service (8804)**      | Reservas y pagos. Comunica con experience-service vía Feign para validar ofertas y stock.                                                                     |
+| **Notification Service (8808)** | Notificaciones in-app y por email. Escucha RabbitMQ (`booking.*`, `payment.*`, `review.*`, `settlement.*`), MongoDB, WebSocket (STOMP) y email con Thymeleaf. |
+| **Gateway Service (8080)**      | Punto de entrada único. Autenticación JWT, CORS y enrutamiento.                                                                                               |
+| **Eureka Service (8811)**       | Service Discovery. Todos los servicios se registran aquí.                                                                                                     |
 
-Gestiona usuarios, autenticación y roles. Se integra con Keycloak para el manejo de identidades.
+### Stack
 
-### 1.1.2 Experience Service (8803)
-
-Catálogo de la plataforma. Maneja ubicaciones, ofertas, reseñas, imágenes, precios y festividades culturales.
-
-### 1.1.3 Booking Service (8804)
-
-Reservas y pagos. Se comunica con experience-service vía Feign para validar ofertas y stock.
-
-### 1.1.4 Notification Service (8808)
-
-Notificaciones in-app y por email. Escucha eventos de RabbitMQ (`booking.*`, `payment.*`, `review.*`, `settlement.*`), persiste en MongoDB, empuja por WebSocket (STOMP) y envía emails con Thymeleaf templates.
-
-### 1.1.5 Gateway Service (8080)
-
-Punto de entrada único. Maneja autenticación JWT, CORS, y enrutamiento a los microservicios.
-
-### 1.1.6 Eureka Service (8811)
-
-Service Discovery. Todos los servicios se registran aquí.
-
----
-
-| Característica          | Valor                                                                                              |
-| ----------------------- | -------------------------------------------------------------------------------------------------- |
-| **Java**                | 21                                                                                                 |
-| **Spring Boot**         | 3.5.x                                                                                              |
-| **Spring Cloud**        | 2025.0.0                                                                                           |
-| **Arquitectura**        | Microservicios con API Gateway                                                                     |
-| **Bases de datos**      | PostgreSQL 15 (x3), MongoDB 6                                                                      |
-| **Mensajería**          | RabbitMQ (Topic Exchange)                                                                          |
-| **Pagos**               | MercadoPago SDK (Checkout Pro) + Strategy Pattern (MOCK/MERCADOPAGO)                               |
-| **Auth**                | Keycloak 24.0.2 (OIDC + JWT)                                                                       |
-| **Service Discovery**   | Netflix Eureka                                                                                     |
-| **Config**              | Configuración local en cada servicio                                                               |
-| **Imágenes**            | Cloudinary                                                                                         |
-| **API Docs**            | Swagger/OpenAPI (springdoc-openapi)                                                                |
-| **Trazabilidad**        | Micrometer Tracing + Zipkin                                                                        |
-| **Migraciones BD**      | ddl-auto=update (no Flyway)                                                                        |
-| **Total endpoints**     | ~113 implementados + ~12 planeados                                                                 |
-| **Total controladores** | 21                                                                                                 |
-| **Redis**               | Cache (ofertas, ubicaciones, precios) + Rate Limiting                                              |
-| **WebSocket**           | STOMP con autenticación JWT, colas privadas por usuario. Raw WebSocket (mobile) + SockJS (browser) |
-| **Email**               | Thymeleaf templates + SMTP configurable                                                            |
+| Característica          | Valor                                                                |
+| ----------------------- | -------------------------------------------------------------------- |
+| **Java**                | 21                                                                   |
+| **Spring Boot**         | 3.5.x                                                                |
+| **Spring Cloud**        | 2025.0.0                                                             |
+| **Arquitectura**        | Microservicios con API Gateway                                       |
+| **Bases de datos**      | PostgreSQL 15 (x3), MongoDB 6                                        |
+| **Mensajería**          | RabbitMQ (Topic Exchange)                                            |
+| **Pagos**               | MercadoPago SDK (Checkout Pro) + Strategy Pattern (MOCK/MERCADOPAGO) |
+| **Auth**                | Keycloak 24.0.2 (OIDC + JWT)                                         |
+| **Service Discovery**   | Netflix Eureka                                                       |
+| **Imágenes**            | Cloudinary                                                           |
+| **API Docs**            | Swagger/OpenAPI (springdoc-openapi)                                  |
+| **Trazabilidad**        | Micrometer Tracing + Zipkin                                          |
+| **Migraciones BD**      | ddl-auto=update (no Flyway)                                          |
+| **Redis**               | Cache (ofertas, ubicaciones, precios) + Rate Limiting                |
+| **WebSocket**           | STOMP con autenticación JWT, colas privadas por usuario              |
+| **Email**               | Thymeleaf templates + SMTP configurable                              |
+| **Total endpoints**     | ~113 implementados + ~12 planeados                                   |
+| **Total controladores** | 21                                                                   |
 
 ---
 
@@ -104,18 +88,21 @@ Service Discovery. Todos los servicios se registran aquí.
                                         (domain.events)
 ```
 
+---
+
 ## 3. API Completa por Servicio
 
 ### 3.1 User Service API
 
 #### AuthController
 
-| #   | Método | Path                 | Descripción                    |
-| --- | ------ | -------------------- | ------------------------------ |
-| 1   | POST   | `/auth/login`        | Login con email y contraseña   |
-| 2   | POST   | `/auth/client-login` | Login M2M (client_credentials) |
-| 3   | POST   | `/auth/refresh`      | Refrescar token                |
-| 4   | POST   | `/auth/register`     | Registrar usuario              |
+| #   | Método | Path                    | Auth    | Descripción                    |
+| --- | ------ | ----------------------- | ------- | ------------------------------ |
+| 1   | POST   | `/auth/login`           | Público | Login con email y contraseña   |
+| 2   | POST   | `/auth/client-login`    | Público | Login M2M (client_credentials) |
+| 3   | POST   | `/auth/refresh`         | Público | Refrescar token                |
+| 4   | POST   | `/auth/register`        | Público | Registrar usuario              |
+| 5   | POST   | `/auth/forgot-password` | Público | Enviar email de recuperación   |
 
 ---
 
@@ -130,19 +117,29 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Response:** `200 OK` — `TokenResponseDTO`
 
-| Campo          | Tipo   | JSON Property     |
-| -------------- | ------ | ----------------- |
-| `accessToken`  | String | `"access_token"`  |
-| `refreshToken` | String | `"refresh_token"` |
-| `userName`     | String | `"userName"`      |
+| Campo              | Tipo   | JSON Property          |
+| ------------------ | ------ | ---------------------- |
+| `accessToken`      | String | `"access_token"`       |
+| `refreshToken`     | String | `"refresh_token"`      |
+| `expiresIn`        | Long   | `"expires_in"`         |
+| `refreshExpiresIn` | Long   | `"refresh_expires_in"` |
+| `userName`         | String | `"userName"`           |
+
+`expiresIn` y `refreshExpiresIn` son la vigencia, en segundos, del access token y del refresh token (ver sección 4.3). El frontend puede usarlos para programar el refresh.
+
+**Errores:**
+
+| Código          | Cuándo                                                                                                                  |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `403 Forbidden` | El usuario está bloqueado (desactivado por un ADMIN). Mensaje: `"Tu cuenta está bloqueada. Contactá al administrador."` |
+
+> **Usuarios bloqueados:** un usuario desactivado con `PUT /users/{id}/deactivate` no puede iniciar sesión ni refrescar su token (`/auth/refresh` también responde `403` con el mismo mensaje).
 
 ---
 
 ##### POST `/auth/client-login` — Login M2M
 
-**Request Body:** Ninguno
-
-**Response:** `200 OK` — `TokenResponseDTO` (misma estructura que `/auth/login`)
+Sin body. Responde con `TokenResponseDTO` igual que `/auth/login`.
 
 ---
 
@@ -191,213 +188,201 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Response:** `201 CREATED` — `UserResponseDTO` o `ProviderResponseDTO`
 
-**UserResponseDTO:**
+**UserResponseDTO:** `id` (String), `email` (String), `userName` (String), `phoneNumber` (String), `active` (Boolean), `role` (String).
 
-| Campo         | Tipo    |
-| ------------- | ------- |
-| `id`          | String  |
-| `email`       | String  |
-| `userName`    | String  |
-| `phoneNumber` | String  |
-| `active`      | Boolean |
-| `role`        | String  |
+**ProviderResponseDTO** (extiende UserResponseDTO): + `razonSocial`, `description`, `type`, `nitRut`, `documentType`, `documentNumber`, `bankName`, `bankAccountType`, `bankAccountNumber`, `onboardingCompleted`, `certified`.
 
-**ProviderResponseDTO** (extiende UserResponseDTO):
+---
 
-| Campo                 | Tipo         |
-| --------------------- | ------------ |
-| `razonSocial`         | String       |
-| `description`         | String       |
-| `type`                | ProviderType |
-| `nitRut`              | String       |
-| `documentType`        | DocumentType |
-| `documentNumber`      | String       |
-| `bankName`            | String       |
-| `bankAccountType`     | String       |
-| `bankAccountNumber`   | String       |
-| `onboardingCompleted` | Boolean      |
-| `certified`           | Boolean      |
+##### POST `/auth/forgot-password` — Recuperar contraseña
+
+Envía un email con link para restablecer la contraseña. Usa `executeActionsEmail` de Keycloak con la acción `UPDATE_PASSWORD`.
+
+> **Requisito:** Keycloak debe tener SMTP configurado en Admin Console → Realm → Email → SMTP Settings.
+
+**Request Body:** `ForgotPasswordRequestDTO`
+
+| Campo   | Tipo   | Validación            | Descripción       |
+| ------- | ------ | --------------------- | ----------------- |
+| `email` | String | `@NotBlank`, `@Email` | Email del usuario |
+
+**Response:** `200 OK` — `"Si el email está registrado, recibirás un correo con las instrucciones para restablecer tu contraseña"`
+
+> Siempre retorna 200 independientemente de si el email existe o no, para evitar enumeración de usuarios.
 
 ---
 
 #### UserController
 
-| #   | Método | Path                     | Descripción               |
-| --- | ------ | ------------------------ | ------------------------- |
-| 5   | PUT    | `/users/{id}`            | Actualizar usuario        |
-| 6   | PUT    | `/users/{id}/deactivate` | Desactivar usuario        |
-| 7   | PUT    | `/users/{id}/activate`   | Activar usuario           |
-| 8   | GET    | `/users/{id}`            | Obtener usuario por ID    |
-| 9   | GET    | `/users/email/{email}`   | Obtener usuario por email |
-| 10  | GET    | `/users`                 | Listar usuarios           |
-| 11  | GET    | `/users/role/{role}`     | Listar por rol            |
-| 12  | GET    | `/users/profile/{id}`    | Obtener perfil            |
+| #   | Método | Path                     | Auth          | Descripción                            |
+| --- | ------ | ------------------------ | ------------- | -------------------------------------- |
+| 5   | PUT    | `/users/{id}`            | ADMIN o dueño | Actualizar usuario                     |
+| 6   | PUT    | `/users/{id}/deactivate` | ADMIN         | Desactivar usuario                     |
+| 7   | PUT    | `/users/{id}/activate`   | ADMIN         | Activar usuario                        |
+| 7b  | PUT    | `/users/{id}/role`       | ADMIN         | Cambiar el rol de realm del usuario    |
+| 8   | GET    | `/users/{id}`            | ADMIN o dueño | Obtener usuario por ID                 |
+| 9   | GET    | `/users/email/{email}`   | ADMIN         | Obtener usuario por email              |
+| 10  | GET    | `/users`                 | ADMIN         | Listar usuarios (paginado: page, size) |
+| 11  | GET    | `/users/role/{role}`     | ADMIN         | Listar por rol (paginado: page, size)  |
+| 12  | GET    | `/users/profile/{id}`    | ADMIN o dueño | Obtener perfil                         |
 
 ---
 
 ##### PUT `/users/{id}` — Actualizar usuario
 
-**Path Variables:**
+**Auth:** ADMIN o dueño (el `{id}` debe ser el propio usuario autenticado).
 
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `id`   | String | ID usuario  |
+**Path:** `id` (String, ID usuario)
 
 **Request Body:** `UserRequestDTO` (polimórfico, mismos campos que registro)
 
 **Response:** `200 OK` — `UserResponseDTO`
 
 > **Onboarding de proveedor:** al actualizar un proveedor, si se completan `bankName`, `bankAccountType` y `bankAccountNumber`, el campo `onboardingCompleted` se marca automáticamente en `true`. Hasta entonces queda `false`, y la liquidación semanal no procesa payouts para ese proveedor.
+>
+> **El campo `active` se ignora si quien llama no es ADMIN.** Un usuario no puede activarse/desactivarse a sí mismo mandando `active` en el body de este endpoint; para eso debe usar los endpoints dedicados `/activate`/`/deactivate` (solo ADMIN).
 
 ---
 
 ##### PUT `/users/{id}/deactivate` — Desactivar usuario
 
-**Path Variables:**
+**Auth:** ADMIN. **Path:** `id` (String). **Response:** `204 No Content`.
 
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `id`   | String | ID usuario  |
-
-**Response:** `204 No Content`
-
----
+Es el **bloqueo de usuario**: lo deja inactivo en la base local y deshabilitado en Keycloak, y además **revoca sus sesiones abiertas y refresh tokens**. Desde ese momento no puede iniciar sesión ni refrescar el token (`403`, ver `POST /auth/login`). El access token ya emitido sigue siendo válido hasta que expire (ver sección 4.3).
 
 ##### PUT `/users/{id}/activate` — Activar usuario
 
-**Path Variables:**
+**Auth:** ADMIN. **Path:** `id` (String). **Response:** `204 No Content`.
 
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `id`   | String | ID usuario  |
+Es el **desbloqueo de usuario**: el usuario vuelve a poder iniciar sesión.
 
-**Response:** `204 No Content`
+##### PUT `/users/{id}/role` — Cambiar rol del usuario
 
----
+**Auth:** ADMIN.
+
+**Path:** `id` (String, ID usuario).
+
+**Request Body:** `RoleChangeRequestDTO`
+
+| Campo  | Tipo   | Validación  | Descripción                                    |
+| ------ | ------ | ----------- | ---------------------------------------------- |
+| `role` | String | `@NotBlank` | Nuevo rol de realm (`USER`/`PROVIDER`/`ADMIN`) |
+
+**Response:** `204 No Content`.
+
+> Reemplaza TODOS los roles de realm que el usuario tenía por el nuevo (no es aditivo). Pensado para el dashboard de admin: promover/revocar un usuario a `PROVIDER` o `ADMIN` sin reenviar el resto del perfil.
 
 ##### GET `/users/{id}` — Obtener usuario por ID
 
-**Path Variables:**
-
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `id`   | String | ID usuario  |
-
-**Response:** `200 OK` — `UserResponseDTO`
-
----
+**Auth:** ADMIN o dueño. **Path:** `id` (String). **Response:** `200 OK` — `UserResponseDTO`.
 
 ##### GET `/users/email/{email}` — Obtener usuario por email
 
-**Path Variables:**
-
-| Nombre  | Tipo   | Descripción |
-| ------- | ------ | ----------- |
-| `email` | String | Email       |
-
-**Response:** `200 OK` — `UserResponseDTO`
-
----
+**Auth:** ADMIN. **Path:** `email` (String). **Response:** `200 OK` — `UserResponseDTO`.
 
 ##### GET `/users` — Listar usuarios (paginado)
 
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<UserResponseDTO>`
-
----
+**Auth:** ADMIN. **Query:** `page` (default 0), `size` (default 20). **Response:** `200 OK` — `Page<UserResponseDTO>`.
 
 ##### GET `/users/role/{role}` — Listar por rol (paginado)
 
-**Path Variables:**
-
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `role` | String | Nombre rol  |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<UserResponseDTO>`
-
----
+**Auth:** ADMIN. **Path:** `role` (String). **Query:** `page` (default 0), `size` (default 20). **Response:** `200 OK` — `Page<UserResponseDTO>`.
 
 ##### GET `/users/profile/{id}` — Obtener perfil
 
-**Path Variables:**
+**Auth:** ADMIN o dueño. **Path:** `id` (String). **Response:** `200 OK` — `UserResponseDTO`.
 
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `id`   | String | ID usuario  |
+---
 
-**Response:** `200 OK` — `UserResponseDTO`
+#### UserStatsController
+
+| #   | Método | Path           | Auth  | Descripción                        |
+| --- | ------ | -------------- | ----- | ---------------------------------- |
+| 17  | GET    | `/users/stats` | ADMIN | Estadísticas agregadas de usuarios |
+
+##### GET `/users/stats` — Estadísticas de usuarios
+
+**Auth:** ADMIN. Expuesto en un controller propio, fuera de `UserController`, para no chocar con `/users/{id}`.
+
+**Response:** `200 OK` — `UserStatsDTO`
+
+| Campo      | Tipo              | Descripción                                                       |
+| ---------- | ----------------- | ----------------------------------------------------------------- |
+| `total`    | long              | Total de usuarios en la tabla local                               |
+| `active`   | long              | Usuarios con `active = true`                                      |
+| `inactive` | long              | Usuarios con `active = false`                                     |
+| `byRole`   | Map<String, Long> | Conteo de miembros por rol de realm (`USER`, `PROVIDER`, `ADMIN`) |
+
+> `byRole` consulta Keycloak en vivo (no la tabla local) y trae todos los miembros de cada rol para contarlos en memoria — correcto para el volumen actual, pero no escalado para bases de usuarios muy grandes.
 
 ---
 
 #### ProviderController
 
-| #   | Método | Path                                     | Descripción                           |
-| --- | ------ | ---------------------------------------- | ------------------------------------- |
-| 13  | POST   | `/user/providers`                        | Crear provider (interno, sin Gateway) |
-| 14  | PUT    | `/user/providers/{id}`                   | Actualizar provider (interno)         |
-| 15  | GET    | `/user/providers/by-username/{username}` | Obtener provider por username         |
+| #   | Método | Path                                      | Auth          | Descripción                           |
+| --- | ------ | ----------------------------------------- | ------------- | ------------------------------------- |
+| 13  | POST   | `/user/providers`                         | Público       | Crear provider (interno, sin Gateway) |
+| 14  | PUT    | `/user/providers/{id}`                    | ADMIN o dueño | Actualizar provider (interno)         |
+| 15  | GET    | `/user/providers/by-username/{username}`  | ADMIN         | Obtener provider por username         |
+| 16  | PUT    | `/user/providers/{id}/onboarding/banking` | ADMIN o dueño | Completar onboarding bancario         |
 
 ---
 
 ##### POST `/user/providers` — Crear provider
 
+**Auth:** Público (se mantiene así deliberadamente; es la ruta de alta de proveedores usada hoy).
+
 **Request Body:** `ProviderRequestDTO` (campos ver subtipo PROVIDER en AuthController)
 
 **Response:** `201 CREATED` — `ProviderResponseDTO`
 
----
-
 ##### PUT `/user/providers/{id}` — Actualizar provider
 
-**Path Variables:**
+**Auth:** ADMIN o dueño. **Path:** `id` (String, ID provider). **Request Body:** `ProviderRequestDTO`.
 
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `id`   | String | ID provider |
-
-**Request Body:** `ProviderRequestDTO`
-
-**Response:** `200 OK` — `ProviderResponseDTO`
-
----
+**Response:** `200 OK` — `ProviderResponseDTO`.
 
 ##### GET `/user/providers/by-username/{username}` — Obtener provider
 
-**Path Variables:**
+**Auth:** ADMIN. **Path:** `username` (String). **Response:** `200 OK` — `ProviderResponseDTO`.
 
-| Nombre     | Tipo   | Descripción |
-| ---------- | ------ | ----------- |
-| `username` | String | Username    |
+---
 
-**Response:** `200 OK` — `ProviderResponseDTO`
+##### PUT `/user/providers/{id}/onboarding/banking` — Completar onboarding bancario
+
+**Auth:** ADMIN o dueño.
+
+Endpoint dedicado para que un proveedor complete su información bancaria y pueda recibir pagos semanales. Valida que el usuario tenga rol `PROVIDER` y que no haya completado el onboarding previamente.
+
+**Path:** `id` (String, Keycloak UUID del proveedor).
+
+**Request Body:** `BankingOnboardingRequestDTO`
+
+| Campo               | Tipo         | Validación  | Descripción                     |
+| ------------------- | ------------ | ----------- | ------------------------------- |
+| `bankName`          | String       | `@NotBlank` | Nombre del banco                |
+| `bankAccountType`   | String       | `@NotBlank` | `AHORROS` / `CORRIENTE`         |
+| `bankAccountNumber` | String       | `@NotBlank` | Número de cuenta bancaria       |
+| `documentType`      | DocumentType | `@NotBlank` | `CC` / `NIT` / `CE`             |
+| `documentNumber`    | String       | `@NotBlank` | Número de documento del titular |
+
+**Response:** `200 OK` — `ProviderResponseDTO` con `onboardingCompleted: true`
+
+| Código | Causa                                         |
+| ------ | --------------------------------------------- |
+| `400`  | El usuario no tiene rol de proveedor          |
+| `400`  | El onboarding ya fue completado anteriormente |
+| `404`  | Usuario o perfil de proveedor no encontrado   |
+
+> Este endpoint se llama una sola vez durante el primer inicio del proveedor.
 
 ---
 
 #### RoleController
 
-| #   | Método | Path           | Descripción                        |
-| --- | ------ | -------------- | ---------------------------------- |
-| 16  | GET    | `/users/roles` | Listar roles de Keycloak (interno) |
-
----
-
-##### GET `/users/roles` — Listar roles
-
-**Response:** `200 OK` — `List<String>`
+| #   | Método | Path           | Auth  | Descripción                                                  |
+| --- | ------ | -------------- | ----- | ------------------------------------------------------------ |
+| 18  | GET    | `/users/roles` | ADMIN | Listar roles de Keycloak (interno). Response: `List<String>` |
 
 ---
 
@@ -405,13 +390,13 @@ Service Discovery. Todos los servicios se registran aquí.
 
 #### BookingController
 
-| #   | Método | Path                          | Descripción        |
-| --- | ------ | ----------------------------- | ------------------ |
-| 17  | POST   | `/api/v1/booking`             | Crear reserva      |
-| 18  | GET    | `/api/v1/booking`             | Listar reservas    |
-| 19  | GET    | `/api/v1/booking/{id}`        | Detalle de reserva |
-| 20  | PUT    | `/api/v1/booking/{id}`        | Actualizar reserva |
-| 21  | POST   | `/api/v1/booking/{id}/cancel` | Cancelar reserva   |
+| #   | Método | Path                          | Descripción                |
+| --- | ------ | ----------------------------- | -------------------------- |
+| 17  | POST   | `/api/v1/booking`             | Crear reserva              |
+| 18  | GET    | `/api/v1/booking`             | Listar reservas (paginado) |
+| 19  | GET    | `/api/v1/booking/{id}`        | Detalle de reserva         |
+| 20  | PUT    | `/api/v1/booking/{id}`        | Actualizar reserva         |
+| 21  | POST   | `/api/v1/booking/{id}/cancel` | Cancelar reserva           |
 
 ---
 
@@ -419,10 +404,10 @@ Service Discovery. Todos los servicios se registran aquí.
 
 **Headers:**
 
-| Nombre            | Tipo   | Requerido | Default       | Descripción           |
-| ----------------- | ------ | --------- | ------------- | --------------------- |
-| `X-User-Id`       | String | No        | `"1"`         | ID del turista        |
-| `Idempotency-Key` | String | No        | UUID generado | Clave de idempotencia |
+| Nombre            | Tipo   | Requerido | Default       |
+| ----------------- | ------ | --------- | ------------- |
+| `X-User-Id`       | String | No        | `"1"`         |
+| `Idempotency-Key` | String | No        | UUID generado |
 
 **Request Body:** `@Valid` `CreateBookingRequestDTO`
 
@@ -464,70 +449,24 @@ Service Discovery. Todos los servicios se registran aquí.
 
 ##### GET `/api/v1/booking` — Listar reservas (paginado)
 
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<BookingResponseDTO>`
-
----
+**Query:** `page` (default 0), `size` (default 20). **Response:** `200 OK` — `Page<BookingResponseDTO>`.
 
 ##### GET `/api/v1/booking/{id}` — Detalle de reserva
 
-**Path Variables:**
+**Path:** `id` (Long).
 
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID reserva  |
+**Response:** `200 OK` — `BookingDetailResponseDTO` (campos de `BookingResponseDTO` +):
 
-**Response:** `200 OK` — `BookingDetailResponseDTO`
-
-| Campo           | Tipo          | Descripción                          |
-| --------------- | ------------- | ------------------------------------ |
-| `id`            | Long          | ID de la reserva                     |
-| `offerId`       | UUID          | ID de la oferta                      |
-| `offerName`     | String        | Nombre de la oferta                  |
-| `totalAmount`   | BigDecimal    | Monto total                          |
-| `currency`      | String        | Moneda                               |
-| `startDate`     | LocalDate     | Fecha de inicio                      |
-| `endDate`       | LocalDate     | Fecha de fin                         |
-| `quantity`      | Integer       | Cantidad                             |
-| `guestCount`    | Integer       | N° de huéspedes (solo ACCOMMODATION) |
-| `expiresAt`     | LocalDateTime | Expiración                           |
-| `createdAt`     | LocalDateTime | Fecha de creación                    |
-| `payments`      | List          | Ver `PaymentResponseDTO` abajo       |
-| `statusHistory` | List          | Ver `BookingStatusHistoryDTO`        |
-
-**PaymentResponseDTO (nested):**
-
-| Campo       | Tipo          |
-| ----------- | ------------- |
-| `id`        | Long          |
-| `status`    | String        |
-| `amount`    | BigDecimal    |
-| `currency`  | String        |
-| `paidAt`    | LocalDateTime |
-| `createdAt` | LocalDateTime |
-
-**BookingStatusHistoryDTO (nested):**
-
-| Campo       | Tipo          |
-| ----------- | ------------- |
-| `status`    | String        |
-| `changedAt` | LocalDateTime |
+| Campo           | Tipo                            | Descripción                                                       |
+| --------------- | ------------------------------- | ----------------------------------------------------------------- |
+| `payments`      | List\<PaymentResponseDTO\>      | Pagos asociados (id, status, amount, currency, paidAt, createdAt) |
+| `statusHistory` | List\<BookingStatusHistoryDTO\> | Historial de cambios de estado (status, changedAt)                |
 
 ---
 
 ##### PUT `/api/v1/booking/{id}` — Actualizar reserva
 
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID reserva  |
+**Path:** `id` (Long).
 
 **Request Body:** `@Valid` `UpdateBookingRequestDTO` (todos opcionales, solo se actualizan los campos enviados)
 
@@ -539,7 +478,7 @@ Service Discovery. Todos los servicios se registran aquí.
 | `guestCount` | Integer           | `@Min(1)`          | N° de huéspedes       |
 | `newStatus`  | BookingStatusType | —                  | Nuevo estado          |
 
-**BookingStatusType enum:** `PENDING_PAYMENT`, `CONFIRMED`, `COMPLETION_REQUESTED`, `COMPLETED`, `CANCELLED`, `EXPIRED`, `FAILED`
+**BookingStatusType:** `PENDING_PAYMENT`, `CONFIRMED`, `COMPLETION_REQUESTED`, `COMPLETED`, `CANCELLED`, `EXPIRED`, `FAILED`
 
 **Transiciones válidas:**
 
@@ -555,17 +494,9 @@ Service Discovery. Todos los servicios se registran aquí.
 
 ##### POST `/api/v1/booking/{id}/cancel` — Cancelar reserva
 
-**Headers:**
+**Headers:** `X-User-Id` (String, requerido, ID turista)
 
-| Nombre      | Tipo   | Requerido | Descripción |
-| ----------- | ------ | --------- | ----------- |
-| `X-User-Id` | String | Sí        | ID turista  |
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID reserva  |
+**Path:** `id` (Long).
 
 **@PreAuthorize:** `#userId == @bookingServiceImpl.getBookingById(#id).customerId`
 
@@ -588,17 +519,9 @@ Service Discovery. Todos los servicios se registran aquí.
 
 ##### POST `/api/v1/booking/{bookingId}/checkout` — Checkout
 
-**Headers:**
+**Headers:** `X-User-Id` (String, requerido, ID turista)
 
-| Nombre      | Tipo   | Requerido | Descripción |
-| ----------- | ------ | --------- | ----------- |
-| `X-User-Id` | String | Sí        | ID turista  |
-
-**Path Variables:**
-
-| Nombre      | Tipo | Descripción |
-| ----------- | ---- | ----------- |
-| `bookingId` | Long | ID reserva  |
+**Path:** `bookingId` (Long).
 
 **@PreAuthorize:** `#userId == @bookingServiceImpl.getBookingById(#bookingId).customerId`
 
@@ -682,65 +605,23 @@ El resultado (hexadecimal) debe ser idéntico al valor `v1` del header `x-signat
 
 ##### GET `/api/v1/webhooks/payments/success` — Callback éxito
 
-**Query Parameters:**
-
-| Nombre               | Tipo   | Requerido | Descripción        |
-| -------------------- | ------ | --------- | ------------------ |
-| `payment_id`         | String | No        | ID del pago        |
-| `status`             | String | No        | Estado del pago    |
-| `external_reference` | String | No        | Referencia externa |
-
-**Response:** `200 OK` — `"Pago procesado correctamente. Puedes cerrar esta ventana."`
-
----
+**Query:** `payment_id`, `status`, `external_reference`. **Response:** `200 OK` — `"Pago procesado correctamente. Puedes cerrar esta ventana."`
 
 ##### GET `/api/v1/webhooks/payments/failure` — Callback fallo
 
-**Query Parameters:**
-
-| Nombre       | Tipo   | Requerido | Descripción |
-| ------------ | ------ | --------- | ----------- |
-| `payment_id` | String | No        | ID del pago |
-| `status`     | String | No        | Estado      |
-
-**Response:** `200 OK` — `"El pago no pudo ser procesado. Puedes intentar nuevamente."`
-
----
+**Query:** `payment_id`, `status`. **Response:** `200 OK` — `"El pago no pudo ser procesado. Puedes intentar nuevamente."`
 
 ##### GET `/api/v1/webhooks/payments/pending` — Callback pendiente
 
-**Query Parameters:**
-
-| Nombre       | Tipo   | Requerido | Descripción |
-| ------------ | ------ | --------- | ----------- |
-| `payment_id` | String | No        | ID del pago |
-| `status`     | String | No        | Estado      |
-
-**Response:** `200 OK` — `"Tu pago está siendo procesado. Te notificaremos cuando se confirme."`
-
----
+**Query:** `payment_id`, `status`. **Response:** `200 OK` — `"Tu pago está siendo procesado. Te notificaremos cuando se confirme."`
 
 ##### POST `/api/v1/webhooks/payments/mock/success/{providerReference}` — Mock éxito
 
-**Path Variables:**
-
-| Nombre              | Tipo   | Descripción         |
-| ------------------- | ------ | ------------------- |
-| `providerReference` | String | Referencia del pago |
-
-**Response:** `200 OK`
-
----
+**Path:** `providerReference` (String). **Response:** `200 OK`.
 
 ##### POST `/api/v1/webhooks/payments/mock/failure/{providerReference}` — Mock fallo
 
-**Path Variables:**
-
-| Nombre              | Tipo   | Descripción         |
-| ------------------- | ------ | ------------------- |
-| `providerReference` | String | Referencia del pago |
-
-**Response:** `200 OK`
+**Path:** `providerReference` (String). **Response:** `200 OK`.
 
 ---
 
@@ -776,30 +657,42 @@ Los siguientes endpoints del dashboard de proveedores y pagos semanales (documen
 
 #### OfferController
 
-| #   | Método | Path                                             | Descripción                  |
-| --- | ------ | ------------------------------------------------ | ---------------------------- |
-| 25  | POST   | `/api/v1/offers`                                 | Crear oferta                 |
-| 26  | PUT    | `/api/v1/offers/{id}`                            | Actualizar oferta            |
-| 27  | PATCH  | `/api/v1/offers/{id}/activate`                   | Activar oferta               |
-| 28  | PATCH  | `/api/v1/offers/{id}/deactivate`                 | Desactivar oferta            |
-| 29  | GET    | `/api/v1/offers/{id}`                            | Detalle de oferta            |
-| 30  | GET    | `/api/v1/offers`                                 | Listar ofertas               |
-| 31  | GET    | `/api/v1/offers/active`                          | Ofertas activas              |
-| 32  | GET    | `/api/v1/offers/provider/{providerId}`           | Ofertas por proveedor        |
-| 33  | GET    | `/api/v1/offers/city/{cityId}`                   | Ofertas por ciudad           |
-| 34  | GET    | `/api/v1/offers/city/{cityId}/active`            | Ofertas activas por ciudad   |
-| 35  | GET    | `/api/v1/offers/type/{type}`                     | Ofertas por tipo             |
-| 36  | GET    | `/api/v1/offers/type/{type}/active`              | Ofertas activas por tipo     |
-| 37  | GET    | `/api/v1/offers/search`                          | Buscar ofertas con filtros   |
-| 38  | GET    | `/api/v1/offers/featured`                        | Ofertas destacadas           |
-| 39  | PATCH  | `/api/v1/offers/{id}/featured`                   | Marcar/desmarcar destacada   |
-| 40  | GET    | `/api/v1/offers/type/{type}/category/{category}` | Ofertas por tipo y categoría |
+| #   | Método | Path                                             | Descripción                             | Autenticación                            |
+| --- | ------ | ------------------------------------------------ | --------------------------------------- | ---------------------------------------- |
+| 25  | POST   | `/api/v1/offers`                                 | Crear oferta                            | `authentication.principal != null`       |
+| 26  | PUT    | `/api/v1/offers/{id}`                            | Actualizar oferta                       | `providerId == authentication.principal` |
+| 27  | PATCH  | `/api/v1/offers/{id}/activate`                   | Activar oferta                          | `providerId == authentication.principal` |
+| 28  | PATCH  | `/api/v1/offers/{id}/deactivate`                 | Desactivar oferta                       | `providerId == authentication.principal` |
+| 28b | PATCH  | `/api/v1/offers/{id}/block`                      | Bloquear oferta (la desactiva)          | ADMIN                                    |
+| 28c | PATCH  | `/api/v1/offers/{id}/unblock`                    | Desbloquear oferta (no la reactiva)     | ADMIN                                    |
+| 29  | GET    | `/api/v1/offers/{id}`                            | Detalle de oferta                       | —                                        |
+| 30  | GET    | `/api/v1/offers`                                 | Listar ofertas (paginado)               | —                                        |
+| 31  | GET    | `/api/v1/offers/active`                          | Ofertas activas (paginado)              | —                                        |
+| 32  | GET    | `/api/v1/offers/provider/{providerId}`           | Ofertas por proveedor (paginado)        | —                                        |
+| 33  | GET    | `/api/v1/offers/city/{cityId}`                   | Ofertas por ciudad (paginado)           | —                                        |
+| 34  | GET    | `/api/v1/offers/city/{cityId}/active`            | Ofertas activas por ciudad (paginado)   | —                                        |
+| 35  | GET    | `/api/v1/offers/type/{type}`                     | Ofertas por tipo (paginado)             | —                                        |
+| 36  | GET    | `/api/v1/offers/type/{type}/active`              | Ofertas activas por tipo (paginado)     | —                                        |
+| 37  | GET    | `/api/v1/offers/search`                          | Buscar ofertas con filtros (paginado)   | —                                        |
+| 38  | GET    | `/api/v1/offers/featured`                        | Ofertas destacadas (paginado)           | —                                        |
+| 39  | PATCH  | `/api/v1/offers/{id}/featured`                   | Marcar/desmarcar destacada              | —                                        |
+| 40  | GET    | `/api/v1/offers/type/{type}/category/{category}` | Ofertas por tipo y categoría (paginado) | —                                        |
+
+**Tipos de oferta:** `"product"`, `"service"`, `"event"`, `"accommodation"`
+
+**Query params de paginado:** `page` (default 0), `size` (default 20).
+
+**Bloqueo de ofertas:** `blocked` es un estado controlado solo por el ADMIN, independiente de `active` (que es el interruptor del proveedor). `OfferResponseDTO` y `OfferDetailDTO` exponen `blocked` para que el front muestre el estado.
+
+- `PATCH /offers/{id}/block` (ADMIN, `204 No Content`): marca la oferta como bloqueada y la desactiva, por lo que desaparece del catálogo y no se puede reservar.
+- `PATCH /offers/{id}/unblock` (ADMIN, `204 No Content`): quita el bloqueo, pero **no** reactiva la oferta; el proveedor debe activarla con `PATCH /offers/{id}/activate`.
+- Si el proveedor intenta activar una oferta bloqueada, responde `409 Conflict` con el mensaje `"Esta oferta está bloqueada por un administrador y no puede activarse."`.
+- Un no-ADMIN que llame a `block`/`unblock` recibe `403 Forbidden`; si la oferta no existe, `404 Not Found`.
+- `blocked` se ignora al crear: toda oferta nueva nace sin bloquear (y desactivada si el cliente intentó enviarla bloqueada).
 
 ---
 
 ##### POST `/api/v1/offers` — Crear oferta
-
-**@PreAuthorize:** `authentication.principal != null`
 
 **Request Body:** `@Valid` `Offer` (polimórfico via discriminador `"type"`)
 
@@ -816,246 +709,15 @@ Los siguientes endpoints del dashboard de proveedores y pagos semanales (documen
 | `featured`    | Boolean    | Destacada (default `false`) |
 | `images`      | List       | Lista de imágenes           |
 
-**Subtipo `"product"` — ProductOffer:**
+**Subtipo `"product"`:** `productCategory` (ProductCategory), `isUnlimitedStock` (Boolean, default `false`)
 
-| Campo              | Tipo            | Descripción                       |
-| ------------------ | --------------- | --------------------------------- |
-| `productCategory`  | ProductCategory | Categoría                         |
-| `isUnlimitedStock` | Boolean         | Stock ilimitado (default `false`) |
+**Subtipo `"service"`:** `serviceCategory` (ServiceCategory), `requiresSchedule` (Boolean), `durationInMinutes` (Integer), `capacity` (Integer), `pricePerPerson` (BigDecimal)
 
-**Subtipo `"service"` — ServiceOffer:**
+**Subtipo `"event"`:** `startDate` (LocalDateTime), `endDate` (LocalDateTime), `maximumCapacity` (Integer), `ticketPrice` (BigDecimal), `purchaseUrl` (String), `eventType` (EventType: `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED`)
 
-| Campo               | Tipo            | Descripción         |
-| ------------------- | --------------- | ------------------- |
-| `serviceCategory`   | ServiceCategory | Categoría           |
-| `requiresSchedule`  | Boolean         | Requiere agenda     |
-| `durationInMinutes` | Integer         | Duración en minutos |
-| `capacity`          | Integer         | Capacidad           |
-| `pricePerPerson`    | BigDecimal      | Precio por persona  |
+**Subtipo `"accommodation"`:** `maxGuests` (Integer), `bedrooms` (Integer), `bathrooms` (Integer), `allowPets` (Boolean), `allowChildren` (Boolean), `pricePerNight` (BigDecimal), `accommodationCategory` (AccommodationCategory)
 
-**Subtipo `"event"` — EventOffer:**
-
-| Campo             | Tipo          | Descripción                                         |
-| ----------------- | ------------- | --------------------------------------------------- |
-| `startDate`       | LocalDateTime | Fecha inicio                                        |
-| `endDate`         | LocalDateTime | Fecha fin                                           |
-| `maximumCapacity` | Integer       | Capacidad máxima                                    |
-| `ticketPrice`     | BigDecimal    | Precio ticket                                       |
-| `purchaseUrl`     | String        | URL de compra                                       |
-| `eventType`       | EventType     | `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED` |
-
-**Subtipo `"accommodation"` — AccommodationOffer:**
-
-| Campo                   | Tipo                  | Descripción       |
-| ----------------------- | --------------------- | ----------------- |
-| `maxGuests`             | Integer               | Máx huéspedes     |
-| `bedrooms`              | Integer               | Habitaciones      |
-| `bathrooms`             | Integer               | Baños             |
-| `allowPets`             | Boolean               | Permitir mascotas |
-| `allowChildren`         | Boolean               | Permitir niños    |
-| `pricePerNight`         | BigDecimal            | Precio por noche  |
-| `accommodationCategory` | AccommodationCategory | Categoría         |
-
-**Response:** `200 OK` — `OfferResponseDTO`
-
-| Campo         | Tipo          | Descripción                                            |
-| ------------- | ------------- | ------------------------------------------------------ |
-| `id`          | UUID          | ID de la oferta                                        |
-| `providerId`  | String        | ID del proveedor                                       |
-| `name`        | String        | Nombre                                                 |
-| `description` | String        | Descripción                                            |
-| `baseprice`   | BigDecimal    | Precio base                                            |
-| `cityId`      | Long          | ID del municipio                                       |
-| `type`        | String        | `"product"`, `"service"`, `"event"`, `"accommodation"` |
-| `category`    | String        | Categoría o null                                       |
-| `active`      | boolean       | Activo                                                 |
-| `featured`    | boolean       | Destacada                                              |
-| `createdAt`   | LocalDateTime | Fecha de creación                                      |
-| `updatedAt`   | LocalDateTime | Fecha de actualización                                 |
-
----
-
-##### PUT `/api/v1/offers/{id}` — Actualizar oferta
-
-**@PreAuthorize:** `@offerQueryServiceImpl.getDetail(#id).providerId == authentication.principal`
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID oferta   |
-
-**Request Body:** `@Valid` `Offer` (polimórfico, mismos campos que creación)
-
-**Response:** `200 OK` — `OfferResponseDTO`
-
----
-
-##### PATCH `/api/v1/offers/{id}/activate` — Activar oferta
-
-**@PreAuthorize:** `@offerQueryServiceImpl.getDetail(#id).providerId == authentication.principal`
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID oferta   |
-
-**Response:** `204 No Content`
-
----
-
-##### PATCH `/api/v1/offers/{id}/deactivate` — Desactivar oferta
-
-**@PreAuthorize:** `@offerQueryServiceImpl.getDetail(#id).providerId == authentication.principal`
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID oferta   |
-
-**Response:** `204 No Content`
-
----
-
-##### GET `/api/v1/offers/{id}` — Detalle de oferta
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID oferta   |
-
-**Response:** `200 OK` — `OfferDetailDTO` (incluye campos base + campos específicos del tipo + `images: List<OfferImageDTO>`)
-
-**OfferImageDTO:**
-
-| Campo       | Tipo    |
-| ----------- | ------- |
-| `imageUrl`  | String  |
-| `isPrimary` | boolean |
-
----
-
-##### GET `/api/v1/offers` — Listar ofertas (paginado)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<OfferResponseDTO>`
-
----
-
-##### GET `/api/v1/offers/active` — Ofertas activas (paginado)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<OfferResponseDTO>`
-
----
-
-##### GET `/api/v1/offers/provider/{providerId}` — Ofertas por proveedor (paginado)
-
-**Path Variables:**
-
-| Nombre       | Tipo   | Descripción  |
-| ------------ | ------ | ------------ |
-| `providerId` | String | ID proveedor |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<OfferResponseDTO>`
-
----
-
-##### GET `/api/v1/offers/city/{cityId}` — Ofertas por ciudad (paginado)
-
-**Path Variables:**
-
-| Nombre   | Tipo | Descripción |
-| -------- | ---- | ----------- |
-| `cityId` | Long | ID ciudad   |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<OfferResponseDTO>`
-
----
-
-##### GET `/api/v1/offers/city/{cityId}/active` — Ofertas activas por ciudad (paginado)
-
-**Path Variables:**
-
-| Nombre   | Tipo | Descripción |
-| -------- | ---- | ----------- |
-| `cityId` | Long | ID ciudad   |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<OfferResponseDTO>`
-
----
-
-##### GET `/api/v1/offers/type/{type}` — Ofertas por tipo (paginado)
-
-**Path Variables:**
-
-| Nombre | Tipo   | Valores permitidos                                     |
-| ------ | ------ | ------------------------------------------------------ |
-| `type` | String | `"accommodation"`, `"service"`, `"product"`, `"event"` |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<OfferResponseDTO>`
-
----
-
-##### GET `/api/v1/offers/type/{type}/active` — Ofertas activas por tipo (paginado)
-
-**Path Variables:**
-
-| Nombre | Tipo   | Valores permitidos                                     |
-| ------ | ------ | ------------------------------------------------------ |
-| `type` | String | `"accommodation"`, `"service"`, `"product"`, `"event"` |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<OfferResponseDTO>`
+**Response:** `200 OK` — `OfferResponseDTO` (id, providerId, name, description, baseprice, cityId, type, category, active, blocked, featured, createdAt, updatedAt)
 
 ---
 
@@ -1063,142 +725,53 @@ Los siguientes endpoints del dashboard de proveedores y pagos semanales (documen
 
 **Query Parameters:**
 
-| Nombre          | Tipo          | Requerido | Descripción                    |
-| --------------- | ------------- | --------- | ------------------------------ |
-| `providerId`    | String        | No        | ID del proveedor               |
-| `cityId`        | Long          | No        | ID del municipio               |
-| `active`        | Boolean       | No        | Filtrar por activas            |
-| `name`          | String        | No        | Nombre (búsqueda parcial)      |
-| `type`          | String        | No        | Tipo de oferta                 |
-| `category`      | String        | No        | Categoría                      |
-| `featured`      | Boolean       | No        | Solo destacadas                |
-| `minPrice`      | BigDecimal    | No        | Precio mínimo                  |
-| `maxPrice`      | BigDecimal    | No        | Precio máximo                  |
-| `maxGuests`     | Integer       | No        | Máximo huéspedes               |
-| `allowPets`     | Boolean       | No        | Permitir mascotas              |
-| `allowChildren` | Boolean       | No        | Permitir niños                 |
-| `startDate`     | LocalDateTime | No        | Fecha inicio (`ISO.DATE_TIME`) |
-| `endDate`       | LocalDateTime | No        | Fecha fin (`ISO.DATE_TIME`)    |
-| `capacity`      | Integer       | No        | Capacidad                      |
-| `page`          | Integer       | No        | Página (default `0`)           |
-| `size`          | Integer       | No        | Tamaño (default `20`)          |
+| Nombre          | Tipo          | Descripción                    |
+| --------------- | ------------- | ------------------------------ |
+| `providerId`    | String        | ID del proveedor               |
+| `cityId`        | Long          | ID del municipio               |
+| `active`        | Boolean       | Filtrar por activas            |
+| `name`          | String        | Nombre (búsqueda parcial)      |
+| `type`          | String        | Tipo de oferta                 |
+| `category`      | String        | Categoría                      |
+| `featured`      | Boolean       | Solo destacadas                |
+| `minPrice`      | BigDecimal    | Precio mínimo                  |
+| `maxPrice`      | BigDecimal    | Precio máximo                  |
+| `maxGuests`     | Integer       | Máximo huéspedes               |
+| `allowPets`     | Boolean       | Permitir mascotas              |
+| `allowChildren` | Boolean       | Permitir niños                 |
+| `startDate`     | LocalDateTime | Fecha inicio (`ISO.DATE_TIME`) |
+| `endDate`       | LocalDateTime | Fecha fin (`ISO.DATE_TIME`)    |
+| `capacity`      | Integer       | Capacidad                      |
+| `page`          | Integer       | Página (default `0`)           |
+| `size`          | Integer       | Tamaño (default `20`)          |
 
 **Response:** `200 OK` — `Page<OfferResponseDTO>`
 
 ---
 
-##### GET `/api/v1/offers/featured` — Ofertas destacadas (paginado)
+##### GET `/api/v1/offers/{id}` — Detalle de oferta
 
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<OfferResponseDTO>`
-
----
-
-##### PATCH `/api/v1/offers/{id}/featured` — Marcar/desmarcar destacada
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID oferta   |
-
-**Query Parameters:**
-
-| Nombre     | Tipo    | Requerido | Descripción |
-| ---------- | ------- | --------- | ----------- |
-| `featured` | boolean | Sí        | true/false  |
-
-**Response:** `204 No Content`
-
----
-
-##### GET `/api/v1/offers/type/{type}/category/{category}` — Ofertas por tipo y categoría (paginado)
-
-**Path Variables:**
-
-| Nombre     | Tipo   | Descripción |
-| ---------- | ------ | ----------- |
-| `type`     | String | Tipo oferta |
-| `category` | String | Categoría   |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<OfferResponseDTO>`
+**Response:** `200 OK` — `OfferDetailDTO` (campos base + campos específicos del tipo + `images: List<OfferImageDTO>` donde cada imagen tiene `imageUrl` y `isPrimary`)
 
 ---
 
 #### StockProductController
 
-| #   | Método | Path                                | Descripción          |
-| --- | ------ | ----------------------------------- | -------------------- |
-| 41  | POST   | `/api/v1/offers/{id}/stock/deduct`  | Deducir stock        |
-| 42  | POST   | `/api/v1/offers/{id}/stock/restock` | Reabastecer stock    |
-| 43  | GET    | `/api/v1/offers/{id}/stock`         | Obtener stock actual |
-
----
+| #   | Método | Path                                | Descripción                                                  |
+| --- | ------ | ----------------------------------- | ------------------------------------------------------------ |
+| 41  | POST   | `/api/v1/offers/{id}/stock/deduct`  | Deducir stock (`providerId == authentication.principal`)     |
+| 42  | POST   | `/api/v1/offers/{id}/stock/restock` | Reabastecer stock (`providerId == authentication.principal`) |
+| 43  | GET    | `/api/v1/offers/{id}/stock`         | Obtener stock actual. Response: `Integer`                    |
 
 ##### POST `/api/v1/offers/{id}/stock/deduct` — Deducir stock
 
-**@PreAuthorize:** `@offerQueryServiceImpl.getDetail(#id).providerId == authentication.principal`
+**Request Body:** `DeductStockRequest` — `quantity` (Integer, cantidad a deducir), `referenceId` (String, ej: `booking-123`).
 
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID oferta   |
-
-**Request Body:** `DeductStockRequest`
-
-| Campo         | Tipo    | Descripción                    |
-| ------------- | ------- | ------------------------------ |
-| `quantity`    | Integer | Cantidad a deducir             |
-| `referenceId` | String  | Referencia (ej: `booking-123`) |
-
-**Response:** `200 OK`
-
----
+**Response:** `200 OK`.
 
 ##### POST `/api/v1/offers/{id}/stock/restock` — Reabastecer stock
 
-**@PreAuthorize:** `@offerQueryServiceImpl.getDetail(#id).providerId == authentication.principal`
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID oferta   |
-
-**Query Parameters:**
-
-| Nombre        | Tipo    | Requerido | Descripción |
-| ------------- | ------- | --------- | ----------- |
-| `quantity`    | Integer | Sí        | Cantidad    |
-| `description` | String  | No        | Descripción |
-
-**Response:** `200 OK`
-
----
-
-##### GET `/api/v1/offers/{id}/stock` — Obtener stock actual
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID oferta   |
-
-**Response:** `200 OK` — `Integer`
+**Query:** `quantity` (Integer, requerido), `description` (String, opcional). **Response:** `200 OK`.
 
 ---
 
@@ -1211,227 +784,47 @@ Los siguientes endpoints del dashboard de proveedores y pagos semanales (documen
 | 46  | GET    | `/api/v1/offers/event/{eventId}/events-status/latest`   | Último estado              |
 | 47  | GET    | `/api/v1/offers/event/{eventId}/events-status/{status}` | Buscar por estado          |
 
----
+**POST — Request:** `eventId` (UUID, @NotNull), `status` (EventStatus: `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED`).
 
-##### POST `/api/v1/offers/event/{eventId}/events-status` — Registrar cambio de estado
-
-**Path Variables:**
-
-| Nombre    | Tipo | Descripción |
-| --------- | ---- | ----------- |
-| `eventId` | UUID | ID evento   |
-
-**Request Body:** `EventStatusHistoryRequest`
-
-| Campo     | Tipo        | Validación | Descripción                                         |
-| --------- | ----------- | ---------- | --------------------------------------------------- |
-| `eventId` | UUID        | `@NotNull` | ID evento                                           |
-| `status`  | EventStatus | `@NotNull` | `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED` |
-
-**Response:** `200 OK` — `EventStatusHistoryResponse`
-
-| Campo       | Tipo          |
-| ----------- | ------------- |
-| `id`        | UUID          |
-| `eventId`   | UUID          |
-| `status`    | EventStatus   |
-| `changedAt` | LocalDateTime |
-
----
-
-##### GET `/api/v1/offers/event/{eventId}/events-status` — Obtener historial
-
-**Path Variables:**
-
-| Nombre    | Tipo | Descripción |
-| --------- | ---- | ----------- |
-| `eventId` | UUID | ID evento   |
-
-**Response:** `200 OK` — `List<EventStatusHistoryResponse>`
-
----
-
-##### GET `/api/v1/offers/event/{eventId}/events-status/latest` — Último estado
-
-**Path Variables:**
-
-| Nombre    | Tipo | Descripción |
-| --------- | ---- | ----------- |
-| `eventId` | UUID | ID evento   |
-
-**Response:** `200 OK` — `EventStatusHistoryResponse` | `404 Not Found`
-
----
-
-##### GET `/api/v1/offers/event/{eventId}/events-status/{status}` — Buscar por estado
-
-**Path Variables:**
-
-| Nombre    | Tipo   | Valores permitidos                                  |
-| --------- | ------ | --------------------------------------------------- |
-| `eventId` | UUID   | ID evento                                           |
-| `status`  | String | `PUBLISHED`, `IN_PROGRESS`, `FINISHED`, `CANCELLED` |
-
-**Response:** `200 OK` — `List<EventStatusHistoryResponse>`
+**GET — Response:** `EventStatusHistoryResponse` — `id` (UUID), `eventId` (UUID), `status` (EventStatus), `changedAt` (LocalDateTime).
 
 ---
 
 #### OfferImageController
 
-| #   | Método | Path                                                | Descripción              |
-| --- | ------ | --------------------------------------------------- | ------------------------ |
-| 48  | POST   | `/api/v1/offers/{offerId}/images`                   | Agregar imagen por URL   |
-| 49  | POST   | `/api/v1/offers/{offerId}/images/upload`            | Subir archivo de imagen  |
-| 50  | POST   | `/api/v1/offers/{offerId}/images/batch-upload`      | Subir múltiples imágenes |
-| 51  | GET    | `/api/v1/offers/{offerId}/images`                   | Listar imágenes          |
-| 52  | DELETE | `/api/v1/offers/{offerId}/images/{imageId}`         | Eliminar imagen          |
-| 53  | PATCH  | `/api/v1/offers/{offerId}/images/{imageId}/primary` | Marcar como principal    |
-
----
-
-##### POST `/api/v1/offers/{offerId}/images` — Agregar imagen por URL
-
-**Path Variables:**
-
-| Nombre    | Tipo | Descripción |
-| --------- | ---- | ----------- |
-| `offerId` | UUID | ID oferta   |
-
-**Request Body:** `ImageRequest`
-
-| Campo       | Tipo    | Validación  | Descripción |
-| ----------- | ------- | ----------- | ----------- |
-| `imageUrl`  | String  | `@NotBlank` | URL imagen  |
-| `isPrimary` | Boolean | —           | Principal   |
-
-**Response:** `200 OK` — `OfferImage`
-
----
-
-##### POST `/api/v1/offers/{offerId}/images/upload` — Subir imagen (multipart)
-
-**Path Variables:**
-
-| Nombre    | Tipo | Descripción |
-| --------- | ---- | ----------- |
-| `offerId` | UUID | ID oferta   |
-
-**Request Parameters (multipart):**
-
-| Nombre      | Tipo          | Requerido | Default |
-| ----------- | ------------- | --------- | ------- |
-| `file`      | MultipartFile | Sí        | —       |
-| `isPrimary` | Boolean       | No        | `false` |
-
-**Response:** `200 OK` — `OfferImage`
-
----
-
-##### POST `/api/v1/offers/{offerId}/images/batch-upload` — Subir múltiples imágenes
-
-**Path Variables:**
-
-| Nombre    | Tipo | Descripción |
-| --------- | ---- | ----------- |
-| `offerId` | UUID | ID oferta   |
-
-**Request Parameters (multipart):**
-
-| Nombre  | Tipo                  | Requerido |
-| ------- | --------------------- | --------- |
-| `files` | List\<MultipartFile\> | Sí        |
-
-**Response:** `200 OK` — `List<OfferImage>`
-
----
-
-##### GET `/api/v1/offers/{offerId}/images` — Listar imágenes
-
-**Path Variables:**
-
-| Nombre    | Tipo | Descripción |
-| --------- | ---- | ----------- |
-| `offerId` | UUID | ID oferta   |
-
-**Response:** `200 OK` — `List<OfferImage>`
-
----
-
-##### DELETE `/api/v1/offers/{offerId}/images/{imageId}` — Eliminar imagen
-
-**Path Variables:**
-
-| Nombre    | Tipo | Descripción |
-| --------- | ---- | ----------- |
-| `imageId` | UUID | ID imagen   |
-
-**Response:** `204 No Content`
-
----
-
-##### PATCH `/api/v1/offers/{offerId}/images/{imageId}/primary` — Marcar como principal
-
-**Path Variables:**
-
-| Nombre    | Tipo | Descripción |
-| --------- | ---- | ----------- |
-| `imageId` | UUID | ID imagen   |
-
-**Response:** `204 No Content`
+| #   | Método | Path                                                | Descripción                                                         |
+| --- | ------ | --------------------------------------------------- | ------------------------------------------------------------------- |
+| 48  | POST   | `/api/v1/offers/{offerId}/images`                   | Agregar imagen por URL (`imageUrl`, `isPrimary`)                    |
+| 49  | POST   | `/api/v1/offers/{offerId}/images/upload`            | Subir archivo de imagen (multipart: `file`, `isPrimary`)            |
+| 50  | POST   | `/api/v1/offers/{offerId}/images/batch-upload`      | Subir múltiples imágenes (multipart: `files`)                       |
+| 51  | GET    | `/api/v1/offers/{offerId}/images`                   | Listar imágenes. Response: `List<OfferImage>` (imageUrl, isPrimary) |
+| 52  | DELETE | `/api/v1/offers/{offerId}/images/{imageId}`         | Eliminar imagen. `204 No Content`                                   |
+| 53  | PATCH  | `/api/v1/offers/{offerId}/images/{imageId}/primary` | Marcar como principal. `204 No Content`                             |
 
 ---
 
 #### CategoryController
 
-| #   | Método | Path                                     | Descripción                   |
-| --- | ------ | ---------------------------------------- | ----------------------------- |
-| 54  | GET    | `/api/v1/offers/categories`              | Todas las categorías por tipo |
-| 55  | GET    | `/api/v1/offers/types/{type}/categories` | Categorías por tipo de oferta |
-
----
-
-##### GET `/api/v1/offers/categories` — Todas las categorías
-
-**Response:** `200 OK` — `Map<String, List<String>>`
-
-```json
-{
-  "accommodation": ["HOTEL", "HOSTEL", ...],
-  "service": ["TOUR", ...],
-  "product": [...],
-  "event": [...]
-}
-```
-
----
-
-##### GET `/api/v1/offers/types/{type}/categories` — Categorías por tipo
-
-**Path Variables:**
-
-| Nombre | Tipo   | Valores permitidos                                     |
-| ------ | ------ | ------------------------------------------------------ |
-| `type` | String | `"accommodation"`, `"service"`, `"product"`, `"event"` |
-
-**Response:** `200 OK` — `List<String>`
+| #   | Método | Path                                     | Descripción                                                          |
+| --- | ------ | ---------------------------------------- | -------------------------------------------------------------------- |
+| 54  | GET    | `/api/v1/offers/categories`              | Todas las categorías por tipo. Response: `Map<String, List<String>>` |
+| 55  | GET    | `/api/v1/offers/types/{type}/categories` | Categorías por tipo de oferta. Response: `List<String>`              |
 
 ---
 
 #### PriceListingController
 
-| #   | Método | Path                                     | Descripción             |
-| --- | ------ | ---------------------------------------- | ----------------------- |
-| 56  | POST   | `/api/v1/prices`                         | Crear listing de precio |
-| 57  | PUT    | `/api/v1/prices/{id}`                    | Actualizar listing      |
-| 58  | GET    | `/api/v1/prices/{id}`                    | Listing por ID          |
-| 59  | GET    | `/api/v1/prices`                         | Listar todos            |
-| 60  | GET    | `/api/v1/prices/city/{cityId}`           | Filtrar por ciudad      |
-| 61  | GET    | `/api/v1/prices/category/{categoryName}` | Filtrar por categoría   |
-| 62  | GET    | `/api/v1/prices/range`                   | Filtrar por rango       |
-| 63  | GET    | `/api/v1/prices/active`                  | Listings activos        |
-| 64  | DELETE | `/api/v1/prices/{id}`                    | Eliminar listing        |
-
----
+| #   | Método | Path                                     | Descripción                                                          |
+| --- | ------ | ---------------------------------------- | -------------------------------------------------------------------- |
+| 56  | POST   | `/api/v1/prices`                         | Crear listing de precio                                              |
+| 57  | PUT    | `/api/v1/prices/{id}`                    | Actualizar listing                                                   |
+| 58  | GET    | `/api/v1/prices/{id}`                    | Listing por ID                                                       |
+| 59  | GET    | `/api/v1/prices`                         | Listar todos                                                         |
+| 60  | GET    | `/api/v1/prices/city/{cityId}`           | Filtrar por ciudad                                                   |
+| 61  | GET    | `/api/v1/prices/category/{categoryName}` | Filtrar por categoría                                                |
+| 62  | GET    | `/api/v1/prices/range`                   | Filtrar por rango (query: `min`, `max`, ambos BigDecimal requeridos) |
+| 63  | GET    | `/api/v1/prices/active`                  | Listings activos                                                     |
+| 64  | DELETE | `/api/v1/prices/{id}`                    | Eliminar listing. `204 No Content`                                   |
 
 ##### POST `/api/v1/prices` — Crear listing de precio
 
@@ -1447,126 +840,23 @@ Los siguientes endpoints del dashboard de proveedores y pagos semanales (documen
 | `cityId`      | Long       | `@NotNull`              | ID ciudad   |
 | `active`      | boolean    | —                       | Activo      |
 
-**Response:** `201 CREATED` — `PriceListingResponse`
-
-| Campo            | Tipo       |
-| ---------------- | ---------- |
-| `id`             | UUID       |
-| `name`           | String     |
-| `description`    | String     |
-| `category`       | String     |
-| `minPrice`       | BigDecimal |
-| `maxPrice`       | BigDecimal |
-| `municipalityId` | Long       |
-| `mainImage`      | String     |
-| `active`         | boolean    |
-
----
-
-##### PUT `/api/v1/prices/{id}` — Actualizar listing
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID listing  |
-
-**Request Body:** `@Valid` `PriceListingRequest` (mismos campos que creación)
-
-**Response:** `200 OK` — `PriceListingResponse`
-
----
-
-##### GET `/api/v1/prices/{id}` — Listing por ID
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID listing  |
-
-**Response:** `200 OK` — `PriceListingResponse` | `404 Not Found`
-
----
-
-##### GET `/api/v1/prices` — Listar todos
-
-**Response:** `200 OK` — `List<PriceListingResponse>`
-
----
-
-##### GET `/api/v1/prices/city/{cityId}` — Filtrar por ciudad
-
-**Path Variables:**
-
-| Nombre   | Tipo | Descripción |
-| -------- | ---- | ----------- |
-| `cityId` | Long | ID ciudad   |
-
-**Response:** `200 OK` — `List<PriceListingResponse>`
-
----
-
-##### GET `/api/v1/prices/category/{categoryName}` — Filtrar por categoría
-
-**Path Variables:**
-
-| Nombre         | Tipo   | Descripción |
-| -------------- | ------ | ----------- |
-| `categoryName` | String | Categoría   |
-
-**Response:** `200 OK` — `List<PriceListingResponse>`
-
----
-
-##### GET `/api/v1/prices/range` — Filtrar por rango
-
-**Query Parameters:**
-
-| Nombre | Tipo       | Requerido | Descripción |
-| ------ | ---------- | --------- | ----------- |
-| `min`  | BigDecimal | Sí        | Precio mín  |
-| `max`  | BigDecimal | Sí        | Precio máx  |
-
-**Response:** `200 OK` — `List<PriceListingResponse>`
-
----
-
-##### GET `/api/v1/prices/active` — Listings activos
-
-**Response:** `200 OK` — `List<PriceListingResponse>`
-
----
-
-##### DELETE `/api/v1/prices/{id}` — Eliminar listing
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID listing  |
-
-**Response:** `204 No Content`
+**Response:** `201 CREATED` — `PriceListingResponse` (id, name, description, category, minPrice, maxPrice, municipalityId, mainImage, active)
 
 ---
 
 #### ReviewController
 
-| #   | Método | Path                                          | Descripción               |
-| --- | ------ | --------------------------------------------- | ------------------------- |
-| 65  | POST   | `/api/v1/reviews`                             | Crear reseña              |
-| 66  | PUT    | `/api/v1/reviews/{id}`                        | Actualizar reseña         |
-| 67  | DELETE | `/api/v1/reviews/{id}`                        | Eliminar reseña           |
-| 68  | GET    | `/api/v1/reviews/{id}`                        | Reseña por ID             |
-| 69  | GET    | `/api/v1/reviews/user/{userId}`               | Reseñas por usuario       |
-| 70  | GET    | `/api/v1/reviews/offer/{offerId}`             | Reseñas por oferta        |
-| 71  | GET    | `/api/v1/reviews/service/{serviceId}/summary` | Resumen de calificaciones |
-
----
+| #   | Método | Path                                          | Descripción                    | Autenticación                          |
+| --- | ------ | --------------------------------------------- | ------------------------------ | -------------------------------------- |
+| 65  | POST   | `/api/v1/reviews`                             | Crear reseña                   | `authentication.principal != null`     |
+| 66  | PUT    | `/api/v1/reviews/{id}`                        | Actualizar reseña              | `authorId == authentication.principal` |
+| 67  | DELETE | `/api/v1/reviews/{id}`                        | Eliminar reseña                | `authorId == authentication.principal` |
+| 68  | GET    | `/api/v1/reviews/{id}`                        | Reseña por ID                  | —                                      |
+| 69  | GET    | `/api/v1/reviews/user/{userId}`               | Reseñas por usuario (paginado) | —                                      |
+| 70  | GET    | `/api/v1/reviews/offer/{offerId}`             | Reseñas por oferta (paginado)  | —                                      |
+| 71  | GET    | `/api/v1/reviews/service/{serviceId}/summary` | Resumen de calificaciones      | —                                      |
 
 ##### POST `/api/v1/reviews` — Crear reseña
-
-**@PreAuthorize:** `authentication.principal != null`
 
 **Request Body:** `@Valid` `ReviewRequest`
 
@@ -1577,215 +867,40 @@ Los siguientes endpoints del dashboard de proveedores y pagos semanales (documen
 | `comment`  | String | `@NotBlank`          | Comentario         |
 | `rating`   | int    | `@Min(1)`, `@Max(5)` | Calificación (1-5) |
 
-**Response:** `201 CREATED` — `ReviewResponse`
-
-| Campo       | Tipo          |
-| ----------- | ------------- |
-| `id`        | String        |
-| `offerId`   | String        |
-| `authorId`  | String        |
-| `comment`   | String        |
-| `rating`    | int           |
-| `createdAt` | LocalDateTime |
-
----
-
-##### PUT `/api/v1/reviews/{id}` — Actualizar reseña
-
-**@PreAuthorize:** `@reviewService.getReviewById(#id).authorId == authentication.principal`
-
-**Path Variables:**
-
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `id`   | String | ID reseña   |
-
-**Request Body:** `@Valid` `ReviewRequest` (mismos campos que creación)
-
-**Response:** `200 OK` — `ReviewResponse`
-
----
-
-##### DELETE `/api/v1/reviews/{id}` — Eliminar reseña
-
-**@PreAuthorize:** `@reviewService.getReviewById(#id).authorId == authentication.principal`
-
-**Path Variables:**
-
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `id`   | String | ID reseña   |
-
-**Response:** `204 No Content`
-
----
-
-##### GET `/api/v1/reviews/{id}` — Reseña por ID
-
-**Path Variables:**
-
-| Nombre | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `id`   | String | ID reseña   |
-
-**Response:** `200 OK` — `ReviewResponse`
-
----
-
-##### GET `/api/v1/reviews/user/{userId}` — Reseñas por usuario (paginado)
-
-**Path Variables:**
-
-| Nombre   | Tipo   | Descripción |
-| -------- | ------ | ----------- |
-| `userId` | String | ID usuario  |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<ReviewResponse>`
-
----
-
-##### GET `/api/v1/reviews/offer/{offerId}` — Reseñas por oferta (paginado)
-
-**Path Variables:**
-
-| Nombre    | Tipo   | Descripción |
-| --------- | ------ | ----------- |
-| `offerId` | String | ID oferta   |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `20`    |
-
-**Response:** `200 OK` — `Page<ReviewResponse>`
-
----
+**Response:** `201 CREATED` — `ReviewResponse` (id, offerId, authorId, comment, rating, createdAt)
 
 ##### GET `/api/v1/reviews/service/{serviceId}/summary` — Resumen de calificaciones
 
-**Path Variables:**
-
-| Nombre      | Tipo   | Descripción |
-| ----------- | ------ | ----------- |
-| `serviceId` | String | ID servicio |
-
-**Response:** `200 OK` — `RatingSummaryResponse`
-
-| Campo          | Tipo   |
-| -------------- | ------ |
-| `average`      | double |
-| `totalReviews` | long   |
+**Response:** `200 OK` — `RatingSummaryResponse` (average: double, totalReviews: long)
 
 ---
 
 #### FavoriteController
 
-| #   | Método | Path                                | Descripción                 |
-| --- | ------ | ----------------------------------- | --------------------------- |
-| 105 | GET    | `/api/v1/offers/favorites`          | Listar favoritos            |
-| 106 | GET    | `/api/v1/offers/favorites/check`    | Verificar si es favorito    |
-| 107 | POST   | `/api/v1/offers/favorites`          | Agregar favorito            |
-| 108 | DELETE | `/api/v1/offers/favorites/{id}`     | Eliminar favorito por ID    |
-| 109 | DELETE | `/api/v1/offers/favorites/by-offer` | Eliminar por usuario+oferta |
-
----
+| #   | Método | Path                                | Descripción                                                                                                       |
+| --- | ------ | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 105 | GET    | `/api/v1/offers/favorites`          | Listar favoritos (query: `userId`)                                                                                |
+| 106 | GET    | `/api/v1/offers/favorites/check`    | Verificar si es favorito (query: `userId`, `offerId`). Response: `FavoriteCheckResponseDTO` (isFavorite: boolean) |
+| 107 | POST   | `/api/v1/offers/favorites`          | Agregar favorito (body: `userId`, `offerId`)                                                                      |
+| 108 | DELETE | `/api/v1/offers/favorites/{id}`     | Eliminar favorito por ID. `204 No Content`                                                                        |
+| 109 | DELETE | `/api/v1/offers/favorites/by-offer` | Eliminar por usuario+oferta (query: `userId`, `offerId`). `204 No Content`                                        |
 
 ##### GET `/api/v1/offers/favorites` — Listar favoritos
 
-**Query Parameters:**
-
-| Nombre   | Tipo   | Requerido | Descripción |
-| -------- | ------ | --------- | ----------- |
-| `userId` | String | Sí        | ID usuario  |
+**Query:** `userId` (String, requerido).
 
 **Response:** `200 OK` — `UserFavoritesResponseDTO`
 
-| Campo    | Tipo                         | Descripción                |
-| -------- | ---------------------------- | -------------------------- |
-| `user`   | ProviderSummary              | Datos del usuario          |
-| `offers` | List\<FavoriteOfferItemDTO\> | Lista de ofertas favoritas |
-
-**ProviderSummary (nested):**
-
-| Campo         | Tipo    |
-| ------------- | ------- |
-| `id`          | String  |
-| `userName`    | String  |
-| `phoneNumber` | String  |
-| `email`       | String  |
-| `role`        | String  |
-| `active`      | Boolean |
-
----
-
-##### GET `/api/v1/offers/favorites/check` — Verificar si es favorito
-
-**Query Parameters:**
-
-| Nombre    | Tipo   | Requerido | Descripción |
-| --------- | ------ | --------- | ----------- |
-| `userId`  | String | Sí        | ID usuario  |
-| `offerId` | UUID   | Sí        | ID oferta   |
-
-**Response:** `200 OK` — `FavoriteCheckResponseDTO`
-
-| Campo        | Tipo    |
-| ------------ | ------- |
-| `isFavorite` | boolean |
-
----
+| Campo    | Tipo                                                               |
+| -------- | ------------------------------------------------------------------ |
+| `user`   | `ProviderSummary` (id, userName, phoneNumber, email, role, active) |
+| `offers` | `List<FavoriteOfferItemDTO>`                                       |
 
 ##### POST `/api/v1/offers/favorites` — Agregar favorito
 
-**Request Body:** `@Valid` `FavoriteRequestDTO`
+**Request Body:** `@Valid` `FavoriteRequestDTO` — `userId` (String, @NotBlank), `offerId` (UUID, @NotNull).
 
-| Campo     | Tipo   | Validación  | Descripción |
-| --------- | ------ | ----------- | ----------- |
-| `userId`  | String | `@NotBlank` | ID usuario  |
-| `offerId` | UUID   | `@NotNull`  | ID oferta   |
-
-**Response:** `201 CREATED` — `FavoriteResponseDTO`
-
-| Campo       | Tipo             |
-| ----------- | ---------------- |
-| `id`        | UUID             |
-| `user`      | ProviderSummary  |
-| `offer`     | Offer (completo) |
-| `createdAt` | LocalDateTime    |
-
----
-
-##### DELETE `/api/v1/offers/favorites/{id}` — Eliminar favorito por ID
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | UUID | ID favorito |
-
-**Response:** `204 No Content`
-
----
-
-##### DELETE `/api/v1/offers/favorites/by-offer` — Eliminar por usuario+oferta
-
-**Query Parameters:**
-
-| Nombre    | Tipo   | Requerido | Descripción |
-| --------- | ------ | --------- | ----------- |
-| `userId`  | String | Sí        | ID usuario  |
-| `offerId` | UUID   | Sí        | ID oferta   |
-
-**Response:** `204 No Content`
+**Response:** `201 CREATED` — `FavoriteResponseDTO` (id: UUID, user: ProviderSummary, offer: Offer, createdAt)
 
 ---
 
@@ -1793,311 +908,63 @@ Los siguientes endpoints del dashboard de proveedores y pagos semanales (documen
 
 #### CityController (Municipality)
 
-| #   | Método | Path                                                                | Descripción                      |
-| --- | ------ | ------------------------------------------------------------------- | -------------------------------- |
-| 72  | POST   | `/api/v1/locations/cities`                                          | Crear ciudad/municipio           |
-| 73  | GET    | `/api/v1/locations/cities`                                          | Listar ciudades                  |
-| 74  | GET    | `/api/v1/locations/cities/{id}`                                     | Ciudad por ID                    |
-| 75  | PUT    | `/api/v1/locations/cities/{id}`                                     | Actualizar ciudad                |
-| 76  | DELETE | `/api/v1/locations/cities/{id}`                                     | Eliminar ciudad                  |
-| 77  | GET    | `/api/v1/locations/cities/by-name/{name}`                           | Buscar por nombre                |
-| 78  | GET    | `/api/v1/locations/cities/by-name/{name}/department/{departmentId}` | Buscar por nombre + departamento |
-| 79  | GET    | `/api/v1/locations/cities/search`                                   | Buscar ciudades (parcial)        |
-| 80  | GET    | `/api/v1/locations/cities/{id}/destinations`                        | Destinos por ciudad              |
-| 81  | GET    | `/api/v1/locations/cities/{cityId}/destinations/type/{type}`        | Destinos por ciudad y tipo       |
-| 82  | GET    | `/api/v1/locations/cities/featured`                                 | Ciudades destacadas              |
-
----
+| #   | Método | Path                                                                | Descripción                                                                    |
+| --- | ------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 72  | POST   | `/api/v1/locations/cities`                                          | Crear ciudad/municipio                                                         |
+| 73  | GET    | `/api/v1/locations/cities`                                          | Listar ciudades (paginado: page, size default 10)                              |
+| 74  | GET    | `/api/v1/locations/cities/{id}`                                     | Ciudad por ID                                                                  |
+| 75  | PUT    | `/api/v1/locations/cities/{id}`                                     | Actualizar ciudad                                                              |
+| 76  | DELETE | `/api/v1/locations/cities/{id}`                                     | Eliminar ciudad. `204 No Content`                                              |
+| 77  | GET    | `/api/v1/locations/cities/by-name/{name}`                           | Buscar por nombre                                                              |
+| 78  | GET    | `/api/v1/locations/cities/by-name/{name}/department/{departmentId}` | Buscar por nombre + departamento                                               |
+| 79  | GET    | `/api/v1/locations/cities/search`                                   | Buscar ciudades (parcial, sin acentos). Query: `q` (requerido), `page`, `size` |
+| 80  | GET    | `/api/v1/locations/cities/{id}/destinations`                        | Destinos por ciudad                                                            |
+| 81  | GET    | `/api/v1/locations/cities/{cityId}/destinations/type/{type}`        | Destinos por ciudad y tipo (paginado)                                          |
+| 82  | GET    | `/api/v1/locations/cities/featured`                                 | Ciudades destacadas (paginado)                                                 |
 
 ##### POST `/api/v1/locations/cities` — Crear ciudad
 
-**Request Body:** `@Valid` `MunicipalityRequestDTO`
+**Request Body:** `@Valid` `MunicipalityRequestDTO` — `name` (String), `imageUrl` (String), `departmentId` (Long), `featured` (Boolean).
 
-| Campo          | Tipo    | Descripción     |
-| -------------- | ------- | --------------- |
-| `name`         | String  | Nombre          |
-| `imageUrl`     | String  | URL imagen      |
-| `departmentId` | Long    | ID departamento |
-| `featured`     | Boolean | Destacada       |
-
-**Response:** `201 CREATED` — `MunicipalityResponseDTO`
-
-| Campo        | Tipo                                               |
-| ------------ | -------------------------------------------------- |
-| `id`         | Long                                               |
-| `name`       | String                                             |
-| `imageUrl`   | String                                             |
-| `featured`   | Boolean                                            |
-| `department` | DepartmentMunicipalityDTO (id: Long, name: String) |
-
----
-
-##### GET `/api/v1/locations/cities` — Listar ciudades (paginado)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<MunicipalityResponseDTO>`
-
----
-
-##### GET `/api/v1/locations/cities/{id}` — Ciudad por ID
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID ciudad   |
-
-**Response:** `200 OK` — `MunicipalityResponseDTO` | `404 Not Found`
-
----
-
-##### PUT `/api/v1/locations/cities/{id}` — Actualizar ciudad
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID ciudad   |
-
-**Request Body:** `@Valid` `MunicipalityRequestDTO` (mismos campos que creación)
-
-**Response:** `200 OK` — `MunicipalityResponseDTO`
-
----
-
-##### DELETE `/api/v1/locations/cities/{id}` — Eliminar ciudad
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID ciudad   |
-
-**Response:** `204 No Content`
-
----
-
-##### GET `/api/v1/locations/cities/by-name/{name}` — Buscar por nombre
-
-**Path Variables:**
-
-| Nombre | Tipo   | Descripción   |
-| ------ | ------ | ------------- |
-| `name` | String | Nombre ciudad |
-
-**Response:** `200 OK` — `MunicipalityResponseDTO` | `404 Not Found`
-
----
-
-##### GET `/api/v1/locations/cities/by-name/{name}/department/{departmentId}` — Buscar por nombre + departamento
-
-**Path Variables:**
-
-| Nombre         | Tipo   | Descripción     |
-| -------------- | ------ | --------------- |
-| `name`         | String | Nombre          |
-| `departmentId` | Long   | ID departamento |
-
-**Response:** `200 OK` — `MunicipalityResponseDTO` | `404 Not Found`
-
----
-
-##### GET `/api/v1/locations/cities/search` — Buscar ciudades (parcial, sin acentos)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `q`    | String  | Sí        | —       |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<MunicipalityResponseDTO>`
-
----
+**Response:** `201 CREATED` — `MunicipalityResponseDTO` (id, name, imageUrl, featured, department: {id, name})
 
 ##### GET `/api/v1/locations/cities/{id}/destinations` — Destinos por ciudad
 
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID ciudad   |
-
-**Response:** `200 OK` — `List<DestinationResponseDTO>`
-
-**DestinationResponseDTO:**
-
-| Campo          | Tipo                    |
-| -------------- | ----------------------- |
-| `id`           | Long                    |
-| `name`         | String                  |
-| `description`  | String                  |
-| `municipality` | MunicipalityResponseDTO |
-| `latitude`     | Double                  |
-| `longitude`    | Double                  |
-| `active`       | Boolean                 |
-| `featured`     | Boolean                 |
-| `imageUrls`    | List\<String\>          |
-
----
-
-##### GET `/api/v1/locations/cities/{cityId}/destinations/type/{type}` — Destinos por ciudad y tipo (paginado)
-
-**Path Variables:**
-
-| Nombre   | Tipo   | Descripción  |
-| -------- | ------ | ------------ |
-| `cityId` | Long   | ID ciudad    |
-| `type`   | String | Tipo destino |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<DestinationResponseDTO>`
-
----
-
-##### GET `/api/v1/locations/cities/featured` — Ciudades destacadas (paginado)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<MunicipalityResponseDTO>`
+**Response:** `200 OK` — `List<DestinationResponseDTO>` (id, name, description, municipality, latitude, longitude, active, featured, imageUrls)
 
 ---
 
 #### DepartmentController
 
-| #   | Método | Path                                        | Descripción             |
-| --- | ------ | ------------------------------------------- | ----------------------- |
-| 83  | POST   | `/api/v1/locations/departments`             | Crear departamento      |
-| 84  | GET    | `/api/v1/locations/departments`             | Listar departamentos    |
-| 85  | GET    | `/api/v1/locations/departments/{id}`        | Departamento por ID     |
-| 86  | PUT    | `/api/v1/locations/departments/{id}`        | Actualizar departamento |
-| 87  | DELETE | `/api/v1/locations/departments/{id}`        | Eliminar departamento   |
-| 88  | GET    | `/api/v1/locations/departments/{id}/cities` | Con municipios          |
+| #   | Método | Path                                        | Descripción                                                                                                                          |
+| --- | ------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 83  | POST   | `/api/v1/locations/departments`             | Crear departamento (body: name)                                                                                                      |
+| 84  | GET    | `/api/v1/locations/departments`             | Listar departamentos (paginado)                                                                                                      |
+| 85  | GET    | `/api/v1/locations/departments/{id}`        | Departamento por ID                                                                                                                  |
+| 86  | PUT    | `/api/v1/locations/departments/{id}`        | Actualizar departamento                                                                                                              |
+| 87  | DELETE | `/api/v1/locations/departments/{id}`        | Eliminar departamento. `204 No Content`                                                                                              |
+| 88  | GET    | `/api/v1/locations/departments/{id}/cities` | Departamento con municipios. Response: `DepartmentWithMunicipalitiesDTO` (id, name, municipalities: List\<MunicipalityResponseDTO\>) |
 
----
-
-##### POST `/api/v1/locations/departments` — Crear departamento
-
-**Request Body:** `@Valid` `DepartmentRequestDTO`
-
-| Campo  | Tipo   | Descripción |
-| ------ | ------ | ----------- |
-| `name` | String | Nombre      |
-
-**Response:** `201 CREATED` — `DepartmentResponseDTO`
-
-| Campo  | Tipo   |
-| ------ | ------ |
-| `id`   | Long   |
-| `name` | String |
-
----
-
-##### GET `/api/v1/locations/departments` — Listar departamentos (paginado)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<DepartmentResponseDTO>`
-
----
-
-##### GET `/api/v1/locations/departments/{id}` — Departamento por ID
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID depto    |
-
-**Response:** `200 OK` — `DepartmentResponseDTO` | `404 Not Found`
-
----
-
-##### PUT `/api/v1/locations/departments/{id}` — Actualizar departamento
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID depto    |
-
-**Request Body:** `@Valid` `DepartmentRequestDTO`
-
-**Response:** `200 OK` — `DepartmentResponseDTO`
-
----
-
-##### DELETE `/api/v1/locations/departments/{id}` — Eliminar departamento
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID depto    |
-
-**Response:** `204 No Content`
-
----
-
-##### GET `/api/v1/locations/departments/{id}/cities` — Departamento con municipios
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID depto    |
-
-**Response:** `200 OK` — `DepartmentWithMunicipalitiesDTO`
-
-| Campo            | Tipo                            |
-| ---------------- | ------------------------------- |
-| `id`             | Long                            |
-| `name`           | String                          |
-| `municipalities` | List\<MunicipalityResponseDTO\> |
+**Response base:** `DepartmentResponseDTO` (id: Long, name: String)
 
 ---
 
 #### DestinationController
 
-| #   | Método | Path                                                          | Descripción         |
-| --- | ------ | ------------------------------------------------------------- | ------------------- |
-| 89  | POST   | `/api/v1/locations/destinations`                              | Crear destino       |
-| 90  | GET    | `/api/v1/locations/destinations`                              | Listar destinos     |
-| 91  | GET    | `/api/v1/locations/destinations/active`                       | Destinos activos    |
-| 92  | GET    | `/api/v1/locations/destinations/{id}`                         | Destino por ID      |
-| 93  | PUT    | `/api/v1/locations/destinations/{id}`                         | Actualizar destino  |
-| 94  | DELETE | `/api/v1/locations/destinations/{id}`                         | Eliminar destino    |
-| 95  | GET    | `/api/v1/locations/destinations/by-city/{cityId}`             | Destinos por ciudad |
-| 96  | GET    | `/api/v1/locations/destinations/by-city/{cityId}/active`      | Activos por ciudad  |
-| 97  | GET    | `/api/v1/locations/destinations/by-city/{cityId}/type/{type}` | Por ciudad y tipo   |
-| 98  | GET    | `/api/v1/locations/destinations/featured`                     | Destinos destacados |
+| #   | Método | Path                                                          | Descripción                        |
+| --- | ------ | ------------------------------------------------------------- | ---------------------------------- |
+| 89  | POST   | `/api/v1/locations/destinations`                              | Crear destino                      |
+| 90  | GET    | `/api/v1/locations/destinations`                              | Listar destinos (paginado)         |
+| 91  | GET    | `/api/v1/locations/destinations/active`                       | Destinos activos (paginado)        |
+| 92  | GET    | `/api/v1/locations/destinations/{id}`                         | Destino por ID                     |
+| 93  | PUT    | `/api/v1/locations/destinations/{id}`                         | Actualizar destino                 |
+| 94  | DELETE | `/api/v1/locations/destinations/{id}`                         | Eliminar destino. `204 No Content` |
+| 95  | GET    | `/api/v1/locations/destinations/by-city/{cityId}`             | Destinos por ciudad                |
+| 96  | GET    | `/api/v1/locations/destinations/by-city/{cityId}/active`      | Activos por ciudad                 |
+| 97  | GET    | `/api/v1/locations/destinations/by-city/{cityId}/type/{type}` | Por ciudad y tipo                  |
+| 98  | GET    | `/api/v1/locations/destinations/featured`                     | Destinos destacados (paginado)     |
 
 **Tipos de destino:** `VIEWPOINT`, `SPOT`, `HISTORICAL_SITE`, `MUSEUM`, `PARK`, `BEACH`, `NATURAL_RESERVE`
-
----
 
 ##### POST `/api/v1/locations/destinations` — Crear destino
 
@@ -2116,248 +983,20 @@ Los siguientes endpoints del dashboard de proveedores y pagos semanales (documen
 | `featured`        | Boolean                     | Destacado    |
 | `images`          | List\<ImageDestinationDTO\> | Imágenes     |
 
-**Response:** `201 CREATED` — `DestinationResponseDTO`
-
-| Campo          | Tipo                    |
-| -------------- | ----------------------- |
-| `id`           | Long                    |
-| `name`         | String                  |
-| `description`  | String                  |
-| `municipality` | MunicipalityResponseDTO |
-| `latitude`     | Double                  |
-| `longitude`    | Double                  |
-| `active`       | Boolean                 |
-| `featured`     | Boolean                 |
-| `imageUrls`    | List\<String\>          |
-
----
-
-##### GET `/api/v1/locations/destinations` — Listar destinos (paginado)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<DestinationResponseDTO>`
-
----
-
-##### GET `/api/v1/locations/destinations/active` — Destinos activos (paginado)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<DestinationResponseDTO>`
-
----
-
-##### GET `/api/v1/locations/destinations/{id}` — Destino por ID
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID destino  |
-
-**Response:** `200 OK` — `DestinationResponseDTO` | `404 Not Found`
-
----
-
-##### PUT `/api/v1/locations/destinations/{id}` — Actualizar destino
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID destino  |
-
-**Request Body:** `@Valid` `DestinationRequestDTO` (mismos campos que creación)
-
-**Response:** `200 OK` — `DestinationResponseDTO`
-
----
-
-##### DELETE `/api/v1/locations/destinations/{id}` — Eliminar destino
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID destino  |
-
-**Response:** `204 No Content`
-
----
-
-##### GET `/api/v1/locations/destinations/by-city/{cityId}` — Destinos por ciudad
-
-**Path Variables:**
-
-| Nombre   | Tipo | Descripción |
-| -------- | ---- | ----------- |
-| `cityId` | Long | ID ciudad   |
-
-**Response:** `200 OK` — `List<DestinationResponseDTO>`
-
----
-
-##### GET `/api/v1/locations/destinations/by-city/{cityId}/active` — Activos por ciudad
-
-**Path Variables:**
-
-| Nombre   | Tipo | Descripción |
-| -------- | ---- | ----------- |
-| `cityId` | Long | ID ciudad   |
-
-**Response:** `200 OK` — `List<DestinationResponseDTO>`
-
----
-
-##### GET `/api/v1/locations/destinations/by-city/{cityId}/type/{type}` — Por ciudad y tipo
-
-**Path Variables:**
-
-| Nombre   | Tipo   | Descripción  |
-| -------- | ------ | ------------ |
-| `cityId` | Long   | ID ciudad    |
-| `type`   | String | Tipo destino |
-
-**Response:** `200 OK` — `List<DestinationResponseDTO>`
-
----
-
-##### GET `/api/v1/locations/destinations/featured` — Destinos destacados (paginado)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<DestinationResponseDTO>`
+**Response:** `201 CREATED` — `DestinationResponseDTO` (id, name, description, municipality, latitude, longitude, active, featured, imageUrls)
 
 ---
 
 #### ImageDestinationController
 
-| #   | Método | Path                                                                   | Descripción            |
-| --- | ------ | ---------------------------------------------------------------------- | ---------------------- |
-| 99  | GET    | `/api/v1/locations/images/by-destination/{destinationId}`              | Imágenes de un destino |
-| 100 | POST   | `/api/v1/locations/images/by-destination/{destinationId}`              | Crear imagen por URL   |
-| 101 | POST   | `/api/v1/locations/images/upload/by-destination/{destinationId}`       | Subir archivo          |
-| 102 | POST   | `/api/v1/locations/images/batch-upload/by-destination/{destinationId}` | Subir múltiples        |
-| 103 | PUT    | `/api/v1/locations/images/{id}`                                        | Actualizar imagen      |
-| 104 | DELETE | `/api/v1/locations/images/{id}`                                        | Eliminar imagen        |
-
----
-
-##### GET `/api/v1/locations/images/by-destination/{destinationId}` — Imágenes
-
-**Path Variables:**
-
-| Nombre          | Tipo | Descripción |
-| --------------- | ---- | ----------- |
-| `destinationId` | Long | ID destino  |
-
-**Response:** `200 OK` — `List<ImageDestinationDTO>`
-
-**ImageDestinationDTO:**
-
-| Campo           | Tipo   |
-| --------------- | ------ |
-| `id`            | Long   |
-| `url`           | String |
-| `publicId`      | String |
-| `destinationId` | Long   |
-
----
-
-##### POST `/api/v1/locations/images/by-destination/{destinationId}` — Crear imagen por URL
-
-**Path Variables:**
-
-| Nombre          | Tipo | Descripción |
-| --------------- | ---- | ----------- |
-| `destinationId` | Long | ID destino  |
-
-**Request Body:** `@Valid` `ImageDestinationDTO`
-
-| Campo      | Tipo   | Descripción   |
-| ---------- | ------ | ------------- |
-| `url`      | String | URL imagen    |
-| `publicId` | String | ID Cloudinary |
-
-**Response:** `201 CREATED` — `ImageDestinationDTO`
-
----
-
-##### POST `/api/v1/locations/images/upload/by-destination/{destinationId}` — Subir imagen
-
-**Path Variables:**
-
-| Nombre          | Tipo | Descripción |
-| --------------- | ---- | ----------- |
-| `destinationId` | Long | ID destino  |
-
-**Request Parameters (multipart):**
-
-| Nombre | Tipo          | Requerido |
-| ------ | ------------- | --------- |
-| `file` | MultipartFile | Sí        |
-
-**Response:** `201 CREATED` — `ImageDestinationDTO`
-
----
-
-##### POST `/api/v1/locations/images/batch-upload/by-destination/{destinationId}` — Subir múltiples
-
-**Path Variables:**
-
-| Nombre          | Tipo | Descripción |
-| --------------- | ---- | ----------- |
-| `destinationId` | Long | ID destino  |
-
-**Request Parameters (multipart):**
-
-| Nombre  | Tipo                  | Requerido |
-| ------- | --------------------- | --------- |
-| `files` | List\<MultipartFile\> | Sí        |
-
-**Response:** `201 CREATED` — `List<ImageDestinationDTO>`
-
----
-
-##### PUT `/api/v1/locations/images/{id}` — Actualizar imagen
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID imagen   |
-
-**Request Body:** `@Valid` `ImageDestinationDTO`
-
-**Response:** `200 OK` — `ImageDestinationDTO`
-
----
-
-##### DELETE `/api/v1/locations/images/{id}` — Eliminar imagen
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción |
-| ------ | ---- | ----------- |
-| `id`   | Long | ID imagen   |
-
-**Response:** `204 No Content`
+| #   | Método | Path                                                                   | Descripción                                                                                      |
+| --- | ------ | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 99  | GET    | `/api/v1/locations/images/by-destination/{destinationId}`              | Imágenes de un destino. Response: `List<ImageDestinationDTO>` (id, url, publicId, destinationId) |
+| 100 | POST   | `/api/v1/locations/images/by-destination/{destinationId}`              | Crear imagen por URL (body: url, publicId)                                                       |
+| 101 | POST   | `/api/v1/locations/images/upload/by-destination/{destinationId}`       | Subir archivo (multipart: file)                                                                  |
+| 102 | POST   | `/api/v1/locations/images/batch-upload/by-destination/{destinationId}` | Subir múltiples (multipart: files)                                                               |
+| 103 | PUT    | `/api/v1/locations/images/{id}`                                        | Actualizar imagen (body: url, publicId)                                                          |
+| 104 | DELETE | `/api/v1/locations/images/{id}`                                        | Eliminar imagen. `204 No Content`                                                                |
 
 ---
 
@@ -2365,99 +1004,35 @@ Los siguientes endpoints del dashboard de proveedores y pagos semanales (documen
 
 #### NotificationController
 
-| #   | Método | Path                                 | Descripción                |
-| --- | ------ | ------------------------------------ | -------------------------- |
-| 110 | GET    | `/api/v1/notifications`              | Notificaciones del usuario |
-| 111 | PATCH  | `/api/v1/notifications/{id}/read`    | Marcar como leída          |
-| 112 | GET    | `/api/v1/notifications/unread-count` | Contar no leídas           |
+| #   | Método | Path                                 | Descripción                                                                                  |
+| --- | ------ | ------------------------------------ | -------------------------------------------------------------------------------------------- |
+| 110 | GET    | `/api/v1/notifications`              | Notificaciones del usuario (query: userId, page, size). Response: `Page<NotificationEntity>` |
+| 111 | PATCH  | `/api/v1/notifications/{id}/read`    | Marcar como leída (query: userId). `200 OK`                                                  |
+| 112 | GET    | `/api/v1/notifications/unread-count` | Contar no leídas (query: userId). Response: `long`                                           |
 
----
+**NotificationEntity (MongoDB):** id, userId, notificationType, title, message, metadata, createdAt, read, deliveries: List\<NotificationDeliveryStatus\> (channel, delivered, deliveredAt).
 
-##### GET `/api/v1/notifications` — Notificaciones del usuario (paginado)
+**NotificationType:** `BOOKING_CONFIRMED`, `BOOKING_CANCELLED`, `BOOKING_COMPLETED`, `COMPLETION_REQUESTED`, `PAYMENT_FAILED`, `NEW_REVIEW`, `SYSTEM_ALERT`, `BOOKING_REMINDER`, `SETTLEMENT_PAID`
 
-**Query Parameters:**
+**NotificationChannelType:** `EMAIL`, `IN_APP`
 
-| Nombre   | Tipo    | Requerido | Descripción |
-| -------- | ------- | --------- | ----------- |
-| `userId` | String  | Sí        | ID usuario  |
-| `page`   | Integer | No        | Página      |
-| `size`   | Integer | No        | Tamaño      |
-
-**Response:** `200 OK` — `Page<NotificationEntity>`
-
-**NotificationEntity (MongoDB):**
-
-| Campo              | Tipo                               | Descripción       |
-| ------------------ | ---------------------------------- | ----------------- |
-| `id`               | String                             | ID                |
-| `userId`           | String                             | ID usuario        |
-| `notificationType` | NotificationType                   | Tipo notificación |
-| `deliveries`       | List\<NotificationDeliveryStatus\> | Entregas          |
-| `title`            | String                             | Título            |
-| `message`          | String                             | Mensaje           |
-| `metadata`         | Map\<String, Object\>              | Metadata          |
-| `createdAt`        | LocalDateTime                      | Fecha creación    |
-| `read`             | Boolean                            | Leída             |
-
-**NotificationType enum:** `BOOKING_CONFIRMED`, `BOOKING_CANCELLED`, `BOOKING_COMPLETED`, `COMPLETION_REQUESTED`, `PAYMENT_FAILED`, `NEW_REVIEW`, `SYSTEM_ALERT`, `BOOKING_REMINDER`, `SETTLEMENT_PAID`
-
-**NotificationDeliveryStatus (nested):**
-
-| Campo         | Tipo                                        |
-| ------------- | ------------------------------------------- |
-| `channel`     | NotificationChannelType (`EMAIL`, `IN_APP`) |
-| `delivered`   | Boolean                                     |
-| `deliveredAt` | LocalDateTime                               |
-
----
-
-##### PATCH `/api/v1/notifications/{id}/read` — Marcar como leída
-
-**Path Variables:**
-
-| Nombre | Tipo   | Descripción     |
-| ------ | ------ | --------------- |
-| `id`   | String | ID notificación |
-
-**Query Parameters:**
-
-| Nombre   | Tipo   | Requerido | Descripción |
-| -------- | ------ | --------- | ----------- |
-| `userId` | String | Sí        | ID usuario  |
-
-**Response:** `200 OK`
-
----
-
-##### GET `/api/v1/notifications/unread-count` — Contar no leídas
-
-**Query Parameters:**
-
-| Nombre   | Tipo   | Requerido | Descripción |
-| -------- | ------ | --------- | ----------- |
-| `userId` | String | Sí        | ID usuario  |
-
-**Response:** `200 OK` — `long`
+> Ver `WEBSOCKET_NOTIFICATIONS.md` para el flujo completo de notificaciones en tiempo real vía WebSocket.
 
 ---
 
 ### 3.6 FestivityController (experience-service)
 
-Festividades culturales colombianas (Carnaval de Barranquilla, Feria de las Flores, etc.).
-Son entidades informativas de calendario cultural, **no** ofertas vendibles — a diferencia de `EventOffer`,
-las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de administración del sistema.
+Festividades culturales colombianas (Carnaval de Barranquilla, Feria de las Flores, etc.). Son entidades informativas de calendario cultural, **no** ofertas vendibles — a diferencia de `EventOffer`, las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de administración del sistema.
 
-| #   | Método | Path                                   | Descripción      |
-| --- | ------ | -------------------------------------- | ---------------- |
-| 113 | POST   | `/api/v1/festivities`                  | Crear festividad |
-| 114 | GET    | `/api/v1/festivities`                  | Listar todas     |
-| 115 | GET    | `/api/v1/festivities/{id}`             | Por ID           |
-| 116 | PUT    | `/api/v1/festivities/{id}`             | Actualizar       |
-| 117 | DELETE | `/api/v1/festivities/{id}`             | Eliminar         |
-| 118 | GET    | `/api/v1/festivities/by-city/{cityId}` | Por ciudad       |
-| 119 | GET    | `/api/v1/festivities/upcoming`         | Próximas         |
-
----
+| #   | Método | Path                                   | Descripción                                   |
+| --- | ------ | -------------------------------------- | --------------------------------------------- |
+| 113 | POST   | `/api/v1/festivities`                  | Crear festividad                              |
+| 114 | GET    | `/api/v1/festivities`                  | Listar todas (paginado)                       |
+| 115 | GET    | `/api/v1/festivities/{id}`             | Por ID                                        |
+| 116 | PUT    | `/api/v1/festivities/{id}`             | Actualizar                                    |
+| 117 | DELETE | `/api/v1/festivities/{id}`             | Eliminar. `204 No Content`                    |
+| 118 | GET    | `/api/v1/festivities/by-city/{cityId}` | Por ciudad (paginado)                         |
+| 119 | GET    | `/api/v1/festivities/upcoming`         | Próximas. Response: `List<FestivityResponse>` |
 
 ##### POST `/api/v1/festivities` — Crear festividad
 
@@ -2473,116 +1048,71 @@ las festividades no tienen proveedor, precio, ni capacidad. Se crean a nivel de 
 | `image`       | String    | —           | URL imagen   |
 | `active`      | Boolean   | —           | Activo       |
 
-**Response:** `201 CREATED` — `FestivityResponse`
-
-| Campo         | Tipo      |
-| ------------- | --------- |
-| `id`          | UUID      |
-| `name`        | String    |
-| `description` | String    |
-| `startDate`   | LocalDate |
-| `endDate`     | LocalDate |
-| `cityId`      | Long      |
-| `image`       | String    |
-| `active`      | Boolean   |
-
----
-
-##### GET `/api/v1/festivities` — Listar todas (paginado)
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<FestivityResponse>`
-
----
-
-##### GET `/api/v1/festivities/{id}` — Por ID
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción   |
-| ------ | ---- | ------------- |
-| `id`   | UUID | ID festividad |
-
-**Response:** `200 OK` — `FestivityResponse` | `404 Not Found`
-
----
-
-##### PUT `/api/v1/festivities/{id}` — Actualizar
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción   |
-| ------ | ---- | ------------- |
-| `id`   | UUID | ID festividad |
-
-**Request Body:** `@Valid` `FestivityRequest` (mismos campos que creación)
-
-**Response:** `200 OK` — `FestivityResponse`
-
----
-
-##### DELETE `/api/v1/festivities/{id}` — Eliminar
-
-**Path Variables:**
-
-| Nombre | Tipo | Descripción   |
-| ------ | ---- | ------------- |
-| `id`   | UUID | ID festividad |
-
-**Response:** `204 No Content`
-
----
-
-##### GET `/api/v1/festivities/by-city/{cityId}` — Festividades por ciudad (paginado)
-
-**Path Variables:**
-
-| Nombre   | Tipo | Descripción |
-| -------- | ---- | ----------- |
-| `cityId` | Long | ID ciudad   |
-
-**Query Parameters:**
-
-| Nombre | Tipo    | Requerido | Default |
-| ------ | ------- | --------- | ------- |
-| `page` | Integer | No        | `0`     |
-| `size` | Integer | No        | `10`    |
-
-**Response:** `200 OK` — `Page<FestivityResponse>`
-
----
-
-##### GET `/api/v1/festivities/upcoming` — Próximas festividades
-
-**Response:** `200 OK` — `List<FestivityResponse>`
+**Response:** `201 CREATED` — `FestivityResponse` (id, name, description, startDate, endDate, cityId, image, active)
 
 ---
 
 ## 4. Seguridad
-
-### 4.1 Autenticación
 
 El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 
 1. App móvil llama a `POST /api/v1/auth/login` (user-service) con email + password
 2. User-service delega en Keycloak vía password grant y devuelve `access_token` + `refresh_token`
 3. La app envía el token en header `Authorization: Bearer <token>` en todas las requests
-4. Gateway valida el JWT contra Keycloak y extrae los roles
+4. Gateway valida el JWT contra Keycloak, extrae los roles del claim `realm_access.roles` y los propaga a los microservicios internos como headers `X-User-Id` / `X-User-Roles`
+5. Cada microservicio (incluido `user-service`) aplica `@PreAuthorize` por endpoint a partir de esos roles
+
+### 4.1 Roles de negocio
+
+| Rol        | Significado                    | Usuario semilla      |
+| ---------- | ------------------------------ | -------------------- |
+| `USER`     | Turista / usuario regular      | `turista@test.com`   |
+| `PROVIDER` | Proveedor de servicios         | `proveedor@test.com` |
+| `ADMIN`    | Administrador de la plataforma | `admin@turiscol.com` |
+
+> El rol `ADMIN` es de negocio (realm `turiscol-realm`), **distinto** del admin de la consola de Keycloak (`admin/admin`, realm `master`, sección 6).
+
+### 4.2 Niveles de autorización usados en las tablas de endpoints
+
+| Nivel             | Significa                                                                                               |
+| ----------------- | ------------------------------------------------------------------------------------------------------- |
+| **Público**       | No requiere token (o solo requiere estar autenticado, sin rol específico)                               |
+| **ADMIN**         | Requiere `ROLE_ADMIN`. El front debe ocultar/bloquear la acción si el usuario no es admin               |
+| **ADMIN o dueño** | `ROLE_ADMIN`, o el `{id}` de la ruta debe coincidir con el ID (sub de Keycloak) del usuario autenticado |
+
+Si el frontend llama un endpoint sin el rol requerido, el backend responde `403 Forbidden`.
+
+### 4.3 Bloqueos y vigencia del token
+
+**Códigos de error relacionados:**
+
+| Código          | Cuándo                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `403 Forbidden` | Login o refresh de un usuario bloqueado; endpoint llamado sin el rol requerido (user-service y experience-service) |
+| `409 Conflict`  | El proveedor intenta activar una oferta bloqueada por un ADMIN                                                     |
+
+**Vigencia del token:** el access token dura **60 minutos** (antes ~5 min por defecto de Keycloak). Las respuestas de `/auth/login`, `/auth/refresh` y `/auth/client-login` incluyen `expires_in` (access token) y `refresh_expires_in` (refresh token), ambos en segundos, para que el frontend programe el refresh.
+
+| Parámetro (user-service)                 | Default             | Realm Keycloak          |
+| ---------------------------------------- | ------------------- | ----------------------- |
+| `keycloak.token.access-lifespan-seconds` | `3600` (60 min)     | `accessTokenLifespan`   |
+| `keycloak.token.sso-idle-seconds`        | `604800` (7 días)   | `ssoSessionIdleTimeout` |
+| `keycloak.token.sso-max-seconds`         | `2592000` (30 días) | `ssoSessionMaxLifespan` |
+
+`user-service` aplica estos valores al realm al arrancar (y están en `keycloak/turiscol-realm.json` para entornos nuevos). Si no puede actualizar el realm solo registra un warning y el arranque continúa.
+
+> **Ventana de bloqueo:** el gateway solo valida firma y expiración del JWT. Un usuario bloqueado conserva su access token vigente hasta 60 minutos como máximo; el refresh queda cortado de inmediato.
+
+---
 
 ## 5. Sistema de Eventos (RabbitMQ)
 
-### 5.1 Exchange
+### Exchange
 
 - **Nombre:** `domain.events`
 - **Tipo:** TopicExchange (durable)
 
-### 5.2 Colas y Bindings
+### Colas y Bindings
 
 | Cola                       | Routing Keys                                         | Dead Letter               | Servicio             |
 | -------------------------- | ---------------------------------------------------- | ------------------------- | -------------------- |
@@ -2591,7 +1121,7 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 | `payment.booking.queue`    | `booking.*`                                          | `booking.events.dlq`      | booking-service      |
 | `notification.events`      | `booking.*`, `payment.*`, `review.*`, `settlement.*` | `notification.events.dlq` | notification-service |
 
-### 5.3 Eventos del Dominio
+### Eventos del Dominio
 
 | Evento                         | Publica         | Consume                               | Descripción                              |
 | ------------------------------ | --------------- | ------------------------------------- | ---------------------------------------- |
@@ -2604,10 +1134,10 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 | `payment.failed`               | payment-module  | booking-service, notification-service | Pago fallido                             |
 | `settlement.paid`              | booking-service | notification-service                  | Pago semanal transferido al proveedor    |
 
-**Notas del notification-service:**
+> Cada evento genera una notificación in-app (MongoDB + push WebSocket) y, si el payload incluye `email`, además un email con su template Thymeleaf.
+> Para `settlement.paid` el destinatario es el **proveedor** (`providerId` del payload), no el turista.
 
-- Cada evento genera una notificación in-app (persistida en MongoDB + push WebSocket) y, si el payload incluye `email`, además un email con su template Thymeleaf (`booking-completed`, `completion-requested`, `settlement-paid`, etc.).
-- Para `settlement.paid` el destinatario no es el turista (`userId`) sino el **proveedor** (`providerId` del payload).
+---
 
 ## 6. Acceso a servicios
 
@@ -2621,27 +1151,17 @@ El Gateway usa **OAuth2 Resource Server** con JWT emitido por **Keycloak**.
 | Redis                | http://localhost:6379                 |
 | WebSocket (STOMP)    | ws://localhost:8080/ws (Gateway)      |
 
-**Nota:** Antes de iniciar los servicios, crear el archivo `.env` en la raíz del proyecto con las variables necesarias para Keycloak (ver `.env.example`). Sin este archivo, el user-service no arranca.
+> Antes de iniciar los servicios, crear el archivo `.env` en la raíz del proyecto con las variables necesarias para Keycloak (ver `.env.example`). Sin este archivo, el user-service no arranca.
 
----
+### Usuarios semilla (realm `turiscol-realm`, no confundir con el admin de Keycloak de arriba)
 
-## 7. Mejoras pendientes (tener en cuenta)
+| Email              | Password | Rol      |
+| ------------------ | -------- | -------- |
+| turista@test.com   | test123  | USER     |
+| proveedor@test.com | test123  | PROVIDER |
+| admin@turiscol.com | admin123 | ADMIN    |
 
-| Funcionalidad                                                                           | Prioridad                                         |
-| --------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| Sistema de pagos semanales a proveedores (comisiones, settlements, dashboard)           | ✅ Implementado (ver DOCUMENTACION_PAGOS.md)      |
-| MercadoPago Checkout Pro + Webhooks + Reembolsos                                        | ✅ Implementado (Checkout Pro, webhooks, refunds) |
-| Onboarding bancario de proveedores (endpoint dedicado)                                  | ✅ Implementado (PUT /user/providers/{id}/onboarding/banking) |
-| Forgot password vía email (Keycloak)                                                    | ✅ Implementado (POST /auth/forgot-password)       |
-| Chatbot con LLM (Function Calling)                                                      | 📋 Documentado (ver DOCUMENTACION_CHATBOT.md)     |
-| Pasarela de pago adicional (Stripe/Wompi)                                                | 🟡 Media                                          |
-| Sistema de recomendaciones por IA                                                        | Alta                                              |
-| Push notifications (FCM)                                                                 | Media                                             |
-| Cleanup de notificaciones viejas (TTL)                                                  | Baja                                              |
-
-**Contexto:** Para push notifications se necesita Firebase Cloud Messaging (FCM) + plugin `@capacitor/push-notifications` en Ionic.
-
----
+> Estos usuarios se importan desde `keycloak/turiscol-realm.json` y se sincronizan al arrancar `user-service` (`UserDataInitializer`). El admin de negocio (`ADMIN`) es distinto del admin de consola de Keycloak (`admin/admin`, fila "Keycloak Admin" arriba).
 
 ## 8. Configuración de MercadoPago — Webhooks y notificaciones
 
@@ -2653,7 +1173,7 @@ Cuando se crea una Preference de Checkout Pro en `MercadoPagoProvider`, se inclu
 String webhookUrl = appBaseUrl + "/api/v1/webhooks/payments";
 ```
 
-MercadoPago **envía automáticamente** notificaciones POST a esa URL cada vez que cambia el estado de un pago. No necesitás configurar nada adicional en el backend.
+MercadoPago **envía automáticamente** notificaciones POST a esa URL cada vez que cambia el estado de un pago.
 
 ### 8.2 ¿Qué llega al webhook?
 
@@ -2676,44 +1196,70 @@ El backend procesa así:
 5. Actualiza el estado a `PAID`
 6. Publica evento `payment.completed` en RabbitMQ → BookingService confirma la reserva
 
-### 8.3 Desarrollo local — ngrok
+### 8.3 Variables de entorno
 
-**Problema:** MercadoPago necesita poder alcanzar tu URL por internet. Si estás corriendo localmente, MercadoPago no puede llegar a `localhost:8080`.
+| Variable                     | Descripción                                                | Ejemplo                           |
+| ---------------------------- | ---------------------------------------------------------- | --------------------------------- |
+| `APP_BASE_URL`               | URL pública del backend                                    | `https://abcd1234.ngrok-free.app` |
+| `PAYMENT_PROVIDER`           | Proveedor activo: `MOCK` o `MERCADOPAGO`                   | `MERCADOPAGO`                     |
+| `MERCADOPAGO_ACCESS_TOKEN`   | Token de acceso TEST o PROD                                | `TEST-2109324389320804-...`       |
+| `MERCADOPAGO_PUBLIC_KEY`     | Public key para el widget de pago del frontend             | `TEST-de8789eb-...`               |
+| `MERCADOPAGO_WEBHOOK_SECRET` | Secret para verificar la firma HMAC-SHA256 de los webhooks | `74fdcd65a5b46d35ec...`           |
 
-**Solución:** Usar ngrok para exponer tu puerto local:
+### 8.4 Tipos de notificación de MercadoPago
+
+| Tipo             | Cuando se envía                    | Nuestro endpoint          |
+| ---------------- | ---------------------------------- | ------------------------- |
+| `payment`        | Cuando cambia el estado de un pago | `POST /webhooks/payments` |
+| `merchant_order` | Cuando se crea/actualiza una orden | (no implementado)         |
+
+### 8.5 Configuración local con ngrok — paso a paso
+
+**Problema:** MercadoPago necesita alcanzar tu URL por internet. En local, `localhost:8080`
+no es accesible desde MercadoPago. La solución es un túnel ngrok.
+
+> **El orden importa: ngrok primero → pegar la URL en `.env` → recién entonces levantar los
+> contenedores.** `booking-service` construye la `notificationUrl`
+> (`APP_BASE_URL + "/api/v1/webhooks/payments"`) **al arrancar**, así que si el contenedor ya
+> existe con una URL vieja, el webhook saldrá mal.
+
+**Paso 1 — Levantar ngrok (antes que los contenedores)**
 
 ```bash
-# 1. Asegurarse de que docker-compose esté corriendo
-docker-compose up -d
-
-# 2. En otra terminal, levantar ngrok
 ngrok http 8080
 ```
 
-Esto te da una URL pública temporal como:
+Esto abre una URL pública temporal, por ejemplo:
 
 ```
 https://abcd1234.ngrok-free.app
 ```
 
-### 8.4 Configurar ngrok paso a paso
+Mantener esa terminal abierta. La consola de ngrok queda en `http://localhost:4040`.
 
-**Paso 1: Actualizar `.env`**
+**Paso 2 — Copiar la URL y pegarla en las variables de entorno**
+
+Copiar la URL que aparece en la sección **Forwarding** de ngrok y pegarla en `.env`:
 
 ```env
-APP_BASE_URL=https://abcd1234.ngrok-free.app
-PAYMENT_PROVIDER=MERCADOPAGO
+APP_BASE_URL=https://abcd1234.ngrok-free.app   # sin barra al final
 ```
 
-> **IMPORTANTE:** La URL de ngrok cambia cada vez que reiniciás ngrok. Actualizá `APP_BASE_URL` en `.env` cada vez que levantes ngrok.
+> **IMPORTANTE:** la URL de ngrok cambia **cada vez que reiniciás ngrok**. Actualizá
+> `APP_BASE_URL` en `.env` en cada arranque nuevo.
 
-**Paso 2: Reiniciar docker-compose para que booking-service tome la nueva URL**
+`PAYMENT_PROVIDER` **no** va en `.env`: ya está fijo en `docker-compose.yml`
+(`PAYMENT_PROVIDER: MERCADOPAGO`).
+
+**Paso 3 — Recién ahora levantar los contenedores**
 
 ```bash
-docker-compose down && docker-compose up -d
+docker compose up --build -d
 ```
 
-**Paso 3: Configurar webhook en MercadoPago Dashboard**
+`booking-service` toma `APP_BASE_URL` de `.env` en este arranque.
+
+**Paso 4 — Configurar el webhook en MercadoPago Dashboard**
 
 1. Ir a https://www.mercadopago.com.ar/developers
 2. Seleccionar tu aplicación
@@ -2723,52 +1269,39 @@ docker-compose down && docker-compose up -d
    - **Evento:** Pagos
 5. Guardar
 
-**Paso 4: Verificar que MercadoPago puede alcanzar ngrok**
+**Paso 5 — Verificar que MercadoPago puede alcanzar ngrok**
 
-Abrí la consola de ngrok en el navegador (`http://localhost:4040`) y verificá que aparezcan requests con status `200` cuando MercadoPago envía notificaciones.
+Abrir la consola de ngrok en el navegador (`http://localhost:4040`) y comprobar que los
+requests de MercadoPago llegan con status `200`.
 
-### 8.6 Variables de entorno relevantes
+**Paso 6 — Prueba del flujo completo (LOCAL)**
 
-| Variable                     | Descripción                                                      | Ejemplo                           |
-| ---------------------------- | ---------------------------------------------------------------- | --------------------------------- |
-| `APP_BASE_URL`               | URL pública del backend (donde MercadoPago envía notificaciones) | `https://abcd1234.ngrok-free.app` |
-| `PAYMENT_PROVIDER`           | Proveedor activo: `MOCK` o `MERCADOPAGO`                         | `MERCADOPAGO`                     |
-| `MERCADOPAGO_ACCESS_TOKEN`   | Token de acceso TEST o PROD                                      | `TEST-2109324389320804-...`       |
-| `MERCADOPAGO_PUBLIC_KEY`     | Public key para el widget de pago del frontend                   | `TEST-de8789eb-...`               |
-| `MERCADOPAGO_WEBHOOK_SECRET` | Secret para verificar la firma HMAC-SHA256 de los webhooks       | `74fdcd65a5b46d35ec...`           |
-
-### 8.7 Tipos de notificación de MercadoPago
-
-| Tipo             | Cuando se envía                    | Nuestro endpoint          |
-| ---------------- | ---------------------------------- | ------------------------- |
-| `payment`        | Cuando cambia el estado de un pago | `POST /webhooks/payments` |
-| `merchant_order` | Cuando se crea/actualiza una orden | (no implementado)         |
-
-### 8.8 Prueba del flujo completo (LOCAL)
-
-1. Levantar docker-compose: `docker-compose up -d`
-2. Levantar ngrok: `ngrok http 8080`
-3. Copiar la URL de ngrok (ej: `https://abcd1234.ngrok-free.app`)
-4. Actualizar `APP_BASE_URL` en `.env` con esa URL
-5. Reiniciar booking-service: `docker-compose restart booking-service`
-6. Configurar el webhook en MercadoPago Dashboard con la URL de ngrok
-7. Crear reserva → ir a checkout → MercadoPago redirige a página de pago
-8. Usar tarjeta de prueba de MercadoPago:
+1. Crear una reserva → ir a checkout → MercadoPago redirige a la página de pago
+2. Usar tarjeta de prueba de MercadoPago:
    - Número: `5031 7557 3453 0604`
    - CVV: `123`
-   - Vencimiento: futuro (ej: 12/25)
+   - Vencimiento: futuro (ej: 12/29)
    - DNI: `12345678`
-9. Completar el pago
-10. MercadoPago envía webhook a ngrok → se procesa → reserva se confirma
+3. Completar el pago
+4. MercadoPago envía el webhook a ngrok → se procesa → la reserva queda en `CONFIRMED`
 
-### 8.9 Troubleshooting
+### 8.6 Si la URL de ngrok cambió
 
-| Problema                                     | Causa posible                                                 | Solución                                                                                                     |
-| -------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Botón de pago deshabilitado                  | Public key no coincide con el ambiente                        | Verificar que la public key en el frontend coincida con las credenciales en `.env`                           |
-| Pago se completa pero reserva no se confirma | Webhook no llega                                              | Verificar que ngrok esté corriendo y la URL en MercadoPago Dashboard sea correcta                            |
-| Webhook retorna error 5xx                    | booking-service no está corriendo o hay error en DB           | Revisar logs de booking-service con `docker-compose logs booking-service`                                    |
-| URL de ngrok cambió                          | ngrok se reinició                                             | Actualizar `APP_BASE_URL` en `.env`, reiniciar docker-compose, y actualizar webhook en MercadoPago Dashboard |
-| Reserva queda en PENDING_PAYMENT             | El pago fue aprobado pero el webhook no procesó correctamente | Verificar en la consola de ngrok (`localhost:4040`) que los requests llegan con status 200                   |
+1. Copiar la nueva URL de ngrok
+2. Pegarla en `.env` (`APP_BASE_URL=...`)
+3. `docker compose up -d` — **no** `docker compose restart`, porque `restart` no vuelve a
+   leer `.env` y el contenedor conserva la URL con la que se creó. `up -d` detecta el cambio
+   de entorno y **recrea** `booking-service`
+4. Actualizar la URL del webhook en el dashboard de MercadoPago
 
----
+### 8.7 Troubleshooting
+
+| Problema                                     | Causa posible                                                    | Solución                                                                                                      |
+| -------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Botón de pago deshabilitado                  | Public key no coincide con el ambiente                           | Verificar que la public key del frontend coincida con las credenciales en `.env`                              |
+| Pago se completa pero reserva no se confirma | Webhook no llega                                                 | Verificar que ngrok esté corriendo y la URL en MercadoPago Dashboard sea correcta                             |
+| Webhook retorna error 5xx                    | booking-service no está corriendo o hay error en DB              | Revisar logs con `docker compose logs booking-service`                                                        |
+| URL de ngrok cambió                          | ngrok se reinició                                                | Actualizar `APP_BASE_URL` en `.env`, `docker compose up -d`, y actualizar el webhook en MercadoPago Dashboard |
+| Reserva queda en PENDING_PAYMENT             | El pago fue aprobado pero el webhook no se procesó correctamente | Verificar en la consola de ngrok (`localhost:4040`) que los requests llegan con status 200                    |
+
+> Desarrollo local con ngrok: ver sección 8.5. Variables de entorno: ver sección 8.3.
