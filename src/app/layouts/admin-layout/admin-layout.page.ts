@@ -15,7 +15,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline,
+  cashOutline, peopleOutline, storefrontOutline, calendarOutline,
   mapOutline, logOutOutline, pricetagsOutline, compassOutline,
 } from 'ionicons/icons';
 
@@ -44,7 +44,7 @@ export class AdminLayoutPage {
 
   constructor() {
     addIcons({
-      homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline,
+      cashOutline, peopleOutline, storefrontOutline, calendarOutline,
       mapOutline, logOutOutline, pricetagsOutline, compassOutline,
     });
   }

@@ -1,6 +1,16 @@
+// The split pane reserves its own side width (Ionic default: min 270px, up to
+// 350px). Keep it identical to the menu width so no gap appears between the
+// menu and the page content.
+ion-split-pane {
+  --side-width: 260px;
+  --side-min-width: 260px;
+  --side-max-width: 260px;
+}
+
 ion-menu {
   --width: 260px;
-  --max-width: 280px;
+  --min-width: 260px;
+  --max-width: 260px;
   --background: var(--ion-surface-color);
   --border: 1px solid var(--ion-border-color);
 }
