@@ -1,36 +1,35 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-  IonIcon, IonButton, IonSpinner, IonList, IonItem, IonLabel, IonBadge,
-  IonSelect, IonSelectOption,
+  IonContent, IonIcon, IonButton, IonSpinner, IonSelect, IonSelectOption,
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  mailOutline, callOutline, personCircleOutline, powerOutline, alertCircleOutline,
+  alertCircleOutline, arrowBackOutline, personCircleOutline, powerOutline,
   shieldCheckmarkOutline,
 } from 'ionicons/icons';
 import { UserService } from 'src/app/core/services/User';
 import { UserApi, RealmRole } from 'src/app/core/models/User';
 import { firstValueFrom } from 'rxjs';
+import {
+  AdminBreadcrumb,
+  AdminPageHeaderComponent,
+} from '../../shared/admin-page-header/admin-page-header.component';
 
 @Component({
   selector: 'app-admin-user-detail',
   standalone: true,
   imports: [
-    CommonModule, RouterModule,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-    IonIcon, IonButton, IonSpinner, IonList, IonItem, IonLabel, IonBadge,
-    IonSelect, IonSelectOption,
+    RouterLink,
+    IonContent, IonIcon, IonButton, IonSpinner, IonSelect, IonSelectOption,
+    AdminPageHeaderComponent,
   ],
   templateUrl: './admin-user-detail.page.html',
   styleUrls: ['./admin-user-detail.page.scss'],
 })
 export class AdminUserDetailPage implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private userService = inject(UserService);
   private toastCtrl = inject(ToastController);
 
@@ -49,9 +48,14 @@ export class AdminUserDetailPage implements OnInit {
   selectedRole = signal<RealmRole | null>(null);
   updatingRole = signal(false);
 
+  breadcrumbs = computed<AdminBreadcrumb[]>(() => [
+    { label: 'Usuarios', link: '/admin-dashboard/users' },
+    { label: this.user()?.userName ?? 'Detalle' },
+  ]);
+
   constructor() {
     addIcons({
-      mailOutline, callOutline, personCircleOutline, powerOutline, alertCircleOutline,
+      alertCircleOutline, arrowBackOutline, personCircleOutline, powerOutline,
       shieldCheckmarkOutline,
     });
   }
@@ -126,10 +130,6 @@ export class AdminUserDetailPage implements OnInit {
   isRoleUnchanged(): boolean {
     const current = this.user();
     return !current || this.selectedRole() === this.toRealmRole(current.role);
-  }
-
-  goBack() {
-    this.router.navigate(['/admin-dashboard/users']);
   }
 
   roleLabel(role: string | undefined): string {

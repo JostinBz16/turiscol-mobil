@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, tap, catchError, throwError } from 'rxjs';
-import { User, UserApi, RealmRole } from '../models/User';
+import { User, UserApi, RealmRole, UserStats } from '../models/User';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
@@ -118,6 +118,15 @@ export class UserService {
     return this.http.put<void>(`${this.API}/${id}/deactivate`, {}).pipe(
       catchError((err) => {
         console.error('Error deactivating user', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  getStats(): Observable<UserStats> {
+    return this.http.get<UserStats>(`${this.API}/stats`).pipe(
+      catchError((err) => {
+        console.error('Error fetching user stats', err);
         return throwError(() => err);
       }),
     );

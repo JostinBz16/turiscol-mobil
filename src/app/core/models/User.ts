@@ -28,7 +28,15 @@ export interface UserApi {
   role: 'ADMIN' | 'PROVIDER' | 'CONSUMER';
 }
 
-export type Role = 'turista' | 'proveedor' | 'admin';
+// Respuesta de GET /users/stats (api-documentation.md).
+export interface UserStats {
+  total: number;
+  active: number;
+  inactive: number;
+  byRole: Record<string, number>;
+}
+
+export type Role ='turista' | 'proveedor' | 'admin';
 
 // Rol de realm de Keycloak (api-documentation.md:253) — distinto del campo
 // `role` de UserApi ('ADMIN'/'PROVIDER'/'CONSUMER'), que es el rol de negocio

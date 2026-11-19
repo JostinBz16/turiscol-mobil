@@ -1,61 +1,110 @@
-<ion-header class="page-header">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Gestión de Usuarios</ion-title>
-  </ion-toolbar>
-  <ion-toolbar>
-    <ion-select
-      label="Rol"
-      labelPlacement="stacked"
-      [value]="roleFilter()"
-      (ionChange)="onRoleFilterChange($event)"
-    >
-      @for (role of roles; track role) {
-        <ion-select-option [value]="role">{{ roleLabel(role) }}</ion-select-option>
-      }
-    </ion-select>
-  </ion-toolbar>
-</ion-header>
+<app-admin-page-header
+  title="Usuarios"
+  subtitle="Consulta, filtra y administra las cuentas de la plataforma"
+>
+  <ion-button actions fill="outline" (click)="refresh()">
+    <ion-icon slot="start" name="refresh-outline"></ion-icon>
+    Actualizar
+  </ion-button>
+</app-admin-page-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  @if (loading()) {
-    <div class="loading-center">
-      <ion-spinner name="crescent"></ion-spinner>
-    </div>
-  } @else {
-    @if (users().length === 0) {
-      <div class="empty-state">
-        <p>No hay usuarios registrados</p>
-      </div>
-    } @else {
-      <ion-list>
-        @for (user of users(); track user.id) {
-          <ion-item class="user-item" [routerLink]="[user.id]">
-            <ion-icon name="person-outline" slot="start"></ion-icon>
-            <ion-label>
-              <h2>{{ user.userName }}</h2>
-              <p>{{ user.email }}</p>
-              <p>{{ roleLabel(user.role) }}</p>
-            </ion-label>
-            <ion-badge [color]="user.active ? 'success' : 'medium'" slot="end">
-              {{ user.active ? 'Activo' : 'Inactivo' }}
-            </ion-badge>
-            <ion-toggle
-              slot="end"
-              [checked]="user.active"
-              (click)="$event.stopPropagation()"
-              (ionChange)="toggleActive(user, $event)"
-            ></ion-toggle>
-            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-          </ion-item>
+  <div class="admin-container">
+    @if (stats(); as s) {
+      <div class="admin-stats">
+        <div class="admin-stat">
+          <span class="stat-label">Total</span>
+          <span class="stat-value">{{ s.total }}</span>
+        </div>
+        <div class="admin-stat">
+          <span class="stat-label">Activos</span>
+          <span class="stat-value">{{ s.active }}</span>
+        </div>
+        <div class="admin-stat">
+          <span class="stat-label">Inactivos</span>
+          <span class="stat-value">{{ s.inactive }}</span>
+        </div>
+        @if (roleStats().length) {
+          <div class="admin-stat">
+            <span class="stat-label">Por rol</span>
+            <ul class="stat-breakdown">
+              @for (item of roleStats(); track item.label) {
+                <li>
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.count }}</strong>
+                </li>
+              }
+            </ul>
+          </div>
         }
-      </ion-list>
+      </div>
     }
-  }
+
+    <div class="admin-toolbar">
+      <ion-select
+        label="Rol"
+        labelPlacement="stacked"
+        fill="outline"
+        interface="popover"
+        [value]="roleFilter()"
+        (ionChange)="onRoleFilterChange($event)"
+      >
+        @for (role of roles; track role) {
+          <ion-select-option [value]="role">{{ roleLabel(role) }}</ion-select-option>
+        }
+      </ion-select>
+
+      <ion-searchbar
+        placeholder="Buscar por nombre o correo"
+        [debounce]="200"
+        [value]="searchTerm()"
+        (ionInput)="onSearch($event)"
+      ></ion-searchbar>
+
+      <span class="filter-hint">
+        La búsqueda filtra solo los usuarios de la página actual.
+      </span>
+    </div>
+
+    <app-admin-data-table
+      [columns]="columns"
+      [rows]="filteredUsers()"
+      [loading]="loading()"
+      rowKey="id"
+      emptyMessage="No hay usuarios para mostrar"
+      [page]="page()"
+      [totalPages]="totalPages()"
+      [totalElements]="totalElements()"
+      (pageChange)="onPageChange($event)"
+    >
+      <ng-template #cell let-user let-column="column">
+        @switch (column.key) {
+          @case ('role') {
+            {{ roleLabel(user.role) }}
+          }
+          @case ('active') {
+            <span
+              class="status-chip"
+              [class.is-active]="user.active"
+              [class.is-inactive]="!user.active"
+            >
+              {{ user.active ? 'Activo' : 'Inactivo' }}
+            </span>
+          }
+          @default {
+            {{ user[column.key] }}
+          }
+        }
+      </ng-template>
+
+      <ng-template #actions let-user>
+        <ion-toggle
+          [checked]="user.active"
+          [attr.aria-label]="user.active ? 'Desactivar usuario' : 'Activar usuario'"
+          (ionChange)="toggleActive(user, $event)"
+        ></ion-toggle>
+        <a class="table-link" [routerLink]="[user.id]">Ver detalle</a>
+      </ng-template>
+    </app-admin-data-table>
+  </div>
 </ion-content>
