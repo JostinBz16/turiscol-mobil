@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { Router, Routes } from '@angular/router';
 import { welcomeGuard } from './core/guards/welcome.guard';
 import { webOnlyGuard } from './core/guards/web-only.guard';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -51,6 +52,8 @@ export const routes: Routes = [
   {
     path: 'admin-dashboard',
     canMatch: [webOnlyGuard],
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     loadComponent: () =>
       import('./layouts/admin-layout/admin-layout.page').then(
         (m) => m.AdminLayoutPage,
