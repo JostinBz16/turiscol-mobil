@@ -103,7 +103,9 @@
           [attr.aria-label]="user.active ? 'Desactivar usuario' : 'Activar usuario'"
           (ionChange)="toggleActive(user, $event)"
         ></ion-toggle>
-        <a class="table-link" [routerLink]="[user.id]">Ver detalle</a>
+        <a class="icon-action" [routerLink]="[user.id]" title="Ver detalle" aria-label="Ver detalle">
+          <ion-icon name="eye-outline"></ion-icon>
+        </a>
       </ng-template>
     </app-admin-data-table>
   </div>

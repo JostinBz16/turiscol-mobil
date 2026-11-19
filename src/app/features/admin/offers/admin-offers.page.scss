@@ -30,27 +30,3 @@
 .muted {
   color: var(--ion-color-medium);
 }
-
-.link-button {
-  margin-left: 12px;
-  padding: 0;
-  border: none;
-  background: none;
-  color: var(--ion-color-secondary);
-  font: inherit;
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-
-  &:hover:not(:disabled) {
-    text-decoration: underline;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-}
-
-.danger-link {
-  color: var(--ion-color-danger);
-}

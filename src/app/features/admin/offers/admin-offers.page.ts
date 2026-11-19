@@ -5,7 +5,9 @@ import {
   AlertController, ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { refreshOutline } from 'ionicons/icons';
+import {
+  eyeOutline, lockClosed, lockOpen, refreshOutline, star, starOutline,
+} from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 import { OfferService } from 'src/app/core/services/offers';
 import { UserService } from 'src/app/core/services/User';
@@ -96,7 +98,7 @@ export class AdminOffersPage implements OnInit {
   private requestSeq = 0;
 
   constructor() {
-    addIcons({ refreshOutline });
+    addIcons({ eyeOutline, lockClosed, lockOpen, refreshOutline, star, starOutline });
   }
 
   ngOnInit() {

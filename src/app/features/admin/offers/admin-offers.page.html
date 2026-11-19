@@ -122,23 +122,31 @@
       </ng-template>
 
       <ng-template #actions let-offer>
-        <a class="table-link" [routerLink]="[offer.id]">Ver detalle</a>
+        <a class="icon-action" [routerLink]="[offer.id]" title="Ver detalle" aria-label="Ver detalle">
+          <ion-icon name="eye-outline"></ion-icon>
+        </a>
         <button
           type="button"
-          class="link-button"
-          [class.danger-link]="!offer.blocked"
+          class="icon-action"
+          [class.is-featured]="offer.featured"
           [disabled]="busyIds().has(offer.id)"
-          (click)="toggleBlock(offer)"
+          [title]="offer.featured ? 'Quitar destacada' : 'Destacar'"
+          [attr.aria-label]="offer.featured ? 'Quitar destacada' : 'Destacar'"
+          (click)="toggleFeatured(offer)"
         >
-          {{ offer.blocked ? 'Desbloquear' : 'Bloquear' }}
+          <ion-icon [name]="offer.featured ? 'star' : 'star-outline'"></ion-icon>
         </button>
         <button
           type="button"
-          class="link-button"
+          class="icon-action"
+          [class.is-danger]="!offer.blocked"
+          [class.is-success]="offer.blocked"
           [disabled]="busyIds().has(offer.id)"
-          (click)="toggleFeatured(offer)"
+          [title]="offer.blocked ? 'Desbloquear' : 'Bloquear'"
+          [attr.aria-label]="offer.blocked ? 'Desbloquear' : 'Bloquear'"
+          (click)="toggleBlock(offer)"
         >
-          {{ offer.featured ? 'Quitar destacada' : 'Destacar' }}
+          <ion-icon [name]="offer.blocked ? 'lock-open' : 'lock-closed'"></ion-icon>
         </button>
       </ng-template>
     </app-admin-data-table>

@@ -5,7 +5,7 @@ import {
   IonToggle, ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { refreshOutline } from 'ionicons/icons';
+import { eyeOutline, refreshOutline } from 'ionicons/icons';
 import { UserService } from 'src/app/core/services/User';
 import { UserApi, UserStats } from 'src/app/core/models/User';
 import { firstValueFrom } from 'rxjs';
@@ -76,7 +76,7 @@ export class AdminUsersPage implements OnInit {
   private requestSeq = 0;
 
   constructor() {
-    addIcons({ refreshOutline });
+    addIcons({ eyeOutline, refreshOutline });
   }
 
   ngOnInit() {

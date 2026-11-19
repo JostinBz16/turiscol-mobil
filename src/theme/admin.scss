@@ -275,6 +275,51 @@ ion-content:has(> .admin-container) {
       text-decoration: underline;
     }
   }
+
+  // Icon-only circular action; native element because ion-button is forced to 40px high by the global theme.
+  .icon-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin: 0 2px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ion-color-medium);
+    font-size: 1.25rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, currentColor 12%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ion-color-primary);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    &.is-danger {
+      color: var(--ion-color-danger);
+    }
+
+    &.is-success {
+      color: var(--ion-color-success);
+    }
+
+    &.is-featured {
+      color: var(--ion-color-warning);
+    }
+  }
 }
 
 .admin-pagination {

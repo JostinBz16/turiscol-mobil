@@ -117,7 +117,7 @@
               [disabled]="updating()"
               (click)="toggleBlock()"
             >
-              <ion-icon slot="start" [name]="o.blocked ? 'lock-open-outline' : 'ban-outline'"></ion-icon>
+              <ion-icon slot="start" [name]="o.blocked ? 'lock-open' : 'lock-closed'"></ion-icon>
               {{ o.blocked ? 'Desbloquear oferta' : 'Bloquear oferta' }}
             </ion-button>
           </section>
@@ -137,7 +137,7 @@
               [disabled]="updating()"
               (click)="toggleFeatured()"
             >
-              <ion-icon slot="start" name="star-outline"></ion-icon>
+              <ion-icon slot="start" [name]="o.featured ? 'star' : 'star-outline'"></ion-icon>
               {{ o.featured ? 'Quitar destacada' : 'Destacar oferta' }}
             </ion-button>
           </section>

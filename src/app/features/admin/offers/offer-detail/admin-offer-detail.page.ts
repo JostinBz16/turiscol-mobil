@@ -6,7 +6,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  alertCircleOutline, banOutline, lockOpenOutline, starOutline,
+  alertCircleOutline, lockClosed, lockOpen, star, starOutline,
 } from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 import { OfferService } from 'src/app/core/services/offers';
@@ -68,7 +68,7 @@ export class AdminOfferDetailPage implements OnInit {
 
   constructor() {
     addIcons({
-      alertCircleOutline, banOutline, lockOpenOutline, starOutline,
+      alertCircleOutline, lockClosed, lockOpen, star, starOutline,
     });
   }
 
