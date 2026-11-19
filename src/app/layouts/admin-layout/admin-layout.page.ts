@@ -1,18 +1,23 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from 'src/app/features/auth/login/services/auth';
 import {
   IonSplitPane,
   IonMenu,
   IonContent,
+  IonFooter,
   IonList,
   IonItem,
   IonLabel,
   IonIcon,
+  IonButton,
   IonRouterOutlet,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline, logOutOutline, pricetagsOutline } from 'ionicons/icons';
+import {
+  homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline,
+  mapOutline, logOutOutline, pricetagsOutline, compassOutline,
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-layout',
@@ -23,10 +28,12 @@ import { homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOut
     IonSplitPane,
     IonMenu,
     IonContent,
+    IonFooter,
     IonList,
     IonItem,
     IonLabel,
     IonIcon,
+    IonButton,
     IonRouterOutlet,
     RouterLink,
     RouterLinkActive,
@@ -34,14 +41,18 @@ import { homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOut
 })
 export class AdminLayoutPage {
   private authService = inject(AuthService);
-  private router = inject(Router);
 
   constructor() {
-    addIcons({ homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline, logOutOutline, pricetagsOutline });
+    addIcons({
+      homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline,
+      mapOutline, logOutOutline, pricetagsOutline, compassOutline,
+    });
   }
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/auth/login'], { replaceUrl: true });
+    // Full reload on purpose: it discards in-memory state and Ionic's page stack,
+    // so going Back never shows the previous user's content.
+    window.location.replace('/auth/login');
   }
 }

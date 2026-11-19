@@ -2,12 +2,9 @@
   [title]="user()?.userName ?? 'Detalle de usuario'"
   subtitle="Información de la cuenta, rol y estado"
   [breadcrumbs]="breadcrumbs()"
->
-  <ion-button actions fill="outline" routerLink="/admin-dashboard/users">
-    <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
-    Volver a usuarios
-  </ion-button>
-</app-admin-page-header>
+  backLink="/admin-dashboard/users"
+  backLabel="Volver a usuarios"
+></app-admin-page-header>
 
 <ion-content>
   <div class="admin-container">
@@ -16,9 +13,10 @@
         <ion-spinner name="crescent"></ion-spinner>
       </div>
     } @else if (error() || !user()) {
-      <div class="admin-state">
+      <div class="admin-card admin-state">
         <ion-icon name="alert-circle-outline" class="state-icon"></ion-icon>
-        <p>No se pudo cargar el usuario</p>
+        <span class="state-title">No se pudo cargar el usuario</span>
+        <p>Vuelve a la lista e inténtalo de nuevo.</p>
       </div>
     } @else {
       <div class="detail-layout">
@@ -59,7 +57,7 @@
 
         <div class="side-column">
           <section class="admin-card">
-            <h2>Rol</h2>
+            <h2 class="form-section-title">Rol</h2>
             <p class="card-hint">Define los permisos del usuario en la plataforma.</p>
             <ion-select
               label="Rol"
@@ -85,7 +83,7 @@
           </section>
 
           <section class="admin-card">
-            <h2>Estado de la cuenta</h2>
+            <h2 class="form-section-title">Estado de la cuenta</h2>
             <p class="card-hint">
               {{
                 user()!.active

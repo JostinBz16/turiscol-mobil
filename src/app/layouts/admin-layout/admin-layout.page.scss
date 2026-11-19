@@ -1,9 +1,111 @@
 ion-menu {
-  --width: 240px;
+  --width: 260px;
   --max-width: 280px;
+  --background: var(--ion-surface-color);
+  --border: 1px solid var(--ion-border-color);
+}
+
+ion-content {
+  --background: var(--ion-surface-color);
+}
+
+// ---- Brand header ----
+.menu-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 20px 20px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--ion-border-color);
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  font-size: 1.5rem;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-name {
+  color: var(--ion-color-primary);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xl);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.brand-subtitle {
+  margin-top: 2px;
+  color: var(--ion-color-medium);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.5px;
+}
+
+// ---- Navigation items ----
+ion-list {
+  padding: 8px 0;
+  background: transparent;
+}
+
+ion-item {
+  --background: transparent;
+  --background-hover: color-mix(in srgb, var(--ion-color-primary) 6%, transparent);
+  --background-hover-opacity: 1;
+  --color: var(--ion-text-color);
+  --border-radius: 8px;
+  --min-height: 44px;
+  --padding-start: 12px;
+  margin: 2px 12px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+
+  ion-icon {
+    margin-inline-end: 12px;
+    color: var(--ion-color-medium);
+    font-size: 1.25rem;
+  }
 }
 
 ion-item.selected {
-  --background: var(--ion-color-light, #f4f5f8);
-  font-weight: 600;
+  --background: color-mix(in srgb, var(--ion-color-primary) 12%, transparent);
+  --background-hover: color-mix(in srgb, var(--ion-color-primary) 16%, transparent);
+  --color: var(--ion-color-primary);
+  font-weight: var(--font-weight-semibold);
+
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
+}
+
+// ---- Logout (pinned footer) ----
+ion-footer {
+  background: var(--ion-surface-color);
+}
+
+.menu-footer {
+  padding: 16px;
+  border-top: 1px solid var(--ion-border-color);
+}
+
+.logout-button {
+  --border-radius: 8px;
+  --border-width: 1.5px;
+  height: 44px;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: normal;
+  text-transform: none;
 }

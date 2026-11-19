@@ -2,12 +2,9 @@
   [title]="offer()?.name ?? 'Detalle de oferta'"
   subtitle="Información de la oferta y herramientas de moderación"
   [breadcrumbs]="breadcrumbs()"
->
-  <ion-button actions fill="outline" routerLink="/admin-dashboard/offers">
-    <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
-    Volver a ofertas
-  </ion-button>
-</app-admin-page-header>
+  backLink="/admin-dashboard/offers"
+  backLabel="Volver a ofertas"
+></app-admin-page-header>
 
 <ion-content>
   <div class="admin-container">
@@ -16,16 +13,17 @@
         <ion-spinner name="crescent"></ion-spinner>
       </div>
     } @else if (errorMessage() || !offer()) {
-      <div class="admin-state">
+      <div class="admin-card admin-state">
         <ion-icon name="alert-circle-outline" class="state-icon"></ion-icon>
-        <p>{{ errorMessage() ?? 'No se pudo cargar la oferta' }}</p>
+        <span class="state-title">{{ errorMessage() ?? 'No se pudo cargar la oferta' }}</span>
+        <p>Vuelve a la lista de ofertas e inténtalo de nuevo.</p>
       </div>
     } @else {
       @let o = offer()!;
       <div class="detail-layout">
         <div class="main-column">
           <section class="admin-card">
-            <h2>Datos generales</h2>
+            <h2 class="form-section-title">Datos generales</h2>
             <dl class="detail-list">
               <div>
                 <dt>Nombre</dt>
@@ -71,7 +69,7 @@
           </section>
 
           <section class="admin-card">
-            <h2>Imágenes</h2>
+            <h2 class="form-section-title">Imágenes</h2>
             @if (o.images.length) {
               <div class="gallery">
                 @for (image of o.images; track $index) {
@@ -88,7 +86,7 @@
 
         <div class="side-column">
           <section class="admin-card">
-            <h2>Estado</h2>
+            <h2 class="form-section-title">Estado</h2>
             <div class="chips">
               <span
                 class="status-chip"
@@ -105,7 +103,7 @@
           </section>
 
           <section class="admin-card">
-            <h2>Bloqueo</h2>
+            <h2 class="form-section-title">Bloqueo</h2>
             <p class="card-hint">
               {{
                 o.blocked
@@ -125,7 +123,7 @@
           </section>
 
           <section class="admin-card">
-            <h2>Destacada</h2>
+            <h2 class="form-section-title">Destacada</h2>
             <p class="card-hint">
               {{
                 o.featured

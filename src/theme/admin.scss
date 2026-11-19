@@ -11,7 +11,43 @@
   box-sizing: border-box;
 
   @media (min-width: 992px) {
-    padding: 24px 32px;
+    padding: 24px 32px 40px;
+  }
+}
+
+/* Subtle grey page background so white cards stand out (any ion-content wrapping .admin-container). */
+ion-content:has(> .admin-container) {
+  --background: var(--ion-color-light);
+}
+
+/* ---- Buttons (admin pages only; small pagination buttons keep their own look) ---- */
+.admin-page-title,
+.admin-container {
+  ion-button:not([size='small']) {
+    --border-radius: 8px;
+    --box-shadow: none;
+    height: 40px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: normal;
+    text-transform: none;
+
+    &[fill='outline'] {
+      --border-width: 1.5px;
+    }
+  }
+}
+
+/* ---- Outline inputs / selects / textareas (admin pages only) ---- */
+.admin-container {
+  ion-input[fill='outline'],
+  ion-select[fill='outline'],
+  ion-textarea[fill='outline'] {
+    --border-radius: 8px;
+    --border-color: var(--ion-border-color);
+    --highlight-color-focused: var(--ion-color-primary);
+    --background: var(--ion-surface-color);
+    border-radius: 8px;
   }
 }
 
@@ -24,13 +60,17 @@
   padding: 20px;
   box-sizing: border-box;
 
+  @media (min-width: 992px) {
+    padding: 24px;
+  }
+
   h2 {
-    font-size: var(--font-size-lg);
     margin-bottom: 12px;
+    font-size: var(--font-size-lg);
   }
 }
 
-/* Loading / empty state block */
+/* Loading / empty state block; optional children: .state-icon, .state-title, p (hint) */
 .admin-state {
   display: flex;
   align-items: center;
@@ -38,22 +78,43 @@
   flex-direction: column;
   gap: 8px;
   min-height: 200px;
-  padding: 24px;
+  padding: 32px 24px;
   color: var(--ion-color-medium);
   text-align: center;
 
   p {
+    max-width: 420px;
     margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-base);
+  }
+
+  /* Large muted icon above the message */
+  .state-icon {
+    font-size: 2.5rem;
+    color: var(--ion-color-medium);
+  }
+
+  /* Short bold heading for an empty/error state */
+  .state-title {
+    color: var(--ion-text-color);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
   }
 }
 
-/* ---- Toolbar (filters) ---- */
+/* ---- Toolbar (filters): a white card holding selects, searchbar and an optional .filter-hint ---- */
 .admin-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 12px 16px;
   margin-bottom: 16px;
+  padding: 16px;
+  background: var(--ion-surface-color);
+  border: 1px solid var(--ion-border-color);
+  border-radius: 12px;
+  box-shadow: var(--ion-box-shadow);
 
   > * {
     min-width: 180px;
@@ -74,6 +135,7 @@
 
   ion-searchbar {
     --background: var(--ion-surface-color);
+    --border-radius: 8px;
     --box-shadow: none;
     border: 1px solid var(--ion-border-color);
     border-radius: 8px;
@@ -81,38 +143,54 @@
   }
 }
 
-/* ---- Summary cards ---- */
+/* ---- Summary cards: .admin-stats grid of .admin-stat (modifiers: is-success, is-warning, is-danger) ---- */
 .admin-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
   margin-bottom: 16px;
 }
 
 .admin-stat {
   background: var(--ion-surface-color);
   border: 1px solid var(--ion-border-color);
+  border-left: 4px solid var(--ion-color-primary);
   border-radius: 12px;
-  padding: 12px 16px;
+  box-shadow: var(--ion-box-shadow);
+  padding: 16px 20px;
+
+  &.is-success {
+    border-left-color: var(--ion-color-success);
+  }
+
+  &.is-warning {
+    border-left-color: var(--ion-color-warning);
+  }
+
+  &.is-danger {
+    border-left-color: var(--ion-color-danger);
+  }
 
   .stat-label {
     display: block;
     color: var(--ion-color-medium);
     font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 
   .stat-value {
     display: block;
-    margin-top: 4px;
+    margin-top: 6px;
     color: var(--ion-color-primary);
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-xxl);
     font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-heading);
   }
 
   .stat-breakdown {
-    margin: 4px 0 0;
+    margin: 8px 0 0;
     padding: 0;
     list-style: none;
     font-size: var(--font-size-sm);
@@ -121,11 +199,23 @@
       display: flex;
       justify-content: space-between;
       gap: 8px;
+      padding: 2px 0;
     }
   }
 }
 
 /* ---- Data table ---- */
+/* Tables keep their original look: undo the richer .admin-state styling inside them. */
+.admin-table-card .admin-state {
+  padding: 24px;
+
+  p {
+    max-width: none;
+    font-size: inherit;
+    line-height: inherit;
+  }
+}
+
 .admin-table-card {
   background: var(--ion-surface-color);
   border: 1px solid var(--ion-border-color);
@@ -242,10 +332,12 @@
 }
 
 /* ---- Forms ---- */
+
+/* Two-column field grid (one column on mobile); add .full-width to a child to span both columns */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 20px 24px;
 
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
@@ -254,4 +346,146 @@
       grid-column: 1 / -1;
     }
   }
+}
+
+/* White form card, readable width; wrap fields in .form-section blocks, each opened by a .form-section-title */
+.admin-form-card {
+  max-width: 900px;
+  padding: 20px;
+  box-sizing: border-box;
+  background: var(--ion-surface-color);
+  border: 1px solid var(--ion-border-color);
+  border-radius: 12px;
+  box-shadow: var(--ion-box-shadow);
+
+  @media (min-width: 992px) {
+    padding: 28px 32px;
+  }
+
+  /* Groups related fields inside an .admin-form-card */
+  .form-section + .form-section {
+    margin-top: 28px;
+  }
+}
+
+/* Section heading inside a form or detail card, with a divider underneath */
+.form-section-title {
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ion-border-color);
+  color: var(--ion-color-primary);
+  font-size: var(--font-size-lg);
+}
+
+/* Small helper text below a field group */
+.form-note {
+  margin: 12px 0 0;
+  color: var(--ion-color-medium);
+  font-size: var(--font-size-xs);
+}
+
+/* Row of toggles/checkboxes inside a .form-grid */
+.toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+/* Form buttons aligned to the right, separated from the fields by a divider; stack on mobile */
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--ion-border-color);
+
+  @media (max-width: 575px) {
+    flex-direction: column-reverse;
+
+    ion-button {
+      width: 100%;
+    }
+  }
+}
+
+/* ---- Detail pages ---- */
+
+/* Two-column detail layout (3fr main / 2fr side on desktop); children: .main-column and .side-column */
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: 992px) {
+    grid-template-columns: 3fr 2fr;
+    align-items: start;
+  }
+}
+
+/* Vertical stack of cards inside a .detail-layout column */
+.main-column,
+.side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Label/value pairs: <dl class="detail-list"><div><dt>Label</dt><dd>Value</dd></div></dl>; add .full-width / .mono / .description */
+.detail-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px 24px;
+  margin: 0;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+  }
+
+  dt {
+    color: var(--ion-color-medium);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  dd {
+    margin: 4px 0 0;
+    color: var(--ion-text-color);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    word-break: break-word;
+  }
+
+  /* Monospace value, e.g. identifiers */
+  .mono {
+    font-family: monospace;
+    font-size: var(--font-size-sm);
+  }
+
+  /* Long multi-line text value */
+  .description {
+    font-weight: var(--font-weight-normal);
+    white-space: pre-line;
+  }
+}
+
+/* Muted explanatory paragraph at the top of an action card */
+.card-hint {
+  margin: 0 0 12px;
+  color: var(--ion-color-medium);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+}
+
+/* Action button placed below a .card-hint inside a card */
+.card-action {
+  display: block;
+  margin-top: 12px;
 }

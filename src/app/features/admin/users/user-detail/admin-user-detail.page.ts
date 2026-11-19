@@ -1,12 +1,12 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   IonContent, IonIcon, IonButton, IonSpinner, IonSelect, IonSelectOption,
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  alertCircleOutline, arrowBackOutline, personCircleOutline, powerOutline,
+  alertCircleOutline, personCircleOutline, powerOutline,
   shieldCheckmarkOutline,
 } from 'ionicons/icons';
 import { UserService } from 'src/app/core/services/User';
@@ -21,7 +21,6 @@ import {
   selector: 'app-admin-user-detail',
   standalone: true,
   imports: [
-    RouterLink,
     IonContent, IonIcon, IonButton, IonSpinner, IonSelect, IonSelectOption,
     AdminPageHeaderComponent,
   ],
@@ -55,7 +54,7 @@ export class AdminUserDetailPage implements OnInit {
 
   constructor() {
     addIcons({
-      alertCircleOutline, arrowBackOutline, personCircleOutline, powerOutline,
+      alertCircleOutline, personCircleOutline, powerOutline,
       shieldCheckmarkOutline,
     });
   }

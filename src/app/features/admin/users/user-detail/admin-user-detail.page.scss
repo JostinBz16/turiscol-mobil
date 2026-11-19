@@ -1,75 +1,20 @@
-.state-icon {
-  font-size: 2.5rem;
-}
-
-.detail-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-
-  @media (min-width: 992px) {
-    grid-template-columns: 3fr 2fr;
-    align-items: start;
-  }
-}
-
-.side-column {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
+// Layout, detail list, cards and hints live in src/theme/admin.scss.
 .profile-heading {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--ion-border-color);
 
   h2 {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    font-size: var(--font-size-xl);
   }
 
   .avatar {
+    flex-shrink: 0;
     font-size: 4rem;
-    color: var(--ion-color-medium);
+    color: var(--ion-color-primary);
   }
-}
-
-.detail-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  margin: 0;
-
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  dt {
-    color: var(--ion-color-medium);
-    font-size: var(--font-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  dd {
-    margin: 4px 0 0;
-    word-break: break-word;
-  }
-
-  .mono {
-    font-family: monospace;
-    font-size: var(--font-size-sm);
-  }
-}
-
-.card-hint {
-  margin: 0 0 12px;
-  color: var(--ion-color-medium);
-  font-size: var(--font-size-sm);
-}
-
-.card-action {
-  display: block;
-  margin-top: 12px;
 }

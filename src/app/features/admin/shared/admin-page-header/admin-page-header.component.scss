@@ -13,7 +13,8 @@
 .admin-page-title {
   background: var(--ion-surface-color);
   border-bottom: 1px solid var(--ion-border-color);
-  padding: 16px 0;
+  box-shadow: var(--ion-box-shadow);
+  padding: 20px 0 24px;
 }
 
 .admin-container {
@@ -21,12 +22,21 @@
   padding-bottom: 0;
 }
 
+// Always-visible "back" button (ion-back-button hides itself without navigation history).
+.back-button {
+  display: inline-block;
+  margin: 0 0 16px;
+  --color: var(--ion-color-primary);
+  --background-hover: color-mix(in srgb, var(--ion-color-primary) 8%, transparent);
+  --background-hover-opacity: 1;
+}
+
 .admin-breadcrumb {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   font-size: var(--font-size-sm);
   color: var(--ion-color-medium);
 
@@ -50,23 +60,24 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
 }
 
 h1 {
-  font-size: var(--font-size-xxl);
+  font-size: calc(var(--font-size-xxl) * 1.25);
   line-height: var(--line-height-heading);
 }
 
 .subtitle {
-  margin: 4px 0 0;
+  margin: 8px 0 0;
   color: var(--ion-color-medium);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
 }
 
 .title-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }

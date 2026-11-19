@@ -4,9 +4,13 @@ import {
   IonHeader,
   IonToolbar,
   IonButtons,
+  IonButton,
+  IonIcon,
   IonMenuButton,
   IonTitle,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { arrowBackOutline } from 'ionicons/icons';
 
 export interface AdminBreadcrumb {
   label: string;
@@ -22,6 +26,8 @@ export interface AdminBreadcrumb {
     IonHeader,
     IonToolbar,
     IonButtons,
+    IonButton,
+    IonIcon,
     IonMenuButton,
     IonTitle,
   ],
@@ -32,4 +38,11 @@ export class AdminPageHeaderComponent {
   title = input.required<string>();
   subtitle = input<string>();
   breadcrumbs = input<AdminBreadcrumb[]>([]);
+  /** Router link of the "back" button; when omitted no back button is rendered. */
+  backLink = input<string | any[]>();
+  backLabel = input<string>('Volver');
+
+  constructor() {
+    addIcons({ arrowBackOutline });
+  }
 }

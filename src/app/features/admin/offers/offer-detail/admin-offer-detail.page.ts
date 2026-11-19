@@ -1,12 +1,12 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   IonContent, IonIcon, IonButton, IonSpinner,
   AlertController, ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  alertCircleOutline, arrowBackOutline, banOutline, lockOpenOutline, starOutline,
+  alertCircleOutline, banOutline, lockOpenOutline, starOutline,
 } from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 import { OfferService } from 'src/app/core/services/offers';
@@ -33,7 +33,6 @@ import {
   selector: 'app-admin-offer-detail',
   standalone: true,
   imports: [
-    RouterLink,
     IonContent, IonIcon, IonButton, IonSpinner,
     AdminPageHeaderComponent,
   ],
@@ -69,7 +68,7 @@ export class AdminOfferDetailPage implements OnInit {
 
   constructor() {
     addIcons({
-      alertCircleOutline, arrowBackOutline, banOutline, lockOpenOutline, starOutline,
+      alertCircleOutline, banOutline, lockOpenOutline, starOutline,
     });
   }
 

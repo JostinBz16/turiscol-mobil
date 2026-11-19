@@ -10,6 +10,13 @@
 
 <div class="admin-page-title">
   <div class="admin-container">
+    @if (backLink(); as link) {
+      <ion-button class="back-button" fill="outline" color="primary" [routerLink]="link">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        {{ backLabel() }}
+      </ion-button>
+    }
+
     @if (breadcrumbs().length) {
       <nav class="admin-breadcrumb" aria-label="Ruta de navegación">
         @for (crumb of breadcrumbs(); track $index; let last = $last) {

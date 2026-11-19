@@ -12,7 +12,7 @@ import {
 } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { saveOutline, closeOutline, arrowBackOutline } from 'ionicons/icons';
+import { saveOutline, closeOutline } from 'ionicons/icons';
 import {
   AdminBreadcrumb,
   AdminPageHeaderComponent,
@@ -72,7 +72,7 @@ export class AdminDestinationEditorPage implements OnInit {
   ];
 
   constructor() {
-    addIcons({ saveOutline, closeOutline, arrowBackOutline });
+    addIcons({ saveOutline, closeOutline });
     this.initForm();
   }
 
