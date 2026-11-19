@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from 'src/app/features/auth/login/services/auth';
 import {
   IonSplitPane,
   IonMenu,
@@ -11,7 +12,7 @@ import {
   IonRouterOutlet,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline } from 'ionicons/icons';
+import { homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline, logOutOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-layout',
@@ -32,7 +33,15 @@ import { homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOut
   ],
 })
 export class AdminLayoutPage {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   constructor() {
-    addIcons({ homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline });
+    addIcons({ homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline, logOutOutline });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/auth/login'], { replaceUrl: true });
   }
 }

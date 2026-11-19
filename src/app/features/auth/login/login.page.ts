@@ -17,6 +17,7 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 import { AuthService } from './services/auth';
 
 @Component({
@@ -74,11 +75,12 @@ export class LoginPage implements OnInit {
   }
 
   redirectByRole(role: string) {
-    if (role === 'proveedor') {
-      this.router.navigate(['/tabs/home'], { replaceUrl: true });
-    } else {
-      this.router.navigate(['/tabs/home'], { replaceUrl: true });
+    // El panel admin es solo web: en nativo (webOnlyGuard) un admin va al home.
+    if (role === 'admin' && !Capacitor.isNativePlatform()) {
+      this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
+      return;
     }
+    this.router.navigate(['/tabs/home'], { replaceUrl: true });
   }
 
   goToRegister() {
