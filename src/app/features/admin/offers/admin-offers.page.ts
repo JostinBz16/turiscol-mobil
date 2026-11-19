@@ -8,7 +8,7 @@ import { addIcons } from 'ionicons';
 import {
   eyeOutline, lockClosed, lockOpen, refreshOutline, star, starOutline,
 } from 'ionicons/icons';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { OfferService } from 'src/app/core/services/offers';
 import { UserService } from 'src/app/core/services/User';
 import {
@@ -34,6 +34,10 @@ import {
 
 /** Sentinel used by the selects for "no filter". */
 const ALL = 'ALL';
+
+/** Page size and upper bound of pages requested when loading the city catalog. */
+const FETCH_SIZE = 100;
+const MAX_FETCH_PAGES = 20;
 
 /** Row shape of GET /offers/search (OfferResponseDTO): price comes as `baseprice`. */
 type OfferRow = Omit<Offer, 'basePrice' | 'images'> & { baseprice: number };
@@ -106,10 +110,29 @@ export class AdminOffersPage implements OnInit {
     this.loadOffers();
   }
 
+  /** Requests consecutive pages until the whole collection is covered (bounded). */
+  private async fetchAllPages<T>(load: (page: number) => Observable<any>): Promise<T[]> {
+    const items: T[] = [];
+    for (let page = 0; page < MAX_FETCH_PAGES; page++) {
+      const res = await firstValueFrom(load(page));
+      // A plain array means the endpoint is not paginated: there is nothing else to fetch.
+      if (Array.isArray(res)) return res;
+      const content: T[] = res?.content ?? [];
+      items.push(...content);
+      if (!content.length || page + 1 >= (res?.totalPages ?? 1)) break;
+    }
+    return items;
+  }
+
+  /** Loads the full city catalog (names for the column and options for the filter). */
   async loadCities() {
     try {
-      const res = await firstValueFrom(this.locationService.getCities({ size: 100 }));
-      this.cities.set(res?.content ?? res ?? []);
+      const cities = await this.fetchAllPages<MunicipalityResponse>((page) =>
+        this.locationService.getCities({ page, size: FETCH_SIZE }),
+      );
+      this.cities.set(
+        [...cities].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '', 'es')),
+      );
     } catch (err) {
       // City names/filter are optional: keep the list working without them.
       console.error('Error loading cities', err);
@@ -180,7 +203,9 @@ export class AdminOffersPage implements OnInit {
   }
 
   cityName(offer: OfferRow): string {
-    return this.cityNames().get(String(offer.cityId)) ?? '-';
+    if (offer.cityId === null || offer.cityId === undefined) return '-';
+    // A city missing from the catalog still shows its id instead of an empty cell.
+    return this.cityNames().get(String(offer.cityId)) ?? `Ciudad #${offer.cityId}`;
   }
 
   providerName(offer: OfferRow): string {
