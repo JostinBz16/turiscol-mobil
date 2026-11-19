@@ -1,98 +1,96 @@
-.loading-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
+// Layout, toolbar, table, form card and chips live in src/theme/admin.scss.
+// This file only holds the row/action helpers and the centered dialog.
+
+.price-name {
+  font-weight: var(--font-weight-medium);
 }
 
-.empty-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 40vh;
-  color: var(--ion-color-medium);
+.price-range {
+  white-space: nowrap;
 }
 
-.price-item {
-  --min-height: 72px;
+.link-button {
+  margin-left: 12px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ion-color-secondary);
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
 
-  h2 {
-    font-weight: 600;
-    font-size: 1rem;
-  }
-
-  p {
-    font-size: 0.85rem;
-    color: var(--ion-color-medium);
-  }
-
-  .range {
-    font-weight: 500;
-    color: var(--ion-color-dark);
+  &:hover {
+    text-decoration: underline;
   }
 }
 
-.form-overlay {
+.danger-link {
+  color: var(--ion-color-danger);
+}
+
+// ---- Create / edit dialog ----
+// The dialog lives outside .admin-container, so the admin field/button
+// styling is repeated here for its controls.
+.dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 100;
+  z-index: 1000;
   display: flex;
-  align-items: flex-end;
-}
-
-.form-panel {
-  width: 100%;
-  max-height: 85vh;
-  background: var(--ion-background-color);
-  border-radius: 16px 16px 0 0;
-  overflow-y: auto;
-  padding: 16px;
-}
-
-.form-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--ion-text-color) 45%, transparent);
+}
 
-  h3 {
+.price-dialog {
+  width: 100%;
+  max-width: 640px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  box-shadow: var(--ion-box-shadow);
+
+  ion-input,
+  ion-select,
+  ion-textarea {
+    --border-radius: 8px;
+    --border-color: var(--ion-border-color);
+    --highlight-color-focused: var(--ion-color-primary);
+    --background: var(--ion-surface-color);
+    border-radius: 8px;
+  }
+
+  ion-button:not([size='small']) {
+    --border-radius: 8px;
+    --box-shadow: none;
+    height: 40px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: normal;
+    text-transform: none;
+
+    &[fill='outline'] {
+      --border-width: 1.5px;
+    }
+  }
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  h2 {
     margin: 0;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #0d3b66;
+    color: var(--ion-color-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
   }
 }
 
-.form-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  ion-item {
-    --background: var(--ion-color-light);
-    --border-radius: 10px;
-    margin-bottom: 8px;
-  }
-}
-
-.price-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.form-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
-  padding-bottom: 16px;
-
-  ion-button[expand="block"] {
-    --background: #0d3b66;
-    --color: #fff;
-    --border-radius: 10px;
-    font-weight: 600;
-  }
+.form-error {
+  margin: 12px 0 0;
+  color: var(--ion-color-danger);
+  font-size: var(--font-size-sm);
 }
