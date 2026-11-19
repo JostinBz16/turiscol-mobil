@@ -129,7 +129,14 @@ export class AdminPricesPage implements OnInit {
 
   ngOnInit() {
     this.loadCities();
-    this.loadPrices();
+  }
+
+  // True after the first entry; later entries reload silently (Ionic caches the view).
+  private entered = false;
+
+  ionViewWillEnter() {
+    this.loadPrices(this.entered);
+    this.entered = true;
   }
 
   private initForm() {
@@ -176,8 +183,8 @@ export class AdminPricesPage implements OnInit {
     }
   }
 
-  async loadPrices() {
-    this.loading.set(true);
+  async loadPrices(silent = false) {
+    if (!silent) this.loading.set(true);
     try {
       const prices = await this.fetchAllPages<Price>((page) =>
         this.priceService.getAll({ page, size: FETCH_SIZE }),
@@ -185,7 +192,7 @@ export class AdminPricesPage implements OnInit {
       this.prices.set(prices);
     } catch (err) {
       console.error('Error loading prices', err);
-      this.prices.set([]);
+      if (!silent) this.prices.set([]);
       this.showToast('No se pudieron cargar los precios', 'danger');
     }
     this.loading.set(false);

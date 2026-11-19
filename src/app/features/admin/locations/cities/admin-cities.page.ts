@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {
@@ -27,7 +27,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './admin-cities.page.html',
   styleUrls: ['./admin-cities.page.scss'],
 })
-export class AdminCitiesPage implements OnInit {
+export class AdminCitiesPage {
   private locationService = inject(LocationService);
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
@@ -39,18 +39,22 @@ export class AdminCitiesPage implements OnInit {
     addIcons({ addOutline, trashOutline, chevronForwardOutline, mapOutline });
   }
 
-  ngOnInit() {
-    this.loadCities();
+  // True after the first entry; later entries reload silently (Ionic caches the view).
+  private entered = false;
+
+  ionViewWillEnter() {
+    this.loadCities(this.entered);
+    this.entered = true;
   }
 
-  async loadCities() {
-    this.loading.set(true);
+  async loadCities(silent = false) {
+    if (!silent) this.loading.set(true);
     try {
       const res = await firstValueFrom(this.locationService.getCities({ size: 100 }));
       this.cities.set(res?.content ?? res ?? []);
     } catch (err) {
       console.error('Error loading cities', err);
-      this.cities.set([]);
+      if (!silent) this.cities.set([]);
     }
     this.loading.set(false);
   }

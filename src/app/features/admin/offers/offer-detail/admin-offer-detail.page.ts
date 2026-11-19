@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   IonContent, IonIcon, IonButton, IonSpinner,
@@ -39,7 +39,7 @@ import {
   templateUrl: './admin-offer-detail.page.html',
   styleUrls: ['./admin-offer-detail.page.scss'],
 })
-export class AdminOfferDetailPage implements OnInit {
+export class AdminOfferDetailPage {
   private route = inject(ActivatedRoute);
   private offerService = inject(OfferService);
   private userService = inject(UserService);
@@ -72,27 +72,38 @@ export class AdminOfferDetailPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.offerId = this.route.snapshot.paramMap.get('id');
+  // Runs on first entry and on every re-entry (Ionic caches the view for this URL).
+  ionViewWillEnter() {
+    const id = this.route.snapshot.paramMap.get('id');
+    // Silent reload only when the same record is already displayed.
+    const silent = id === this.offerId && this.offer() !== null;
+    this.offerId = id;
     if (this.offerId) {
-      this.loadOffer();
+      this.loadOffer(silent);
     } else {
       this.errorMessage.set('Oferta no encontrada');
       this.loading.set(false);
     }
   }
 
-  async loadOffer() {
+  async loadOffer(silent = false) {
     if (!this.offerId) return;
-    this.loading.set(true);
-    this.errorMessage.set(null);
+    if (!silent) {
+      this.loading.set(true);
+      this.errorMessage.set(null);
+    }
     try {
       const offer = await firstValueFrom(this.offerService.getById(this.offerId));
       this.offer.set(offer);
+      this.errorMessage.set(null);
       this.loading.set(false);
       this.loadRelatedNames(offer);
     } catch (err: any) {
       console.error('Error loading offer', err);
+      if (silent) {
+        this.loading.set(false);
+        return;
+      }
       this.errorMessage.set(
         err?.status === 404
           ? 'La oferta no existe o fue eliminada'

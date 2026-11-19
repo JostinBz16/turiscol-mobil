@@ -76,7 +76,14 @@ export class AdminDestinationsPage implements OnInit {
 
   ngOnInit() {
     this.loadCities();
-    this.loadDestinations();
+  }
+
+  // True after the first entry; later entries reload silently (Ionic caches the view).
+  private entered = false;
+
+  ionViewWillEnter() {
+    this.loadDestinations(this.entered);
+    this.entered = true;
   }
 
   async loadCities() {
@@ -90,9 +97,9 @@ export class AdminDestinationsPage implements OnInit {
     }
   }
 
-  async loadDestinations() {
+  async loadDestinations(silent = false) {
     const seq = ++this.requestSeq;
-    this.loading.set(true);
+    if (!silent) this.loading.set(true);
     try {
       const city = this.cityFilter();
       const params = { page: this.page(), size: this.pageSize };
@@ -108,9 +115,11 @@ export class AdminDestinationsPage implements OnInit {
     } catch (err) {
       if (seq !== this.requestSeq) return;
       console.error('Error loading destinations', err);
-      this.destinations.set([]);
-      this.totalPages.set(0);
-      this.totalElements.set(0);
+      if (!silent) {
+        this.destinations.set([]);
+        this.totalPages.set(0);
+        this.totalElements.set(0);
+      }
     }
     this.loading.set(false);
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -30,7 +30,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './admin-department-editor.page.html',
   styleUrls: ['./admin-department-editor.page.scss'],
 })
-export class AdminDepartmentEditorPage implements OnInit {
+export class AdminDepartmentEditorPage {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private locationService = inject(LocationService);
@@ -48,12 +48,19 @@ export class AdminDepartmentEditorPage implements OnInit {
     this.initForm();
   }
 
-  async ngOnInit() {
+  // Runs on first entry and on every re-entry (Ionic caches the view for this URL).
+  async ionViewWillEnter() {
     this.departmentId = this.route.snapshot.paramMap.get('id');
+    this.isNew = !this.departmentId;
+    this.resetForm();
     if (this.departmentId) {
-      this.isNew = false;
       await this.loadDepartment();
     }
+  }
+
+  private resetForm() {
+    this.form.reset({ name: '' });
+    this.saving.set(false);
   }
 
   private initForm() {

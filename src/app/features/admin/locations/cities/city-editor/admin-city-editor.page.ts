@@ -52,15 +52,31 @@ export class AdminCityEditorPage implements OnInit {
     this.initForm();
   }
 
-  async ngOnInit() {
+  private departmentsReady: Promise<void> = Promise.resolve();
+
+  ngOnInit() {
+    this.departmentsReady = this.loadDepartments();
+  }
+
+  // Runs on first entry and on every re-entry (Ionic caches the view for this URL).
+  async ionViewWillEnter() {
     this.cityId = this.route.snapshot.paramMap.get('id');
+    this.isNew = !this.cityId;
+    this.resetForm();
     if (this.cityId) {
-      this.isNew = false;
-    }
-    await this.loadDepartments();
-    if (this.cityId) {
+      await this.departmentsReady;
       await this.loadCity();
     }
+  }
+
+  private resetForm() {
+    this.form.reset({
+      name: '',
+      imageUrl: '',
+      departmentId: null,
+      featured: false,
+    });
+    this.saving.set(false);
   }
 
   private initForm() {

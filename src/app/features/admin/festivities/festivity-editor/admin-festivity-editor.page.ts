@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -29,7 +29,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './admin-festivity-editor.page.html',
   styleUrls: ['./admin-festivity-editor.page.scss'],
 })
-export class AdminFestivityEditorPage implements OnInit {
+export class AdminFestivityEditorPage {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private festivityService = inject(FestivityService);
@@ -47,12 +47,27 @@ export class AdminFestivityEditorPage implements OnInit {
     this.initForm();
   }
 
-  async ngOnInit() {
+  // Runs on first entry and on every re-entry (Ionic caches the view for this URL).
+  async ionViewWillEnter() {
     this.festivityId = this.route.snapshot.paramMap.get('id');
+    this.isNew = !this.festivityId;
+    this.resetForm();
     if (this.festivityId) {
-      this.isNew = false;
       await this.loadFestivity();
     }
+  }
+
+  private resetForm() {
+    this.form.reset({
+      name: '',
+      description: '',
+      startDate: null,
+      endDate: null,
+      cityId: null,
+      image: '',
+      active: true,
+    });
+    this.saving.set(false);
   }
 
   private initForm() {

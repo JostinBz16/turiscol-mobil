@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   IonContent, IonIcon, IonButton, IonSpinner, IonSelect, IonSelectOption,
@@ -27,7 +27,7 @@ import {
   templateUrl: './admin-user-detail.page.html',
   styleUrls: ['./admin-user-detail.page.scss'],
 })
-export class AdminUserDetailPage implements OnInit {
+export class AdminUserDetailPage {
   private route = inject(ActivatedRoute);
   private userService = inject(UserService);
   private toastCtrl = inject(ToastController);
@@ -59,27 +59,34 @@ export class AdminUserDetailPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.userId = this.route.snapshot.paramMap.get('id');
+  // Runs on first entry and on every re-entry (Ionic caches the view for this URL).
+  ionViewWillEnter() {
+    const id = this.route.snapshot.paramMap.get('id');
+    // Silent reload only when the same record is already displayed.
+    const silent = id === this.userId && this.user() !== null;
+    this.userId = id;
     if (this.userId) {
-      this.loadUser();
+      this.loadUser(silent);
     } else {
       this.error.set(true);
       this.loading.set(false);
     }
   }
 
-  async loadUser() {
+  async loadUser(silent = false) {
     if (!this.userId) return;
-    this.loading.set(true);
-    this.error.set(false);
+    if (!silent) {
+      this.loading.set(true);
+      this.error.set(false);
+    }
     try {
       const user = await firstValueFrom(this.userService.getById(this.userId));
       this.user.set(user);
       this.selectedRole.set(this.toRealmRole(user.role));
+      this.error.set(false);
     } catch (err) {
       console.error('Error loading user', err);
-      this.error.set(true);
+      if (!silent) this.error.set(true);
     }
     this.loading.set(false);
   }

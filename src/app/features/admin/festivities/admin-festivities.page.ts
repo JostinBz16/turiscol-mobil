@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {
@@ -27,7 +27,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './admin-festivities.page.html',
   styleUrls: ['./admin-festivities.page.scss'],
 })
-export class AdminFestivitiesPage implements OnInit {
+export class AdminFestivitiesPage {
   private festivityService = inject(FestivityService);
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
@@ -39,18 +39,22 @@ export class AdminFestivitiesPage implements OnInit {
     addIcons({ addOutline, createOutline, trashOutline, chevronForwardOutline, calendarOutline });
   }
 
-  ngOnInit() {
-    this.loadFestivities();
+  // True after the first entry; later entries reload silently (Ionic caches the view).
+  private entered = false;
+
+  ionViewWillEnter() {
+    this.loadFestivities(this.entered);
+    this.entered = true;
   }
 
-  async loadFestivities() {
-    this.loading.set(true);
+  async loadFestivities(silent = false) {
+    if (!silent) this.loading.set(true);
     try {
       const res = await firstValueFrom(this.festivityService.getAll({ size: 100 }));
       this.festivities.set(res?.content ?? res ?? []);
     } catch (err) {
       console.error('Error loading festivities', err);
-      this.festivities.set([]);
+      if (!silent) this.festivities.set([]);
     }
     this.loading.set(false);
   }

@@ -76,22 +76,48 @@ export class AdminDestinationEditorPage implements OnInit {
     this.initForm();
   }
 
-  // Stable reference (set once in ngOnInit) to avoid change-detection churn.
+  // Stable reference (set in applyRoute, not per change detection) to avoid churn.
   breadcrumbs: AdminBreadcrumb[] = [];
 
-  async ngOnInit() {
+  private citiesReady: Promise<void> = Promise.resolve();
+
+  ngOnInit() {
+    this.applyRoute();
+    this.citiesReady = this.loadCities();
+  }
+
+  // Runs on first entry and on every re-entry (Ionic caches the view for this URL).
+  async ionViewWillEnter() {
+    this.applyRoute();
+    // Clears values left from a previous visit (also fields the API does not return).
+    this.resetForm();
+    if (!this.destinationId) return;
+    await this.citiesReady;
+    await this.loadDestination();
+  }
+
+  private applyRoute() {
     this.destinationId = this.route.snapshot.paramMap.get('id');
-    if (this.destinationId) {
-      this.isNew = false;
-    }
+    this.isNew = !this.destinationId;
     this.breadcrumbs = [
       { label: 'Destinos', link: '/admin-dashboard/locations/destinations' },
       { label: this.isNew ? 'Nuevo' : 'Editar' },
     ];
-    await this.loadCities();
-    if (this.destinationId) {
-      await this.loadDestination();
-    }
+  }
+
+  private resetForm() {
+    this.form.reset({
+      name: '',
+      description: '',
+      imageUrl: '',
+      latitude: null,
+      longitude: null,
+      destinationType: null,
+      municipalityId: null,
+      active: true,
+      featured: false,
+    });
+    this.saving.set(false);
   }
 
   private initForm() {

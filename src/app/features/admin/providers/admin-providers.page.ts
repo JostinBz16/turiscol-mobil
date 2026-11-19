@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {
@@ -24,7 +24,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './admin-providers.page.html',
   styleUrls: ['./admin-providers.page.scss'],
 })
-export class AdminProvidersPage implements OnInit {
+export class AdminProvidersPage {
   private providerAdminService = inject(ProviderAdminService);
   private toastCtrl = inject(ToastController);
 
@@ -35,12 +35,16 @@ export class AdminProvidersPage implements OnInit {
     addIcons({ chevronForwardOutline, businessOutline, powerOutline });
   }
 
-  ngOnInit() {
-    this.loadProviders();
+  // True after the first entry; later entries reload silently (Ionic caches the view).
+  private entered = false;
+
+  ionViewWillEnter() {
+    this.loadProviders(this.entered);
+    this.entered = true;
   }
 
-  async loadProviders() {
-    this.loading.set(true);
+  async loadProviders(silent = false) {
+    if (!silent) this.loading.set(true);
     try {
       const res = await firstValueFrom(
         this.providerAdminService.listProviders({ size: 100 }),
@@ -48,7 +52,7 @@ export class AdminProvidersPage implements OnInit {
       this.providers.set(res?.content ?? res ?? []);
     } catch (err) {
       console.error('Error loading providers', err);
-      this.providers.set([]);
+      if (!silent) this.providers.set([]);
     }
     this.loading.set(false);
   }

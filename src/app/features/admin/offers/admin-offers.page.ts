@@ -107,7 +107,14 @@ export class AdminOffersPage implements OnInit {
 
   ngOnInit() {
     this.loadCities();
-    this.loadOffers();
+  }
+
+  // True after the first entry; later entries reload silently (Ionic caches the view).
+  private entered = false;
+
+  ionViewWillEnter() {
+    this.loadOffers(this.entered);
+    this.entered = true;
   }
 
   /** Requests consecutive pages until the whole collection is covered (bounded). */
@@ -140,9 +147,9 @@ export class AdminOffersPage implements OnInit {
     }
   }
 
-  async loadOffers() {
+  async loadOffers(silent = false) {
     const seq = ++this.requestSeq;
-    this.loading.set(true);
+    if (!silent) this.loading.set(true);
     try {
       const city = this.cityFilter();
       const res = await firstValueFrom(
@@ -166,9 +173,11 @@ export class AdminOffersPage implements OnInit {
     } catch (err) {
       if (seq !== this.requestSeq) return;
       console.error('Error loading offers', err);
-      this.offers.set([]);
-      this.totalPages.set(0);
-      this.totalElements.set(0);
+      if (!silent) {
+        this.offers.set([]);
+        this.totalPages.set(0);
+        this.totalElements.set(0);
+      }
       this.loading.set(false);
       this.showToast('No se pudieron cargar las ofertas', 'danger');
     }

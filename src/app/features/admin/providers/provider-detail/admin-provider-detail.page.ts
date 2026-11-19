@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
@@ -25,7 +25,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './admin-provider-detail.page.html',
   styleUrls: ['./admin-provider-detail.page.scss'],
 })
-export class AdminProviderDetailPage implements OnInit {
+export class AdminProviderDetailPage {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private providerAdminService = inject(ProviderAdminService);
@@ -44,28 +44,35 @@ export class AdminProviderDetailPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.providerId = this.route.snapshot.paramMap.get('id');
+  // Runs on first entry and on every re-entry (Ionic caches the view for this URL).
+  ionViewWillEnter() {
+    const id = this.route.snapshot.paramMap.get('id');
+    // Silent reload only when the same record is already displayed.
+    const silent = id === this.providerId && this.provider() !== null;
+    this.providerId = id;
     if (this.providerId) {
-      this.loadProvider();
+      this.loadProvider(silent);
     } else {
       this.error.set(true);
       this.loading.set(false);
     }
   }
 
-  async loadProvider() {
+  async loadProvider(silent = false) {
     if (!this.providerId) return;
-    this.loading.set(true);
-    this.error.set(false);
+    if (!silent) {
+      this.loading.set(true);
+      this.error.set(false);
+    }
     try {
       const provider = await firstValueFrom(
         this.providerAdminService.getById(this.providerId),
       );
       this.provider.set(provider);
+      this.error.set(false);
     } catch (err) {
       console.error('Error loading provider', err);
-      this.error.set(true);
+      if (!silent) this.error.set(true);
     }
     this.loading.set(false);
   }

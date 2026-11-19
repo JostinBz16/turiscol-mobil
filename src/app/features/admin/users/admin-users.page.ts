@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonContent, IonButton, IonIcon, IonSelect, IonSelectOption, IonSearchbar,
@@ -29,7 +29,7 @@ type RoleFilter = 'ALL' | UserApi['role'];
   templateUrl: './admin-users.page.html',
   styleUrls: ['./admin-users.page.scss'],
 })
-export class AdminUsersPage implements OnInit {
+export class AdminUsersPage {
   private userService = inject(UserService);
   private toastCtrl = inject(ToastController);
 
@@ -79,14 +79,18 @@ export class AdminUsersPage implements OnInit {
     addIcons({ eyeOutline, refreshOutline });
   }
 
-  ngOnInit() {
-    this.loadUsers();
+  // True after the first entry; later entries reload silently (Ionic caches the view).
+  private entered = false;
+
+  ionViewWillEnter() {
+    this.loadUsers(this.entered);
     this.loadStats();
+    this.entered = true;
   }
 
-  async loadUsers() {
+  async loadUsers(silent = false) {
     const seq = ++this.requestSeq;
-    this.loading.set(true);
+    if (!silent) this.loading.set(true);
     try {
       const filter = this.roleFilter();
       const params = { page: this.page(), size: this.pageSize };
@@ -102,9 +106,11 @@ export class AdminUsersPage implements OnInit {
     } catch (err) {
       if (seq !== this.requestSeq) return;
       console.error('Error loading users', err);
-      this.users.set([]);
-      this.totalPages.set(0);
-      this.totalElements.set(0);
+      if (!silent) {
+        this.users.set([]);
+        this.totalPages.set(0);
+        this.totalElements.set(0);
+      }
     }
     this.loading.set(false);
   }
