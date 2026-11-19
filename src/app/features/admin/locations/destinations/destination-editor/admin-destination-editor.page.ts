@@ -7,13 +7,16 @@ import {
   Validators,
 } from '@angular/forms';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-  IonIcon, IonButton, IonItem, IonLabel, IonInput, IonTextarea, IonToggle,
+  IonContent, IonIcon, IonButton, IonInput, IonTextarea, IonToggle,
   IonSelect, IonSelectOption, IonSpinner, ToastController,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { saveOutline, closeOutline } from 'ionicons/icons';
+import { saveOutline, closeOutline, arrowBackOutline } from 'ionicons/icons';
+import {
+  AdminBreadcrumb,
+  AdminPageHeaderComponent,
+} from '../../../shared/admin-page-header/admin-page-header.component';
 import {
   LocationService,
   DestinationRequest,
@@ -37,9 +40,9 @@ const DESTINATION_TYPE_LABELS: Record<DestinationType, string> = {
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-    IonIcon, IonButton, IonItem, IonLabel, IonInput, IonTextarea, IonToggle,
+    IonContent, IonIcon, IonButton, IonInput, IonTextarea, IonToggle,
     IonSelect, IonSelectOption, IonSpinner,
+    AdminPageHeaderComponent,
   ],
   templateUrl: './admin-destination-editor.page.html',
   styleUrls: ['./admin-destination-editor.page.scss'],
@@ -69,15 +72,22 @@ export class AdminDestinationEditorPage implements OnInit {
   ];
 
   constructor() {
-    addIcons({ saveOutline, closeOutline });
+    addIcons({ saveOutline, closeOutline, arrowBackOutline });
     this.initForm();
   }
+
+  // Stable reference (set once in ngOnInit) to avoid change-detection churn.
+  breadcrumbs: AdminBreadcrumb[] = [];
 
   async ngOnInit() {
     this.destinationId = this.route.snapshot.paramMap.get('id');
     if (this.destinationId) {
       this.isNew = false;
     }
+    this.breadcrumbs = [
+      { label: 'Destinos', link: '/admin-dashboard/locations/destinations' },
+      { label: this.isNew ? 'Nuevo' : 'Editar' },
+    ];
     await this.loadCities();
     if (this.destinationId) {
       await this.loadDestination();

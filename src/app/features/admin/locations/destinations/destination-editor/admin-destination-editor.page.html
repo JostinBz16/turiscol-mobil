@@ -1,111 +1,114 @@
-<ion-header class="page-header">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard/locations/destinations"></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{ isNew ? 'Nuevo Destino' : 'Editar Destino' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-admin-page-header
+  [title]="isNew ? 'Nuevo destino' : 'Editar destino'"
+  subtitle="Completa los datos del destino turístico"
+  [breadcrumbs]="breadcrumbs"
+>
+  <ion-button actions fill="outline" (click)="cancel()">
+    <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+    Volver a destinos
+  </ion-button>
+</app-admin-page-header>
 
 <ion-content>
-  @if (loading()) {
-    <div class="loading-center">
-      <ion-spinner name="crescent"></ion-spinner>
-    </div>
-  } @else {
-    <form [formGroup]="form" (ngSubmit)="save()" class="form-body">
-      <ion-item>
-        <ion-input
-          label="Nombre"
-          labelPlacement="stacked"
-          formControlName="name"
-          placeholder="Ej: Catedral de Sal"
-        ></ion-input>
-      </ion-item>
+  <div class="admin-container">
+    @if (loading()) {
+      <div class="admin-state">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="admin-card editor-card">
+        <div class="form-grid">
+          <ion-input
+            label="Nombre"
+            labelPlacement="stacked"
+            fill="outline"
+            formControlName="name"
+            placeholder="Ej: Catedral de Sal"
+          ></ion-input>
 
-      <ion-item>
-        <ion-textarea
-          label="Descripción"
-          labelPlacement="stacked"
-          formControlName="description"
-          placeholder="Descripción opcional"
-          [autoGrow]="true"
-        ></ion-textarea>
-      </ion-item>
+          <ion-select
+            label="Ciudad"
+            labelPlacement="stacked"
+            fill="outline"
+            interface="popover"
+            formControlName="municipalityId"
+            placeholder="Selecciona una ciudad"
+          >
+            @for (city of cities(); track city.id) {
+              <ion-select-option [value]="city.id">{{ city.name }}</ion-select-option>
+            }
+          </ion-select>
 
-      <ion-item>
-        <ion-input
-          label="URL de imagen"
-          labelPlacement="stacked"
-          formControlName="imageUrl"
-          placeholder="https://..."
-        ></ion-input>
-      </ion-item>
+          <ion-select
+            label="Tipo de destino"
+            labelPlacement="stacked"
+            fill="outline"
+            interface="popover"
+            formControlName="destinationType"
+            placeholder="Selecciona un tipo"
+          >
+            @for (type of destinationTypes; track type) {
+              <ion-select-option [value]="type">{{ destinationTypeLabel(type) }}</ion-select-option>
+            }
+          </ion-select>
 
-      <div class="coords-row">
-        <ion-item>
+          <ion-input
+            label="URL de imagen"
+            labelPlacement="stacked"
+            fill="outline"
+            formControlName="imageUrl"
+            placeholder="https://..."
+          ></ion-input>
+
           <ion-input
             label="Latitud"
             labelPlacement="stacked"
+            fill="outline"
             type="number"
             formControlName="latitude"
             placeholder="Ej: 4.5709"
           ></ion-input>
-        </ion-item>
-        <ion-item>
+
           <ion-input
             label="Longitud"
             labelPlacement="stacked"
+            fill="outline"
             type="number"
             formControlName="longitude"
             placeholder="Ej: -74.2973"
           ></ion-input>
-        </ion-item>
-      </div>
 
-      <ion-item>
-        <ion-select
-          label="Tipo de destino"
-          labelPlacement="stacked"
-          formControlName="destinationType"
-          placeholder="Selecciona un tipo"
-        >
-          @for (type of destinationTypes; track type) {
-            <ion-select-option [value]="type">{{ destinationTypeLabel(type) }}</ion-select-option>
-          }
-        </ion-select>
-      </ion-item>
+          <ion-textarea
+            class="full-width"
+            label="Descripción"
+            labelPlacement="stacked"
+            fill="outline"
+            formControlName="description"
+            placeholder="Descripción opcional"
+            [autoGrow]="true"
+            [rows]="4"
+          ></ion-textarea>
 
-      <ion-item>
-        <ion-select
-          label="Ciudad"
-          labelPlacement="stacked"
-          formControlName="municipalityId"
-          placeholder="Selecciona una ciudad"
-        >
-          @for (city of cities(); track city.id) {
-            <ion-select-option [value]="city.id">{{ city.name }}</ion-select-option>
-          }
-        </ion-select>
-      </ion-item>
+          <div class="toggle-row full-width">
+            <ion-toggle formControlName="active">Activo</ion-toggle>
+            <ion-toggle formControlName="featured">Destacado</ion-toggle>
+          </div>
+        </div>
 
-      <ion-item>
-        <ion-label>Activo</ion-label>
-        <ion-toggle formControlName="active" slot="end"></ion-toggle>
-      </ion-item>
+        @if (!isNew) {
+          <p class="form-note">
+            El tipo de destino no se precarga porque la API no lo devuelve; vuelve a elegirlo al guardar.
+          </p>
+        }
 
-      <ion-item>
-        <ion-label>Destacado</ion-label>
-        <ion-toggle formControlName="featured" slot="end"></ion-toggle>
-      </ion-item>
-
-      <div class="form-actions">
-        <ion-button fill="outline" type="button" (click)="cancel()">Cancelar</ion-button>
-        <ion-button expand="block" type="submit" [disabled]="form.invalid || saving()">
-          <ion-icon slot="start" name="save-outline"></ion-icon>
-          {{ isNew ? 'Crear' : 'Actualizar' }}
-        </ion-button>
-      </div>
-    </form>
-  }
+        <div class="form-actions">
+          <ion-button fill="outline" type="button" (click)="cancel()">Cancelar</ion-button>
+          <ion-button type="submit" [disabled]="form.invalid || saving()">
+            <ion-icon slot="start" name="save-outline"></ion-icon>
+            {{ isNew ? 'Crear' : 'Actualizar' }}
+          </ion-button>
+        </div>
+      </form>
+    }
+  </div>
 </ion-content>

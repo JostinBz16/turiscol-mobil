@@ -1,43 +1,26 @@
-.loading-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
+// Layout, cards and the two-column grid live in src/theme/admin.scss.
+.editor-card {
+  max-width: 900px;
 }
 
-.form-body {
+.toggle-row {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 16px;
-
-  ion-item {
-    --background: var(--ion-color-light);
-    --border-radius: 10px;
-    margin-bottom: 8px;
-  }
+  flex-wrap: wrap;
+  gap: 24px;
 }
 
-.coords-row {
-  display: flex;
-  gap: 8px;
-
-  ion-item {
-    flex: 1;
-  }
+.form-note {
+  margin: 12px 0 0;
+  color: var(--ion-color-medium);
+  font-size: var(--font-size-xs);
 }
 
 .form-actions {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
-  padding-bottom: 16px;
-
-  ion-button[expand="block"] {
-    --background: #0d3b66;
-    --color: #fff;
-    --border-radius: 10px;
-    font-weight: 600;
-  }
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ion-border-color);
 }

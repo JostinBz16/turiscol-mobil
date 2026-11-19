@@ -1,28 +1,30 @@
-.loading-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
+// Layout and table styles live in src/theme/admin.scss.
+.status-chip.is-featured {
+  background: color-mix(in srgb, var(--ion-color-warning) 22%, transparent);
+
+  &::before {
+    background: var(--ion-color-warning);
+  }
 }
 
-.empty-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 40vh;
+.muted {
   color: var(--ion-color-medium);
 }
 
-.destination-item {
-  --min-height: 72px;
+.link-button {
+  margin-left: 12px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
 
-  h2 {
-    font-weight: 600;
-    font-size: 1rem;
+  &:hover {
+    text-decoration: underline;
   }
+}
 
-  p {
-    font-size: 0.85rem;
-    color: var(--ion-color-medium);
-  }
+.danger-link {
+  color: var(--ion-color-danger);
 }

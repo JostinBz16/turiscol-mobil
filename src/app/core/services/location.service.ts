@@ -218,6 +218,28 @@ export class LocationService {
     );
   }
 
+  /**
+   * `GET /locations/destinations/by-city/{cityId}` (api-documentation.md:962).
+   * The doc does not state whether this endpoint is paginated, so callers must
+   * accept either a Page or a plain array.
+   */
+  getDestinationsByCity(
+    cityId: string | number,
+    params?: { page?: number; size?: number },
+  ): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.size) httpParams = httpParams.set('size', params.size);
+    return this.http
+      .get<any>(`${this.destinationsApi}/by-city/${cityId}`, { params: httpParams })
+      .pipe(
+        catchError((err) => {
+          console.error('Error fetching destinations by city', err);
+          return throwError(() => err);
+        }),
+      );
+  }
+
   getDestinationById(id: string | number): Observable<DestinationResponse> {
     return this.http.get<DestinationResponse>(`${this.destinationsApi}/${id}`).pipe(
       catchError((err) => {
