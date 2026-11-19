@@ -12,7 +12,7 @@ import {
   IonRouterOutlet,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline, logOutOutline } from 'ionicons/icons';
+import { homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline, logOutOutline, pricetagsOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-layout',
@@ -37,7 +37,7 @@ export class AdminLayoutPage {
   private router = inject(Router);
 
   constructor() {
-    addIcons({ homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline, logOutOutline });
+    addIcons({ homeOutline, cashOutline, peopleOutline, storefrontOutline, calendarOutline, mapOutline, logOutOutline, pricetagsOutline });
   }
 
   logout() {

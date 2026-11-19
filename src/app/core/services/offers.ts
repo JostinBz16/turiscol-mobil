@@ -132,6 +132,38 @@ export class OfferService {
     );
   }
 
+  // Admin moderation (api-documentation.md, OfferController): 204 No Content.
+  // block also deactivates the offer; unblock does NOT reactivate it.
+  block(id: string): Observable<void> {
+    return this.http.patch<void>(`${this.api}/${id}/block`, {}).pipe(
+      catchError((err) => {
+        console.error('Error blocking offer', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  unblock(id: string): Observable<void> {
+    return this.http.patch<void>(`${this.api}/${id}/unblock`, {}).pipe(
+      catchError((err) => {
+        console.error('Error unblocking offer', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  // ASSUMED CONTRACT: PATCH /offers/{id}/featured exists but its body/query is not
+  // documented; the boolean is sent as a `featured` query param. Verify with the backend.
+  setFeatured(id: string, featured: boolean): Observable<any> {
+    const params = new HttpParams().set('featured', featured);
+    return this.http.patch<any>(`${this.api}/${id}/featured`, {}, { params }).pipe(
+      catchError((err) => {
+        console.error('Error updating featured flag', err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
   getByCityActive(cityId: string, params?: { page?: number; size?: number }): Observable<any> {
     let httpParams = new HttpParams();
     if (params?.page) httpParams = httpParams.set('page', params.page);

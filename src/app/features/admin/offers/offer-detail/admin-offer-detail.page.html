@@ -1,0 +1,150 @@
+<app-admin-page-header
+  [title]="offer()?.name ?? 'Detalle de oferta'"
+  subtitle="Información de la oferta y herramientas de moderación"
+  [breadcrumbs]="breadcrumbs()"
+>
+  <ion-button actions fill="outline" routerLink="/admin-dashboard/offers">
+    <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+    Volver a ofertas
+  </ion-button>
+</app-admin-page-header>
+
+<ion-content>
+  <div class="admin-container">
+    @if (loading()) {
+      <div class="admin-state">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    } @else if (errorMessage() || !offer()) {
+      <div class="admin-state">
+        <ion-icon name="alert-circle-outline" class="state-icon"></ion-icon>
+        <p>{{ errorMessage() ?? 'No se pudo cargar la oferta' }}</p>
+      </div>
+    } @else {
+      @let o = offer()!;
+      <div class="detail-layout">
+        <div class="main-column">
+          <section class="admin-card">
+            <h2>Datos generales</h2>
+            <dl class="detail-list">
+              <div>
+                <dt>Nombre</dt>
+                <dd>{{ o.name }}</dd>
+              </div>
+              <div>
+                <dt>Tipo</dt>
+                <dd>{{ typeLabel(o.type) }}</dd>
+              </div>
+              <div>
+                <dt>Categoría</dt>
+                <dd>{{ o.category || '-' }}</dd>
+              </div>
+              <div>
+                <dt>Precio base</dt>
+                <dd>{{ formatPrice(o.basePrice) }}</dd>
+              </div>
+              <div>
+                <dt>Ciudad</dt>
+                <dd>{{ cityName() ?? o.cityId }}</dd>
+              </div>
+              <div>
+                <dt>Proveedor</dt>
+                <dd>{{ providerLabel(o) }}</dd>
+              </div>
+              <div>
+                <dt>Creada</dt>
+                <dd>{{ formatDate(o.createdAt) }}</dd>
+              </div>
+              <div>
+                <dt>Última actualización</dt>
+                <dd>{{ formatDate(o.updatedAt) }}</dd>
+              </div>
+              <div class="full-width">
+                <dt>Descripción</dt>
+                <dd class="description">{{ o.description || 'Sin descripción' }}</dd>
+              </div>
+              <div class="full-width">
+                <dt>Identificador</dt>
+                <dd class="mono">{{ o.id }}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="admin-card">
+            <h2>Imágenes</h2>
+            @if (o.images.length) {
+              <div class="gallery">
+                @for (image of o.images; track $index) {
+                  <a [href]="image" target="_blank" rel="noopener noreferrer">
+                    <img [src]="image" [alt]="'Imagen ' + ($index + 1) + ' de ' + o.name" loading="lazy" />
+                  </a>
+                }
+              </div>
+            } @else {
+              <p class="card-hint">Esta oferta no tiene imágenes.</p>
+            }
+          </section>
+        </div>
+
+        <div class="side-column">
+          <section class="admin-card">
+            <h2>Estado</h2>
+            <div class="chips">
+              <span
+                class="status-chip"
+                [class.is-active]="!o.blocked && o.active"
+                [class.is-inactive]="!o.blocked && !o.active"
+                [class.is-blocked]="o.blocked"
+              >
+                {{ statusLabel(o) }}
+              </span>
+              @if (o.featured) {
+                <span class="status-chip is-featured">Destacada</span>
+              }
+            </div>
+          </section>
+
+          <section class="admin-card">
+            <h2>Bloqueo</h2>
+            <p class="card-hint">
+              {{
+                o.blocked
+                  ? 'La oferta está bloqueada. Al desbloquearla no se reactiva sola: el proveedor debe activarla de nuevo.'
+                  : 'Al bloquear la oferta se desactiva y deja de estar disponible para los turistas.'
+              }}
+            </p>
+            <ion-button
+              class="card-action"
+              [color]="o.blocked ? 'success' : 'danger'"
+              [disabled]="updating()"
+              (click)="toggleBlock()"
+            >
+              <ion-icon slot="start" [name]="o.blocked ? 'lock-open-outline' : 'ban-outline'"></ion-icon>
+              {{ o.blocked ? 'Desbloquear oferta' : 'Bloquear oferta' }}
+            </ion-button>
+          </section>
+
+          <section class="admin-card">
+            <h2>Destacada</h2>
+            <p class="card-hint">
+              {{
+                o.featured
+                  ? 'La oferta aparece entre las destacadas.'
+                  : 'Marca la oferta como destacada para darle visibilidad.'
+              }}
+            </p>
+            <ion-button
+              class="card-action"
+              fill="outline"
+              [disabled]="updating()"
+              (click)="toggleFeatured()"
+            >
+              <ion-icon slot="start" name="star-outline"></ion-icon>
+              {{ o.featured ? 'Quitar destacada' : 'Destacar oferta' }}
+            </ion-button>
+          </section>
+        </div>
+      </div>
+    }
+  </div>
+</ion-content>

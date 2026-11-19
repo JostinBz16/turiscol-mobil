@@ -1,0 +1,146 @@
+<app-admin-page-header
+  title="Ofertas"
+  subtitle="Modera las ofertas publicadas por los proveedores"
+  [breadcrumbs]="[{ label: 'Panel', link: '/admin-dashboard/dashboard' }, { label: 'Ofertas' }]"
+>
+  <ion-button actions fill="outline" (click)="refresh()">
+    <ion-icon slot="start" name="refresh-outline"></ion-icon>
+    Actualizar
+  </ion-button>
+</app-admin-page-header>
+
+<ion-content>
+  <div class="admin-container">
+    <div class="admin-toolbar">
+      <ion-searchbar
+        placeholder="Buscar por nombre"
+        [debounce]="300"
+        (ionInput)="onSearch($event)"
+      ></ion-searchbar>
+
+      <ion-select
+        label="Tipo"
+        labelPlacement="stacked"
+        fill="outline"
+        interface="popover"
+        [value]="typeFilter()"
+        (ionChange)="onTypeChange($event)"
+      >
+        <ion-select-option [value]="all">Todos los tipos</ion-select-option>
+        @for (type of typeOptions; track type) {
+          <ion-select-option [value]="type">{{ typeLabel(type) }}</ion-select-option>
+        }
+      </ion-select>
+
+      <ion-select
+        label="Ciudad"
+        labelPlacement="stacked"
+        fill="outline"
+        interface="popover"
+        [value]="cityFilter()"
+        (ionChange)="onCityChange($event)"
+      >
+        <ion-select-option [value]="all">Todas las ciudades</ion-select-option>
+        @for (city of cities(); track city.id) {
+          <ion-select-option [value]="city.id">{{ city.name }}</ion-select-option>
+        }
+      </ion-select>
+
+      <ion-select
+        label="Estado"
+        labelPlacement="stacked"
+        fill="outline"
+        interface="popover"
+        [value]="activeFilter()"
+        (ionChange)="onActiveChange($event)"
+      >
+        <ion-select-option [value]="all">Todas</ion-select-option>
+        <ion-select-option value="true">Activas</ion-select-option>
+        <ion-select-option value="false">Inactivas</ion-select-option>
+      </ion-select>
+
+      <ion-select
+        label="Destacada"
+        labelPlacement="stacked"
+        fill="outline"
+        interface="popover"
+        [value]="featuredFilter()"
+        (ionChange)="onFeaturedChange($event)"
+      >
+        <ion-select-option [value]="all">Todas</ion-select-option>
+        <ion-select-option value="true">Destacadas</ion-select-option>
+        <ion-select-option value="false">No destacadas</ion-select-option>
+      </ion-select>
+    </div>
+
+    <app-admin-data-table
+      [columns]="columns"
+      [rows]="offers()"
+      [loading]="loading()"
+      rowKey="id"
+      emptyMessage="No hay ofertas para mostrar"
+      [page]="page()"
+      [totalPages]="totalPages()"
+      [totalElements]="totalElements()"
+      (pageChange)="onPageChange($event)"
+    >
+      <ng-template #cell let-offer let-column="column">
+        @switch (column.key) {
+          @case ('name') {
+            <span class="offer-name" [title]="offer.name">{{ offer.name }}</span>
+          }
+          @case ('type') {
+            {{ typeLabel(offer.type) }}
+          }
+          @case ('city') {
+            {{ cityName(offer) }}
+          }
+          @case ('provider') {
+            {{ providerName(offer) }}
+          }
+          @case ('price') {
+            {{ price(offer) }}
+          }
+          @case ('featured') {
+            @if (offer.featured) {
+              <span class="status-chip is-featured">Destacada</span>
+            } @else {
+              <span class="muted">-</span>
+            }
+          }
+          @case ('status') {
+            <span
+              class="status-chip"
+              [class.is-active]="!offer.blocked && offer.active"
+              [class.is-inactive]="!offer.blocked && !offer.active"
+              [class.is-blocked]="offer.blocked"
+            >
+              {{ statusLabel(offer) }}
+            </span>
+          }
+        }
+      </ng-template>
+
+      <ng-template #actions let-offer>
+        <a class="table-link" [routerLink]="[offer.id]">Ver detalle</a>
+        <button
+          type="button"
+          class="link-button"
+          [class.danger-link]="!offer.blocked"
+          [disabled]="busyIds().has(offer.id)"
+          (click)="toggleBlock(offer)"
+        >
+          {{ offer.blocked ? 'Desbloquear' : 'Bloquear' }}
+        </button>
+        <button
+          type="button"
+          class="link-button"
+          [disabled]="busyIds().has(offer.id)"
+          (click)="toggleFeatured(offer)"
+        >
+          {{ offer.featured ? 'Quitar destacada' : 'Destacar' }}
+        </button>
+      </ng-template>
+    </app-admin-data-table>
+  </div>
+</ion-content>

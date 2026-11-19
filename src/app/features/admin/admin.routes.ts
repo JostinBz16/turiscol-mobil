@@ -46,6 +46,26 @@ export const adminRoutes: Routes = [
   },
 
   {
+    path: 'offers',
+    canActivate: [roleGuard],
+    data: { role: 'admin' },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./offers/admin-offers.page').then((m) => m.AdminOffersPage),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./offers/offer-detail/admin-offer-detail.page').then(
+            (m) => m.AdminOfferDetailPage,
+          ),
+      },
+    ],
+  },
+
+  {
     path: 'providers',
     canActivate: [roleGuard],
     data: { role: 'admin' },

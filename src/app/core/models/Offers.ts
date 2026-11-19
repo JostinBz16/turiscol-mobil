@@ -47,6 +47,12 @@ export interface Offer {
   providerId: string;
   basePrice: number;
   active: boolean;
+  // Moderation / listing fields returned by OfferResponseDTO (api-documentation.md).
+  blocked?: boolean;
+  featured?: boolean;
+  category?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AccommodationOffer extends Offer {
