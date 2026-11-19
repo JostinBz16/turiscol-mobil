@@ -6,11 +6,13 @@ import {
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { AuthService } from 'src/app/features/auth/login/services/auth';
 
 let isRefreshing = false;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const http = inject(HttpClient);
+  const authService = inject(AuthService);
   const token = localStorage.getItem('access_token');
 
   // No añadir el token si la petición es para autenticación (login/register/refresh)
@@ -48,7 +50,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                 }),
                 catchError((refreshError) => {
                   isRefreshing = false;
-                  localStorage.clear();
+                  authService.logout();
                   window.location.href = '/auth/login';
                   return throwError(() => refreshError);
                 }),

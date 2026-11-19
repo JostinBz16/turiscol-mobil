@@ -6,9 +6,20 @@ import { LoginResponse, UserSession } from '../models/auth.models';
 import { RegisterRequestDTO } from '../../register/models/register-request';
 import { environment } from 'src/environments/environment';
 
+/** Claves de localStorage que pertenecen a la sesión del usuario. */
+export const SESSION_STORAGE_KEYS = [
+  'access_token',
+  'refresh_token',
+  'user',
+  'role',
+  'selectedCity',
+  'account_return_url',
+] as const;
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
+  private logoutHooks: Array<() => void> = [];
 
   private API = `${environment.apiUrl}/auth`;
 
@@ -126,8 +137,25 @@ export class AuthService {
     }
   }
 
+  /**
+   * Registra una función que se ejecuta de forma síncrona en cada logout.
+   * Los servicios singleton con estado en memoria la usan para resetearse.
+   */
+  onLogout(hook: () => void) {
+    this.logoutHooks.push(hook);
+  }
+
   logout() {
-    localStorage.clear();
+    // Solo claves de sesión: se conservan preferencias como `welcomeShown`.
+    SESSION_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
     this.user.set(null);
+
+    for (const hook of this.logoutHooks) {
+      try {
+        hook();
+      } catch (err) {
+        console.error('Logout hook failed', err);
+      }
+    }
   }
 }

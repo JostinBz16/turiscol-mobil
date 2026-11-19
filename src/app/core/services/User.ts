@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, catchError, throwError } from 'rxjs';
 import { User, UserApi, RealmRole } from '../models/User';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
@@ -11,18 +11,28 @@ export class UserService {
   private http = inject(HttpClient);
 
   private API = `${environment.apiUrl}/users`;
-  user: User | null = JSON.parse(localStorage.getItem('user') || 'null');
-  private currentUser$ = new BehaviorSubject<User | null>(null);
+  /**
+   * Usuario de la sesión actual. Se lee siempre de localStorage (fuente de
+   * verdad de la sesión) para no conservar el usuario anterior en memoria
+   * tras un logout/login.
+   */
+  get user(): User | null {
+    try {
+      return JSON.parse(localStorage.getItem('user') || 'null');
+    } catch {
+      return null;
+    }
+  }
 
   getProfile(): Observable<User> {
-    if (!this.user?.id) {
+    const current = this.user;
+    if (!current?.id) {
       return throwError(() => new Error('User ID no disponible'));
     }
 
     return this.http
-      .get<User>(`${this.API}/profile/${this.user.id}`)
+      .get<User>(`${this.API}/profile/${current.id}`)
       .pipe(
-        tap((user) => this.currentUser$.next(user)),
         catchError((err) => {
           console.error('Error fetching profile', err);
           return throwError(() => err);
@@ -31,22 +41,24 @@ export class UserService {
   }
 
   updateProfile(user: Partial<User>): Observable<User> {
-    if (!this.user?.id) {
+    const current = this.user;
+    if (!current?.id) {
       return throwError(() => new Error('User ID no disponible'));
     }
 
     const payload = {
       ...user,
-      userType: this.user.role === 'proveedor' ? 'PROVIDER' : 'TOURIST',
+      userType: current.role === 'proveedor' ? 'PROVIDER' : 'TOURIST',
     };
 
     return this.http
-      .put<User>(`${this.API}/${this.user.id}`, payload)
+      .put<User>(`${this.API}/${current.id}`, payload)
       .pipe(
         tap((updatedUser) => {
-          this.currentUser$.next(updatedUser);
-          this.user = { ...this.user!, ...updatedUser };
-          localStorage.setItem('user', JSON.stringify(this.user));
+          localStorage.setItem(
+            'user',
+            JSON.stringify({ ...current, ...updatedUser }),
+          );
         }),
         catchError((err) => {
           console.error('Error updating profile', err);

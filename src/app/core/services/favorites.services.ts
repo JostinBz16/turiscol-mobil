@@ -27,6 +27,14 @@ export class FavoritesService {
   private favorites = signal<FavoriteOfferDto[]>([]);
   private loaded = false;
 
+  constructor() {
+    // Evita mostrar los favoritos del usuario anterior tras un logout.
+    this.auth.onLogout(() => {
+      this.favorites.set([]);
+      this.loaded = false;
+    });
+  }
+
   favoriteOfferIds = computed(() => {
     return this.favorites().map((f) => f.id);
   });
@@ -41,20 +49,22 @@ export class FavoritesService {
 
   private async ensureLoaded(): Promise<void> {
     if (this.loaded) return;
-    this.loaded = true;
     const userId = this.auth.userId();
     if (!userId) return;
+    this.loaded = true;
     try {
       const res: any = await firstValueFrom(
         this.http.get(`${this.api}?userId=${userId}`),
       );
+      // Si la sesión cambió mientras cargaba, descartar la respuesta obsoleta.
+      if (this.auth.userId() !== userId) return;
       this.favorites.set((res.offers ?? []).map((item: any) => ({
         ...item.offer,
         createdAt: item.createdAt,
       })));
     } catch {
       console.warn('Error loading favorites, using empty');
-      this.favorites.set([]);
+      if (this.auth.userId() === userId) this.favorites.set([]);
     }
   }
 
