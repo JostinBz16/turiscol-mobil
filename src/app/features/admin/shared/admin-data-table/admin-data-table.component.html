@@ -1,0 +1,87 @@
+<div class="admin-table-card">
+  @if (loading()) {
+    <div class="admin-state">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else if (rows().length === 0) {
+    <div class="admin-state">
+      <p>{{ emptyMessage() }}</p>
+    </div>
+  } @else {
+    <div class="admin-table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            @for (col of columns(); track col.key) {
+              <th
+                scope="col"
+                [style.width]="col.width ?? null"
+                [style.text-align]="col.align ?? 'left'"
+              >
+                {{ col.label }}
+              </th>
+            }
+            @if (actionsTpl()) {
+              <th scope="col" class="actions-col">Acciones</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track trackRow(row, $index)) {
+            <tr>
+              @for (col of columns(); track col.key) {
+                <td [style.text-align]="col.align ?? 'left'">
+                  @if (cellTpl(); as tpl) {
+                    <ng-container
+                      *ngTemplateOutlet="tpl; context: { $implicit: row, column: col }"
+                    ></ng-container>
+                  } @else {
+                    {{ cellValue(row, col) }}
+                  }
+                </td>
+              }
+              @if (actionsTpl(); as actions) {
+                <td class="actions-col">
+                  <ng-container
+                    *ngTemplateOutlet="actions; context: { $implicit: row }"
+                  ></ng-container>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (totalPages() > 0) {
+    <div class="admin-pagination">
+      <span class="pagination-info">
+        Página {{ page() + 1 }} de {{ totalPages() }}
+        @if (totalElements() !== undefined) {
+          &middot; {{ totalElements() }} resultados
+        }
+      </span>
+      <div class="pagination-buttons">
+        <ion-button
+          fill="outline"
+          size="small"
+          [disabled]="!hasPrev() || loading()"
+          (click)="goTo(page() - 1)"
+        >
+          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+          Anterior
+        </ion-button>
+        <ion-button
+          fill="outline"
+          size="small"
+          [disabled]="!hasNext() || loading()"
+          (click)="goTo(page() + 1)"
+        >
+          Siguiente
+          <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  }
+</div>

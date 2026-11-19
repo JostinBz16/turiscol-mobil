@@ -1,0 +1,257 @@
+/* ===============================
+   Admin panel (desktop web UI)
+   Shared styles for the admin pages. Colors come from variables.scss.
+   =============================== */
+
+.admin-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+
+  @media (min-width: 992px) {
+    padding: 24px 32px;
+  }
+}
+
+/* Generic surface card */
+.admin-card {
+  background: var(--ion-surface-color);
+  border: 1px solid var(--ion-border-color);
+  border-radius: 12px;
+  box-shadow: var(--ion-box-shadow);
+  padding: 20px;
+  box-sizing: border-box;
+
+  h2 {
+    font-size: var(--font-size-lg);
+    margin-bottom: 12px;
+  }
+}
+
+/* Loading / empty state block */
+.admin-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 200px;
+  padding: 24px;
+  color: var(--ion-color-medium);
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}
+
+/* ---- Toolbar (filters) ---- */
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 16px;
+  margin-bottom: 16px;
+
+  > * {
+    min-width: 180px;
+  }
+
+  .filter-hint {
+    flex-basis: 100%;
+    min-width: 0;
+    color: var(--ion-color-medium);
+    font-size: var(--font-size-xs);
+  }
+
+  ion-select,
+  ion-searchbar {
+    flex: 1 1 220px;
+    max-width: 360px;
+  }
+
+  ion-searchbar {
+    --background: var(--ion-surface-color);
+    --box-shadow: none;
+    border: 1px solid var(--ion-border-color);
+    border-radius: 8px;
+    padding: 0;
+  }
+}
+
+/* ---- Summary cards ---- */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-stat {
+  background: var(--ion-surface-color);
+  border: 1px solid var(--ion-border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+
+  .stat-label {
+    display: block;
+    color: var(--ion-color-medium);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    display: block;
+    margin-top: 4px;
+    color: var(--ion-color-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .stat-breakdown {
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-sm);
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+  }
+}
+
+/* ---- Data table ---- */
+.admin-table-card {
+  background: var(--ion-surface-color);
+  border: 1px solid var(--ion-border-color);
+  border-radius: 12px;
+  box-shadow: var(--ion-box-shadow);
+  overflow: hidden;
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+
+  th,
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--ion-border-color);
+    vertical-align: middle;
+  }
+
+  th {
+    white-space: nowrap;
+    background: color-mix(in srgb, var(--ion-color-primary) 6%, transparent);
+    color: var(--ion-color-primary);
+    font-weight: var(--font-weight-semibold);
+    text-align: left;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background: color-mix(in srgb, var(--ion-color-primary) 4%, transparent);
+  }
+
+  .actions-col {
+    text-align: right;
+    white-space: nowrap;
+
+    > * {
+      vertical-align: middle;
+    }
+  }
+
+  .table-link {
+    margin-left: 12px;
+    color: var(--ion-color-secondary);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--ion-border-color);
+  color: var(--ion-color-medium);
+  font-size: var(--font-size-sm);
+
+  .pagination-buttons {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+/* ---- Status chips ---- */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  color: var(--ion-text-color);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &.is-active {
+    background: color-mix(in srgb, var(--ion-color-success) 18%, transparent);
+
+    &::before {
+      background: var(--ion-color-success);
+    }
+  }
+
+  &.is-inactive {
+    background: color-mix(in srgb, var(--ion-color-medium) 18%, transparent);
+
+    &::before {
+      background: var(--ion-color-medium);
+    }
+  }
+}
+
+/* ---- Forms ---- */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+  }
+}

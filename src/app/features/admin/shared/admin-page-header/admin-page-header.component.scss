@@ -1,0 +1,72 @@
+:host {
+  display: block;
+  flex-shrink: 0;
+}
+
+// The drawer toolbar is only needed when the split pane is collapsed.
+@media (min-width: 992px) {
+  .admin-narrow-header {
+    display: none;
+  }
+}
+
+.admin-page-title {
+  background: var(--ion-surface-color);
+  border-bottom: 1px solid var(--ion-border-color);
+  padding: 16px 0;
+}
+
+.admin-container {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.admin-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: var(--font-size-sm);
+  color: var(--ion-color-medium);
+
+  a {
+    color: var(--ion-color-secondary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  [aria-current='page'] {
+    color: var(--ion-text-color);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+.title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+h1 {
+  font-size: var(--font-size-xxl);
+  line-height: var(--line-height-heading);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: var(--ion-color-medium);
+  font-size: var(--font-size-sm);
+}
+
+.title-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}

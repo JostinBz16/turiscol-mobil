@@ -1,0 +1,40 @@
+<!-- Narrow screens only: the menu is a drawer there, so expose the menu button. -->
+<ion-header class="admin-narrow-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Panel de administración</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="admin-page-title">
+  <div class="admin-container">
+    @if (breadcrumbs().length) {
+      <nav class="admin-breadcrumb" aria-label="Ruta de navegación">
+        @for (crumb of breadcrumbs(); track $index; let last = $last) {
+          @if (crumb.link && !last) {
+            <a [routerLink]="crumb.link">{{ crumb.label }}</a>
+          } @else {
+            <span [attr.aria-current]="last ? 'page' : null">{{ crumb.label }}</span>
+          }
+          @if (!last) {
+            <span class="separator" aria-hidden="true">&rsaquo;</span>
+          }
+        }
+      </nav>
+    }
+
+    <div class="title-row">
+      <div class="title-block">
+        <h1>{{ title() }}</h1>
+        @if (subtitle()) {
+          <p class="subtitle">{{ subtitle() }}</p>
+        }
+      </div>
+      <div class="title-actions">
+        <ng-content select="[actions]"></ng-content>
+      </div>
+    </div>
+  </div>
+</div>
