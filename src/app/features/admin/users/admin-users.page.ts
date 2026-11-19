@@ -2,7 +2,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonContent, IonButton, IonIcon, IonSelect, IonSelectOption, IonSearchbar,
-  IonToggle, ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eyeOutline, refreshOutline } from 'ionicons/icons';
@@ -23,7 +22,6 @@ type RoleFilter = 'ALL' | UserApi['role'];
   imports: [
     RouterLink,
     IonContent, IonButton, IonIcon, IonSelect, IonSelectOption, IonSearchbar,
-    IonToggle,
     AdminPageHeaderComponent, AdminDataTableComponent,
   ],
   templateUrl: './admin-users.page.html',
@@ -31,7 +29,6 @@ type RoleFilter = 'ALL' | UserApi['role'];
 })
 export class AdminUsersPage {
   private userService = inject(UserService);
-  private toastCtrl = inject(ToastController);
 
   readonly pageSize = 15;
 
@@ -145,31 +142,6 @@ export class AdminUsersPage {
     this.loadStats();
   }
 
-  async toggleActive(user: UserApi, event: any) {
-    const detail = event.detail;
-    const toggle = event.target as HTMLIonToggleElement | null;
-    if (!detail) return;
-    const checked: boolean = detail.checked;
-    try {
-      if (checked) {
-        await firstValueFrom(this.userService.activate(user.id));
-      } else {
-        await firstValueFrom(this.userService.deactivate(user.id));
-      }
-      this.users.set(
-        this.users().map((u) =>
-          u.id === user.id ? { ...u, active: checked } : u,
-        ),
-      );
-      this.showToast(checked ? 'Usuario activado' : 'Usuario desactivado');
-      this.loadStats();
-    } catch (err) {
-      console.error('Error toggling user', err);
-      if (toggle) toggle.checked = !checked;
-      this.showToast('No se pudo actualizar el usuario', 'danger');
-    }
-  }
-
   roleLabel(role: string): string {
     const map: Record<string, string> = {
       ALL: 'Todos',
@@ -179,15 +151,5 @@ export class AdminUsersPage {
       USER: 'Turista',
     };
     return map[role] ?? role;
-  }
-
-  private async showToast(message: string, color = 'success') {
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2500,
-      position: 'bottom',
-      color,
-    });
-    await toast.present();
   }
 }

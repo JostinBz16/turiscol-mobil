@@ -98,11 +98,6 @@
       </ng-template>
 
       <ng-template #actions let-user>
-        <ion-toggle
-          [checked]="user.active"
-          [attr.aria-label]="user.active ? 'Desactivar usuario' : 'Activar usuario'"
-          (ionChange)="toggleActive(user, $event)"
-        ></ion-toggle>
         <a class="icon-action" [routerLink]="[user.id]" title="Ver detalle" aria-label="Ver detalle">
           <ion-icon name="eye-outline"></ion-icon>
         </a>
