@@ -1,38 +1,82 @@
-import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-  IonIcon, IonSpinner, IonRefresher, IonRefresherContent,
-  IonList, IonItem, IonLabel, IonBadge, IonToggle,
-  ToastController,
+  IonContent, IonButton, IonIcon, IonSelect, IonSelectOption, IonSearchbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { chevronForwardOutline, businessOutline, powerOutline } from 'ionicons/icons';
+import { eyeOutline, refreshOutline } from 'ionicons/icons';
 import { ProviderAdminService, ProviderApi } from 'src/app/core/services/provider-admin.service';
 import { firstValueFrom } from 'rxjs';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header/admin-page-header.component';
+import {
+  AdminDataTableComponent,
+  AdminTableColumn,
+} from '../shared/admin-data-table/admin-data-table.component';
+
+type StatusFilter = 'ALL' | 'ACTIVE' | 'INACTIVE';
 
 @Component({
   selector: 'app-admin-providers',
   standalone: true,
   imports: [
-    CommonModule, RouterModule,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-    IonIcon, IonSpinner, IonRefresher, IonRefresherContent,
-    IonList, IonItem, IonLabel, IonBadge, IonToggle,
+    RouterLink,
+    IonContent, IonButton, IonIcon, IonSelect, IonSelectOption, IonSearchbar,
+    AdminPageHeaderComponent, AdminDataTableComponent,
   ],
   templateUrl: './admin-providers.page.html',
   styleUrls: ['./admin-providers.page.scss'],
 })
 export class AdminProvidersPage {
   private providerAdminService = inject(ProviderAdminService);
-  private toastCtrl = inject(ToastController);
+
+  readonly pageSize = 15;
+
+  readonly statusFilters: StatusFilter[] = ['ALL', 'ACTIVE', 'INACTIVE'];
 
   providers = signal<ProviderApi[]>([]);
   loading = signal(true);
+  statusFilter = signal<StatusFilter>('ALL');
+  searchTerm = signal('');
+
+  page = signal(0);
+  totalPages = signal(0);
+  totalElements = signal(0);
+
+  // The role endpoint returns the base user fields; onboardingCompleted is only
+  // shown when the backend actually sends it for the loaded rows.
+  columns = computed<AdminTableColumn[]>(() => {
+    const cols: AdminTableColumn[] = [
+      { key: 'userName', label: 'Proveedor' },
+      { key: 'email', label: 'Correo electrónico' },
+      { key: 'phoneNumber', label: 'Teléfono', width: '160px' },
+    ];
+    if (this.providers().some((p) => p.onboardingCompleted !== undefined)) {
+      cols.push({ key: 'onboardingCompleted', label: 'Onboarding', width: '140px' });
+    }
+    cols.push({ key: 'active', label: 'Estado', width: '120px' });
+    return cols;
+  });
+
+  filteredProviders = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    const status = this.statusFilter();
+    return this.providers().filter((p) => {
+      if (status === 'ACTIVE' && !p.active) return false;
+      if (status === 'INACTIVE' && p.active) return false;
+      if (!term) return true;
+      return (
+        p.userName?.toLowerCase().includes(term) ||
+        p.email?.toLowerCase().includes(term) ||
+        p.phoneNumber?.toLowerCase().includes(term)
+      );
+    });
+  });
+
+  // Guards against out-of-order responses when pages change quickly.
+  private requestSeq = 0;
 
   constructor() {
-    addIcons({ chevronForwardOutline, businessOutline, powerOutline });
+    addIcons({ eyeOutline, refreshOutline });
   }
 
   // True after the first entry; later entries reload silently (Ionic caches the view).
@@ -44,53 +88,52 @@ export class AdminProvidersPage {
   }
 
   async loadProviders(silent = false) {
+    const seq = ++this.requestSeq;
     if (!silent) this.loading.set(true);
     try {
       const res = await firstValueFrom(
-        this.providerAdminService.listProviders({ size: 100 }),
+        this.providerAdminService.listProviders({ page: this.page(), size: this.pageSize }),
       );
-      this.providers.set(res?.content ?? res ?? []);
+      if (seq !== this.requestSeq) return;
+      const content: ProviderApi[] = Array.isArray(res) ? res : (res?.content ?? []);
+      this.providers.set(content);
+      this.totalPages.set(res?.totalPages ?? (content.length ? 1 : 0));
+      this.totalElements.set(res?.totalElements ?? content.length);
     } catch (err) {
+      if (seq !== this.requestSeq) return;
       console.error('Error loading providers', err);
-      if (!silent) this.providers.set([]);
+      if (!silent) {
+        this.providers.set([]);
+        this.totalPages.set(0);
+        this.totalElements.set(0);
+      }
     }
     this.loading.set(false);
   }
 
-  async toggleActive(provider: ProviderApi, event: any) {
-    const detail = event.detail;
-    if (!detail) return;
-    try {
-      if (detail.checked) {
-        await firstValueFrom(this.providerAdminService.approve(provider.id));
-      } else {
-        await firstValueFrom(this.providerAdminService.suspend(provider.id));
-      }
-      this.providers.set(
-        this.providers().map((p) =>
-          p.id === provider.id ? { ...p, active: detail.checked } : p,
-        ),
-      );
-      this.showToast(detail.checked ? 'Proveedor activado' : 'Proveedor suspendido');
-    } catch (err) {
-      console.error('Error toggling provider', err);
-      detail.checked = !detail.checked;
-      this.showToast('No se pudo actualizar el proveedor', 'danger');
-    }
+  onStatusFilterChange(event: any) {
+    this.statusFilter.set(event.detail.value ?? 'ALL');
   }
 
-  async refresh(event: any) {
-    await this.loadProviders();
-    event.target.complete();
+  onSearch(event: any) {
+    this.searchTerm.set(event.detail?.value ?? '');
   }
 
-  private async showToast(message: string, color = 'success') {
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2500,
-      position: 'bottom',
-      color,
-    });
-    await toast.present();
+  onPageChange(page: number) {
+    this.page.set(page);
+    this.loadProviders();
+  }
+
+  refresh() {
+    this.loadProviders();
+  }
+
+  statusLabel(status: StatusFilter): string {
+    const map: Record<StatusFilter, string> = {
+      ALL: 'Todos',
+      ACTIVE: 'Activos',
+      INACTIVE: 'Inactivos',
+    };
+    return map[status];
   }
 }
